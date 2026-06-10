@@ -1,0 +1,43 @@
+{
+  "categories": [
+    "Soft & Other skills",
+    "Web Mapping",
+    "GIS & Remote Sensing",
+    "Cartography & Design",
+    "Programming",
+    "Data Visualization",
+    "Infrastructure",
+    "Languages"
+  ],
+  "skills": [
+    { "id": "maplibre", "name": "MapLibre GL JS", "category": "Web Mapping", "level": "expert", "iconType": "text" },
+    { "id": "mapbox", "name": "Mapbox", "category": "Web Mapping", "level": "intermediate", "iconType": "text" },
+    { "id": "leaflet", "name": "Leaflet", "category": "Web Mapping", "level": "advanced", "iconType": "text" },
+    { "id": "openlayers", "name": "OpenLayers", "category": "Web Mapping", "level": "intermediate", "iconType": "text" },
+    { "id": "qgis", "name": "QGIS", "category": "GIS & Remote Sensing", "level": "expert", "iconType": "text" },
+    { "id": "gee", "name": "Google Earth Engine", "category": "GIS & Remote Sensing", "level": "advanced", "iconType": "text" },
+    { "id": "arcgis", "name": "ArcGIS Pro", "category": "GIS & Remote Sensing", "level": "advanced", "iconType": "text" },
+    { "id": "typography", "name": "Map Typography", "category": "Cartography & Design", "level": "expert", "iconType": "text" },
+    { "id": "illustrator", "name": "Adobe Illustrator", "category": "Cartography & Design", "level": "intermediate", "iconType": "text" },
+    { "id": "affinity", "name": "Affinity", "category": "Cartography & Design", "level": "beginner", "iconType": "text" },
+    { "id": "figma", "name": "Figma", "category": "Cartography & Design", "level": "expert", "iconType": "text" },
+    { "id": "framer", "name": "Framer", "category": "Cartography & Design", "level": "intermediate", "iconType": "text" },
+    { "id": "blender", "name": "Blender", "category": "Cartography & Design", "level": "intermediate", "iconType": "text" },
+    { "id": "python", "name": "Python", "category": "Programming", "level": "advanced", "iconType": "text" },
+    { "id": "javascript", "name": "JavaScript", "category": "Programming", "level": "advanced", "iconType": "text" },
+    { "id": "d3", "name": "D3.js", "category": "Data Visualization", "level": "intermediate", "iconType": "text" },
+    { "id": "deckgl", "name": "deck.gl", "category": "Data Visualization", "level": "intermediate", "iconType": "text" },
+    { "id": "flourish", "name": "Flourish", "category": "Data Visualization", "level": "learning", "iconType": "text" },
+    { "id": "datawrapper", "name": "Datawrapper", "category": "Data Visualization", "level": "learning", "iconType": "text" },
+    { "id": "postgresql", "name": "PostgreSQL", "category": "Infrastructure", "level": "intermediate", "iconType": "text" },
+    { "id": "postgis", "name": "PostGIS", "category": "Infrastructure", "level": "intermediate", "iconType": "text" },
+    { "id": "trex", "name": "T-rex", "category": "Infrastructure", "level": "beginner", "iconType": "text" },
+    { "id": "martin", "name": "Martin", "category": "Infrastructure", "level": "beginner", "iconType": "text" },
+    { "id": "gdal", "name": "GDAL", "category": "Infrastructure", "level": "intermediate", "iconType": "text" },
+    { "id": "lang-russian", "name": "Russian", "category": "Languages", "level": "expert", "iconType": "text" },
+    { "id": "lang-english", "name": "English", "category": "Languages", "level": "advanced", "iconType": "text" },
+    { "id": "lang-german", "name": "German", "category": "Languages", "level": "beginner", "iconType": "text" },
+    { "id": "lang-japanese", "name": "Japanese", "category": "Languages", "level": "beginner", "iconType": "text" },
+    { "id": "storytelling", "name": "Storytelling", "category": "Soft & Other skills", "level": "expert", "iconType": "text" }
+  ]
+}

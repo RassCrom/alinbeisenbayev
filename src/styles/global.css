@@ -1,0 +1,325 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Base element styles — layered so Tailwind utilities can override them.
+   (Unlayered rules would beat every utility in @layer utilities.) */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-bg-base);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: var(--body-font-size);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: 1.2;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+  }
+}
+
+/* ---- Shared primitives ---- */
+
+@layer components {
+  .heading-section {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+  }
+
+  .pill-active {
+    border-color: var(--color-accent);
+    background: var(--color-accent-glow);
+    color: var(--color-accent-light);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-accent-light);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text-primary);
+  }
+
+  .animate-fade-up {
+    animation: fade-up var(--transition-slow) both;
+  }
+
+  /* Story panel reveal (About page, Intersection Observer toggles .is-visible) */
+  .story-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+
+  .story-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Line clamp for blog excerpts */
+  .clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Faint map-grid (graticule) backdrop, radially masked to fade out */
+  .graticule-bg {
+    background-image:
+      linear-gradient(to bottom, var(--color-border-subtle) 1px, transparent 1px),
+      linear-gradient(to right, var(--color-border-subtle) 1px, transparent 1px);
+    background-size: 72px 72px;
+    opacity: 0.25;
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, black 25%, transparent 80%);
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 40%, black 25%, transparent 80%);
+  }
+}
+
+/* ---- Scrollbar (matches the dark token palette) ---- */
+
+/* Chromium / WebKit: full styling with rounded thumb */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-overlay);
+  border: 2px solid var(--color-bg-base);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--color-bg-base);
+}
+
+/* Firefox only — setting scrollbar-color in Chromium would disable the
+   richer ::-webkit-scrollbar styling above */
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-bg-overlay) var(--color-bg-base);
+  }
+}
+
+/* ---- Animations ---- */
+
+@keyframes pulse-dot {
+  0%   { transform: scale(1);   opacity: 1; }
+  70%  { transform: scale(2.4); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Skill hover preview pop-in (Skills page cursor-follow card) */
+@keyframes preview-pop {
+  from { opacity: 0; transform: scale(0.85) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---- Third-party DOM styling (unlayered on purpose: must beat the
+        plain imported maplibre-gl / medium-zoom stylesheets) ---- */
+
+/* Pulsing map marker (WorksMap origin points) */
+.map-origin-marker {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.map-origin-marker::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-light);
+  animation: pulse-dot 2s ease-out infinite;
+}
+
+.map-origin-marker::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-light);
+  box-shadow: 0 0 8px var(--color-accent-light);
+}
+
+.map-context-marker {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-gold);
+  box-shadow: 0 0 6px var(--color-accent-gold);
+  cursor: pointer;
+}
+
+/* MapLibre popup theming */
+.maplibregl-popup-content {
+  background: var(--color-bg-overlay) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-elevated) !important;
+  font-family: var(--font-heading);
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.maplibregl-popup-tip {
+  border-top-color: var(--color-bg-overlay) !important;
+  border-bottom-color: var(--color-bg-overlay) !important;
+}
+
+/* medium-zoom overlay above everything */
+.medium-zoom-overlay,
+.medium-zoom-image--opened {
+  z-index: var(--z-modal);
+}
+
+/* ---- Custom cursor (fine pointers only; touch devices keep defaults) ---- */
+@media (pointer: fine) {
+  .has-custom-cursor,
+  .has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+.cursor-pointer-el {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: calc(var(--z-modal) + 100);
+  will-change: transform;
+}
+
+/* Scale/glow animate on the inner svg so position tracking stays instant.
+   transform-origin at the arrow tip keeps the click point fixed while scaling. */
+.cursor-pointer-el svg {
+  display: block;
+  transform-origin: 2px 2px;
+  transition: transform 150ms ease, filter 150ms ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.cursor-pointer-el svg path {
+  fill: var(--color-text-primary);
+  stroke: var(--color-bg-base);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  transition: fill 150ms ease;
+}
+
+.cursor-pointer-el.is-hovering svg {
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 8px rgba(102, 145, 192, 0.6));
+}
+
+.cursor-pointer-el.is-hovering svg path {
+  fill: var(--color-accent-light);
+}
+
+.cursor-pointer-el.is-pressed svg {
+  transform: scale(0.85);
+}
+
+.cursor-pointer-el.is-hovering.is-pressed svg {
+  transform: scale(1.1);
+}

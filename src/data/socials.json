@@ -1,0 +1,76 @@
+{
+  "socials": [
+    {
+      "id": "linkedin",
+      "platform": "LinkedIn",
+      "label": "Alikhan Beisenbayev",
+      "url": "https://linkedin.com/in/karasu",
+      "description": "Professional profile — career updates, geospatial articles.",
+      "iconUrl": "/images/socials/linkedin.svg",
+      "featured": true
+    },
+    {
+      "id": "github",
+      "platform": "GitHub",
+      "label": "rasscrom",
+      "url": "https://github.com/rasscrom",
+      "description": "Open source projects and map experiments.",
+      "iconUrl": "/images/socials/github.svg",
+      "featured": true
+    },
+    {
+      "id": "instagram-tulparmaps",
+      "platform": "Instagram",
+      "label": "tulparmaps",
+      "url": "https://instagram.com/tulparmaps",
+      "description": "Map portfolio — prints, interactive stories, cartographic experiments.",
+      "iconUrl": "/images/socials/instagram.svg",
+      "featured": true
+    },
+    {
+      "id": "instagram-tulparstories",
+      "platform": "Instagram",
+      "label": "tulparstories",
+      "url": "https://instagram.com/tulparstories",
+      "description": "Behind the scenes, travel, personal stories.",
+      "iconUrl": "/images/socials/instagram.svg",
+      "featured": false
+    },
+    {
+      "id": "youtube-tulparstories",
+      "platform": "YouTube",
+      "label": "tulparstories",
+      "url": "https://youtube.com/@tulparstories",
+      "description": "Video content — map-making process, tutorials, journeys.",
+      "iconUrl": "/images/socials/youtube.svg",
+      "featured": false
+    },
+    {
+      "id": "telegram-tulparmaps",
+      "platform": "Telegram",
+      "label": "tulparmaps",
+      "url": "https://t.me/tulparmaps",
+      "description": "Telegram channel with map drops and cartography news.",
+      "iconUrl": "/images/socials/telegram.svg",
+      "featured": false
+    },
+    {
+      "id": "email",
+      "platform": "Email",
+      "label": "alikhan.beisenbay490@gmail.com",
+      "url": "mailto:alikhan.beisenbay490@gmail.com",
+      "description": "For collaboration, job inquiries, and questions.",
+      "iconUrl": "/images/socials/email.svg",
+      "featured": true
+    },
+    {
+      "id": "cv",
+      "platform": "CV",
+      "label": "Download CV",
+      "url": "/files/CV.pdf",
+      "description": "Full resume — cartography, GIS engineering, remote sensing.",
+      "iconUrl": "/images/socials/cv.svg",
+      "featured": true
+    }
+  ]
+}

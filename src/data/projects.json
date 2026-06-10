@@ -1,0 +1,454 @@
+{
+  "projects": [
+    {
+      "id": "tigranes-the-greatest",
+      "slug": "tigranes-the-greatest",
+      "title": "Tigranes the Greatest",
+      "tagline": "Scrollytelling map of an ancient empire at its peak.",
+      "status": "complete",
+      "featured": true,
+      "type": "website",
+      "category": "storytelling map",
+      "keywords": ["scrollytelling", "Armenia", "history", "web"],
+      "role": "team",
+      "startDate": "2025-01",
+      "endDate": "2025-03",
+      "awards": ["Armenia Open Data Contest — Winner"],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists. What problem or question drove it.",
+      "idea": "[PLACEHOLDER] The original spark or concept behind the project.",
+      "design": "[PLACEHOLDER] Design decisions — visual language, colors, typography, layout.",
+      "inspiration": "[PLACEHOLDER] What influenced the aesthetic or approach.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] Research & Data",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Prototyping",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Result, award, who uses it, any metrics.",
+      "stack": ["MapLibre GL JS", "JavaScript", "QGIS"],
+      "liveUrl": "https://example.com/tigranes",
+      "codeUrl": "https://github.com/rasscrom/tigranes",
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Description of what this image shows.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Detail view.",
+          "type": "detail"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 48.2082, "lng": 16.3738, "label": "Vienna, Austria" },
+        "contexts": [
+          {
+            "connectionType": "polygon",
+            "geojsonUrl": "/data/geo/armenia.geojson",
+            "centroidLat": 40.2,
+            "centroidLng": 44.8,
+            "label": "Armenia"
+          }
+        ]
+      }
+    },
+    {
+      "id": "silk-road",
+      "slug": "silk-road",
+      "title": "Silk Road through Centuries",
+      "tagline": "[PLACEHOLDER] A print map tracing trade routes across a millennium.",
+      "status": "complete",
+      "featured": true,
+      "type": "static-map",
+      "category": "print",
+      "keywords": ["print", "history", "cartography"],
+      "role": "solo",
+      "startDate": "2025-04",
+      "endDate": "2024-06",
+      "awards": ["British Cartographic Society — Winner"],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists.",
+      "idea": "[PLACEHOLDER] The original spark or concept.",
+      "design": "[PLACEHOLDER] Design decisions for the print layout.",
+      "inspiration": "[PLACEHOLDER] Influences and references.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] Historical Research",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Map Composition",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Result and recognition.",
+      "stack": ["QGIS", "Adobe Illustrator", "Blender"],
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Full map sheet.",
+          "type": "print"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Typography detail.",
+          "type": "detail"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 48.2082, "lng": 16.3738, "label": "Vienna, Austria" },
+        "contexts": [
+          { "connectionType": "point", "lat": 34.3416, "lng": 108.9398, "label": "Xi'an, China" },
+          { "connectionType": "point", "lat": 39.6542, "lng": 66.9597, "label": "Samarkand, Uzbekistan" },
+          { "connectionType": "point", "lat": 41.0082, "lng": 28.9784, "label": "Istanbul, Türkiye" }
+        ]
+      }
+    },
+    {
+      "id": "ignisatlas",
+      "slug": "ignisatlas",
+      "title": "IgnisAtlas — Wildfire Platform",
+      "tagline": "[PLACEHOLDER] Web platform for monitoring wildfire activity.",
+      "status": "in-progress",
+      "featured": true,
+      "type": "website",
+      "category": "platform",
+      "keywords": ["wildfire", "remote sensing", "platform", "web"],
+      "role": "solo",
+      "startDate": "2025-05",
+      "endDate": "2026-01",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists.",
+      "idea": "[PLACEHOLDER] The original spark or concept.",
+      "design": "[PLACEHOLDER] Design decisions.",
+      "inspiration": "[PLACEHOLDER] Influences and references.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] Data Pipeline",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Frontend Build",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Current state and roadmap.",
+      "stack": ["React", "MapLibre GL JS", "Python", "GDAL"],
+      "liveUrl": "https://example.com/ignisatlas",
+      "codeUrl": "https://github.com/rasscrom/ignisatlas",
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Dashboard view.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Fire detail panel.",
+          "type": "screenshot"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 48.1351, "lng": 11.582, "label": "Munich, Germany" },
+        "contexts": [
+          { "connectionType": "point", "lat": 37.9838, "lng": 23.7275, "label": "Athens, Greece" },
+          { "connectionType": "point", "lat": 34.0522, "lng": -118.2437, "label": "Los Angeles, USA" }
+        ]
+      }
+    },
+    {
+      "id": "heat-stress-vienna",
+      "slug": "heat-stress-vienna",
+      "title": "Heat Stress in Vienna",
+      "tagline": "[PLACEHOLDER] MSc thesis on urban heat stress mapping.",
+      "status": "in-progress",
+      "featured": true,
+      "type": "website",
+      "category": "analysis",
+      "keywords": ["urban climate", "Vienna", "thesis", "analysis"],
+      "role": "solo",
+      "startDate": "2026-03",
+      "endDate": "2026-08",
+      "awards": ["MSc Thesis — TU Wien"],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists.",
+      "idea": "[PLACEHOLDER] The original spark or concept.",
+      "design": "[PLACEHOLDER] Design decisions.",
+      "inspiration": "[PLACEHOLDER] Influences and references.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] Satellite Analysis",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Visualization",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Findings and academic outcome.",
+      "stack": ["Python", "Google Earth Engine", "MapLibre GL JS"],
+      "liveUrl": "https://example.com/heat-vienna",
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Heat map overview.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] District comparison.",
+          "type": "chart"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 48.1351, "lng": 11.582, "label": "Munich, Germany" },
+        "contexts": [
+          { "connectionType": "point", "lat": 48.2082, "lng": 16.3738, "label": "Vienna, Austria" }
+        ]
+      }
+    },
+    {
+      "id": "earth-on-fire",
+      "slug": "earth-on-fire",
+      "title": "Earth on Fire",
+      "tagline": "[PLACEHOLDER] Static map of global fire activity over one year.",
+      "status": "complete",
+      "featured": true,
+      "type": "static-map",
+      "category": "print",
+      "keywords": ["fire", "global", "print", "remote sensing"],
+      "role": "solo",
+      "startDate": "2025-05",
+      "endDate": "2025-05",
+      "awards": ["GeoHipster Calendar — Featured", "Sustainability Atlas Book"],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists.",
+      "idea": "[PLACEHOLDER] The original spark or concept.",
+      "design": "[PLACEHOLDER] Design decisions.",
+      "inspiration": "[PLACEHOLDER] Influences and references.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] FIRMS Data Wrangling",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Styling & Export",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Recognition and distribution.",
+      "stack": ["QGIS", "Python", "Adobe Photoshop"],
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Full poster.",
+          "type": "print"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Regional close-up.",
+          "type": "detail"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 51.1694, "lng": 71.4704, "label": "Astana, Kazakhstan" },
+        "contexts": [
+          { "connectionType": "point", "lat": -25.2744, "lng": 133.7751, "label": "Australia" },
+          { "connectionType": "point", "lat": -8.7832, "lng": -55.4915, "label": "Amazon, Brazil" }
+        ]
+      }
+    },
+    {
+      "id": "ignition-point-analysis",
+      "slug": "ignition-point-analysis",
+      "title": "Ignition Point Analysis",
+      "tagline": "[PLACEHOLDER] Spatial analysis of wildfire ignition points.",
+      "status": "complete",
+      "featured": false,
+      "type": "website",
+      "category": "analysis",
+      "keywords": ["wildfire", "analysis", "GIS", "statistics"],
+      "role": "solo",
+      "startDate": "2024-11",
+      "endDate": "2025-02",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists.",
+      "idea": "[PLACEHOLDER] The original spark or concept.",
+      "design": "[PLACEHOLDER] Design decisions.",
+      "inspiration": "[PLACEHOLDER] Influences and references.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] Point Pattern Analysis",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Web Report",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Findings summary.",
+      "stack": ["R", "Python", "QGIS"],
+      "codeUrl": "https://github.com/rasscrom/ignition-analysis",
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Density surface.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Cluster map.",
+          "type": "screenshot"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 48.1351, "lng": 11.582, "label": "Munich, Germany" },
+        "contexts": [
+          { "connectionType": "point", "lat": 40.4168, "lng": -3.7038, "label": "Spain" }
+        ]
+      }
+    },
+    {
+      "id": "astana-buildings",
+      "slug": "astana-buildings",
+      "title": "Astana Buildings Web Map",
+      "tagline": "[PLACEHOLDER] Interactive 3D building explorer for Astana.",
+      "status": "complete",
+      "featured": false,
+      "type": "website",
+      "category": "interactive-map",
+      "keywords": ["Astana", "buildings", "3D", "web"],
+      "role": "solo",
+      "startDate": "2023-08",
+      "endDate": "2023-11",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists.",
+      "idea": "[PLACEHOLDER] The original spark or concept.",
+      "design": "[PLACEHOLDER] Design decisions.",
+      "inspiration": "[PLACEHOLDER] Influences and references.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] OSM Data Prep",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Extrusion Styling",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Usage and reception.",
+      "stack": ["MapLibre GL JS", "OpenStreetMap", "Tippecanoe"],
+      "liveUrl": "https://example.com/astana-buildings",
+      "codeUrl": "https://github.com/rasscrom/astana-buildings",
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] City overview.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Night mode.",
+          "type": "screenshot"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 51.1694, "lng": 71.4704, "label": "Astana, Kazakhstan" },
+        "contexts": [
+          { "connectionType": "point", "lat": 51.128, "lng": 71.43, "label": "Astana Left Bank" }
+        ]
+      }
+    },
+    {
+      "id": "kazgisa-geoportal",
+      "slug": "kazgisa-geoportal",
+      "title": "KazGISA National Geoportal",
+      "tagline": "[PLACEHOLDER] Contribution to the national geoportal platform.",
+      "status": "complete",
+      "featured": false,
+      "type": "platform",
+      "category": "platform",
+      "keywords": ["geoportal", "Kazakhstan", "platform", "infrastructure"],
+      "role": "team — GIS engineer",
+      "startDate": "2021-06",
+      "endDate": "2022-05",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "[PLACEHOLDER] Why this project exists.",
+      "idea": "[PLACEHOLDER] The original spark or concept.",
+      "design": "[PLACEHOLDER] Design decisions.",
+      "inspiration": "[PLACEHOLDER] Influences and references.",
+      "process": [
+        {
+          "step": 1,
+          "title": "[PLACEHOLDER] Data Integration",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        },
+        {
+          "step": 2,
+          "title": "[PLACEHOLDER] Service Publishing",
+          "description": "[PLACEHOLDER] What was done in this step.",
+          "image": "/images/placeholder.jpg"
+        }
+      ],
+      "outcome": "[PLACEHOLDER] Platform scale and impact.",
+      "stack": ["ArcGIS Enterprise", "PostgreSQL", "GeoServer"],
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Portal home.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "[PLACEHOLDER] Layer catalog.",
+          "type": "screenshot"
+        }
+      ],
+      "geography": {
+        "origin": { "lat": 51.1694, "lng": 71.4704, "label": "Astana, Kazakhstan" },
+        "contexts": [
+          { "connectionType": "point", "lat": 43.222, "lng": 76.8512, "label": "Almaty, Kazakhstan" }
+        ]
+      }
+    }
+  ]
+}

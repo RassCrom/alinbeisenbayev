@@ -1,0 +1,210 @@
+{
+  "version": 8,
+  "name": "Portfolio Dark — alinbeisenbayev.com",
+  "metadata": {
+    "description": "Custom minimal dark basemap matching the site design tokens (bg #0d1320, surface #121a2d, borders #243049/#2e3d5c, text #566280/#8594b0, accent #4472a8). CARTO vector tiles, OpenMapTiles schema, no API key."
+  },
+  "sources": {
+    "carto": {
+      "type": "vector",
+      "url": "https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json"
+    }
+  },
+  "glyphs": "https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": { "background-color": "#0d1320" }
+    },
+    {
+      "id": "park",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "park",
+      "minzoom": 9,
+      "paint": { "fill-color": "#10192c", "fill-opacity": 0.8 }
+    },
+    {
+      "id": "landuse-residential",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "landuse",
+      "minzoom": 10,
+      "filter": ["in", "class", "residential", "suburbs", "neighbourhood"],
+      "paint": { "fill-color": "#111a2e", "fill-opacity": 0.6 }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "water",
+      "paint": { "fill-color": "#0a111f" }
+    },
+    {
+      "id": "waterway",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "waterway",
+      "minzoom": 8,
+      "paint": {
+        "line-color": "#0a111f",
+        "line-width": { "stops": [[8, 0.5], [12, 1.5], [16, 3]] }
+      }
+    },
+    {
+      "id": "building",
+      "type": "fill",
+      "source": "carto",
+      "source-layer": "building",
+      "minzoom": 13,
+      "paint": { "fill-color": "#192236", "fill-opacity": 0.5 }
+    },
+    {
+      "id": "road-minor",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "transportation",
+      "minzoom": 11,
+      "filter": ["in", "class", "minor", "tertiary", "service", "secondary"],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": "#1b2540",
+        "line-width": { "stops": [[11, 0.4], [14, 1], [18, 4]] }
+      }
+    },
+    {
+      "id": "road-major",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "transportation",
+      "minzoom": 6,
+      "filter": ["in", "class", "motorway", "trunk", "primary"],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": "#243049",
+        "line-width": { "stops": [[6, 0.4], [10, 1.2], [14, 2.5], [18, 6]] }
+      }
+    },
+    {
+      "id": "boundary-state",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "boundary",
+      "minzoom": 4,
+      "filter": ["all", ["==", "admin_level", 4], ["==", "maritime", 0]],
+      "paint": {
+        "line-color": "#243049",
+        "line-width": { "stops": [[4, 0.4], [8, 1]] },
+        "line-dasharray": [2, 2]
+      }
+    },
+    {
+      "id": "boundary-country-glow",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "boundary",
+      "filter": ["all", ["==", "admin_level", 2], ["==", "maritime", 0]],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": "#4472a8",
+        "line-opacity": 0.08,
+        "line-width": { "stops": [[2, 2], [6, 5]] }
+      }
+    },
+    {
+      "id": "boundary-country",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "boundary",
+      "filter": ["all", ["==", "admin_level", 2], ["==", "maritime", 0]],
+      "layout": { "line-cap": "round", "line-join": "round" },
+      "paint": {
+        "line-color": "#2e3d5c",
+        "line-width": { "stops": [[2, 0.6], [6, 1.2], [10, 2]] }
+      }
+    },
+    {
+      "id": "label-water",
+      "type": "symbol",
+      "source": "carto",
+      "source-layer": "water_name",
+      "minzoom": 2,
+      "layout": {
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
+        "text-font": ["Montserrat Medium", "Open Sans Bold", "Noto Sans Regular"],
+        "text-size": { "stops": [[2, 9], [6, 12]] },
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.25,
+        "text-max-width": 6
+      },
+      "paint": {
+        "text-color": "#3c4b6e",
+        "text-halo-color": "#0a111f",
+        "text-halo-width": 1
+      }
+    },
+    {
+      "id": "label-city",
+      "type": "symbol",
+      "source": "carto",
+      "source-layer": "place",
+      "minzoom": 4,
+      "maxzoom": 14,
+      "filter": ["in", "class", "city", "town"],
+      "layout": {
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
+        "text-font": ["Montserrat Medium", "Open Sans Bold", "Noto Sans Regular"],
+        "text-size": { "stops": [[4, 10], [8, 12], [12, 14]] },
+        "text-max-width": 8
+      },
+      "paint": {
+        "text-color": "#566280",
+        "text-halo-color": "#0d1320",
+        "text-halo-width": 1.2
+      }
+    },
+    {
+      "id": "label-country",
+      "type": "symbol",
+      "source": "carto",
+      "source-layer": "place",
+      "minzoom": 2,
+      "maxzoom": 8,
+      "filter": ["==", "class", "country"],
+      "layout": {
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
+        "text-font": ["Montserrat Medium", "Open Sans Bold", "Noto Sans Regular"],
+        "text-size": { "stops": [[2, 10], [5, 13], [7, 15]] },
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.15,
+        "text-max-width": 7
+      },
+      "paint": {
+        "text-color": "#8594b0",
+        "text-halo-color": "#0d1320",
+        "text-halo-width": 1.2
+      }
+    },
+    {
+      "id": "label-continent",
+      "type": "symbol",
+      "source": "carto",
+      "source-layer": "place",
+      "maxzoom": 2,
+      "filter": ["==", "class", "continent"],
+      "layout": {
+        "text-field": ["coalesce", ["get", "name_en"], ["get", "name"]],
+        "text-font": ["Montserrat Medium", "Open Sans Bold", "Noto Sans Regular"],
+        "text-size": 11,
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.35
+      },
+      "paint": {
+        "text-color": "#566280",
+        "text-halo-color": "#0d1320",
+        "text-halo-width": 1
+      }
+    }
+  ]
+}

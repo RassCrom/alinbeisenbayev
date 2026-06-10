@@ -1,0 +1,77 @@
+{
+  "profile": {
+    "name": "Alikhan Beisenbayev",
+    "title": "Cartographer & Data Storyteller",
+    "tagline": "My maps resonate with people through aesthetic designs.",
+    "languages": ["English", "Russian"],
+    "bio": "[PLACEHOLDER] Two paragraph bio text for the end of the about story. Second sentence of the placeholder bio.",
+    "photo": "/images/about/portrait.jpg"
+  },
+  "story": [
+    {
+      "id": 1,
+      "type": "origin",
+      "date": "2000",
+      "title": "Born in Astana",
+      "description": "[PLACEHOLDER] Short text shown alongside the globe as the story begins.",
+      "location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
+      "globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 2.5, "animationDuration": 1500 },
+      "images": ["/images/placeholder.jpg"]
+    },
+    {
+      "id": 2,
+      "type": "education",
+      "date": "2018",
+      "title": "[PLACEHOLDER] BSc Geodesy & Cartography — ENU, Astana",
+      "description": "[PLACEHOLDER] Started undergraduate studies in geodesy and cartography.",
+      "location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
+      "globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 1.5, "animationDuration": 1200 },
+      "images": []
+    },
+    {
+      "id": 3,
+      "type": "work",
+      "date": "2022",
+      "title": "[PLACEHOLDER] Internship at HERE Technologies",
+      "description": "[PLACEHOLDER] Remote internship working on map data.",
+      "location": { "name": "Online / Astana", "lat": 51.1694, "lng": 71.4704 },
+      "globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 2.0, "animationDuration": 1200 },
+      "images": []
+    },
+    {
+      "id": 4,
+      "type": "move",
+      "date": "2022",
+      "title": "[PLACEHOLDER] Exchange at CSULB",
+      "description": "[PLACEHOLDER] Exchange semester at California State University, Long Beach.",
+      "location": { "name": "Long Beach, USA", "lat": 33.7701, "lng": -118.1937 },
+      "globeView": { "lat": 33.7701, "lng": -118.1937, "altitude": 1.8, "animationDuration": 1500 },
+      "images": ["/images/placeholder.jpg"]
+    },
+    {
+      "id": 5,
+      "type": "education",
+      "date": "2024",
+      "title": "[PLACEHOLDER] MSc Cartography + work — Vienna & Munich",
+      "description": "[PLACEHOLDER] Started the international MSc in Cartography while working.",
+      "location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
+      "globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.5, "animationDuration": 1500 },
+      "images": []
+    },
+    {
+      "id": 6,
+      "type": "award",
+      "date": "2026",
+      "title": "[PLACEHOLDER] MSc Thesis — TU München",
+      "description": "[PLACEHOLDER] Finishing the thesis on urban heat stress in Vienna.",
+      "location": { "name": "Munich, Germany", "lat": 48.1351, "lng": 11.582 },
+      "globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.2, "animationDuration": 1200 },
+      "images": ["/images/placeholder.jpg"]
+    }
+  ],
+  "endCta": {
+    "heading": "[PLACEHOLDER] Explore my work or get in touch",
+    "worksLabel": "View Works",
+    "contactLabel": "Contact Me"
+  }
+}

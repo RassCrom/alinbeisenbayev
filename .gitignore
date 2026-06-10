@@ -1,0 +1,94 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+.vercel/
+.netlify/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.sample
+*.env
+
+# Claude / AI tools
+.claude/
+.aider*
+.cursor/
+.copilot/
+.codeium/
+.continue/
+agent/
+.agent/
+agents/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime / temp
+*.pid
+*.seed
+*.pid.lock
+.cache/
+.temp/
+.tmp/
+tmp/
+temp/
+
+# Testing
+coverage/
+.nyc_output/
+.jest-cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Package manager locks (keep only one — remove lines for ones you use)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Misc
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+.secret
+secrets/
