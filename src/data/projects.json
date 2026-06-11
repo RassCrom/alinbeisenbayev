@@ -79,6 +79,90 @@
       }
     },
     {
+      "id": "orhon-stories",
+      "slug": "orhon-stories",
+      "title": "Orhon Stories (Stories about Asia)",
+      "tagline": "Orhon Stories is series of maps specifically focused on Asia.",
+      "status": "in-progress",
+      "featured": true,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "Central Asia",
+        "Asia",
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2026-05",
+      "endDate": "Present",
+      "awards": [
+      ],
+      "coverImage": "/images/projects/orhon-stories/turkic_nomadic-countries.png",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma"
+      ],
+      "liveUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/orhon-stories/turkic_nomadic-countries.png",
+          "caption": "Interesting about Turkic, Central Asian, and Nomadic countries.",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/orhon-stories/asian-regions.png",
+          "caption": "Division of Asia into regions.",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/orhon-stories/asia-csmajor-s3-v1.png",
+          "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 3.",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/orhon-stories/asia-csmajor-s3-v2.png",
+          "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 3, colored logo.",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/orhon-stories/asia-csmajor-s12-v1.png",
+          "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 1 and 2.",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/orhon-stories/asia-csmajor-s12-v2.png",
+          "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 1 and 2, colored logo.",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/orhon-stories/asia-in-wc26.png",
+          "caption": "Asian teams that qualified for World Cup 2026",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/orhon-stories/asian-teams-base-locations.png",
+          "caption": "Location of stay of Asian teams for World Cup 2026.",
+          "type": "detail"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+        ]
+      }
+    },
+    {
       "id": "silk-road",
       "slug": "silk-road",
       "title": "Silk Road Through Centuries",
