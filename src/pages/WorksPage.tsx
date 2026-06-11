@@ -12,14 +12,29 @@ const WorksMap = lazy(() => import('../components/WorksMap/WorksMap'));
 const { projects } = projectsData as ProjectsData;
 
 type ViewMode = 'grid' | 'map';
+type TypeFilter = 'all' | 'web' | 'image';
+
+const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'web', label: 'Web' },
+  { key: 'image', label: 'Image' },
+];
 
 export default function WorksPage() {
   const [view, setView] = useState<ViewMode>('grid');
   const [mapExpanded, setMapExpanded] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   // ?q= lets other pages (e.g. Skills) deep-link into a pre-filtered list
   const [searchParams] = useSearchParams();
+
+  const typeFiltered = useMemo(() => {
+    if (typeFilter === 'web') return projects.filter((p) => p.type !== 'static-map');
+    if (typeFilter === 'image') return projects.filter((p) => p.type === 'static-map');
+    return projects;
+  }, [typeFilter]);
+
   const { search, setSearch, selected, toggleKeyword, keywords, filtered } =
-    useProjectFilter(projects, searchParams.get('q') ?? '');
+    useProjectFilter(typeFiltered, searchParams.get('q') ?? '');
 
   const visibleIds = useMemo(() => filtered.map((p) => p.id), [filtered]);
 
@@ -55,9 +70,29 @@ export default function WorksPage() {
         Works
       </h1>
 
+      {/* Type filter tabs */}
+      {!mapExpanded && (
+        <div className="mt-[var(--space-6)] flex gap-[var(--space-6)] border-b border-[var(--color-border-subtle)]">
+          {TYPE_FILTERS.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setTypeFilter(key)}
+              className={`-mb-px pb-[var(--space-3)] font-[family-name:var(--font-mono)] text-[10px] tracking-[0.12em] uppercase transition-colors ${
+                typeFilter === key
+                  ? 'border-b-2 border-[var(--color-accent)] text-[var(--color-text-primary)]'
+                  : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Controls row (hidden while the fullscreen map shows its own sidebar) */}
       {!mapExpanded && (
-        <div className="mt-[var(--space-6)] py-[var(--space-4)]">
+        <div className="mt-[var(--space-4)] py-[var(--space-2)]">
           <div className="flex flex-col gap-[var(--space-4)] sm:flex-row sm:items-start sm:justify-between">
             <SearchFilter
               keywords={keywords}
@@ -109,7 +144,7 @@ export default function WorksPage() {
                   id={project.id}
                   slug={project.slug}
                   title={project.title}
-                  year={Number(project.endDate.slice(0, 4))}
+                  year={project.endDate ? Number(project.endDate.slice(0, 4)) || null : null}
                   category={project.category}
                   tagline={project.tagline}
                   coverImage={project.coverImage}
@@ -163,7 +198,7 @@ export default function WorksPage() {
                           {project.title}
                         </span>
                         <span className="ml-[var(--space-2)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
-                          {project.endDate.slice(0, 4)}
+                          {project.endDate?.slice(0, 4) ?? '—'}
                         </span>
                       </Link>
                     </li>

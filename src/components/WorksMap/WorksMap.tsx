@@ -4,19 +4,8 @@ import type { Map as MapLibreMap, LngLatBounds } from 'maplibre-gl';
 import type { Project } from '../../types';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-// Custom basemap matching the site tokens (CARTO vector tiles, no API key)
 const MAP_STYLE = '/map-styles/portfolio-dark.json';
 
-export interface WorksMapProps {
-  projects: Project[];
-  /** Project ids currently matching search/filters; markers outside it are hidden. */
-  visibleIds?: string[];
-  /** Fullscreen mode: fills its parent instead of the fixed-height card. */
-  expanded?: boolean;
-  onToggleExpand?: () => void;
-}
-
-/** Curved arc between two lng/lat points (quadratic bezier, perpendicular offset). */
 function arcCoords(
   from: [number, number],
   to: [number, number],
@@ -66,6 +55,60 @@ function buildPopupCard(project: Project, onView: () => void): HTMLElement {
   return el;
 }
 
+function buildOriginPopup(
+  projects: Project[],
+  label: string,
+  onNavigate: (slug: string) => void,
+): HTMLElement {
+  if (projects.length === 1) {
+    return buildPopupCard(projects[0], () => onNavigate(projects[0].slug));
+  }
+  const el = document.createElement('div');
+  el.style.width = '220px';
+  const header = document.createElement('div');
+  header.textContent = label;
+  header.style.cssText =
+    'padding:8px 12px 6px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;' +
+    'color:var(--color-text-muted);text-transform:uppercase;' +
+    'border-bottom:1px solid rgba(255,255,255,0.06);';
+  el.append(header);
+  projects.forEach((project) => {
+    const item = document.createElement('div');
+    item.style.cssText =
+      'padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;';
+    item.addEventListener('mouseenter', () => {
+      item.style.background = 'rgba(68,114,168,0.12)';
+    });
+    item.addEventListener('mouseleave', () => {
+      item.style.background = '';
+    });
+    const cat = document.createElement('div');
+    cat.textContent = project.category;
+    cat.style.cssText =
+      'font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;color:var(--color-text-muted);';
+    const titleEl = document.createElement('div');
+    titleEl.textContent = project.title;
+    titleEl.style.cssText =
+      'font-family:var(--font-heading);font-weight:600;font-size:12px;' +
+      'color:var(--color-text-primary);line-height:1.3;margin-top:2px;';
+    const cta = document.createElement('div');
+    cta.textContent = 'View →';
+    cta.style.cssText =
+      'font-family:var(--font-mono);font-size:10px;color:var(--color-accent-light);margin-top:3px;';
+    item.append(cat, titleEl, cta);
+    item.addEventListener('click', () => onNavigate(project.slug));
+    el.append(item);
+  });
+  return el;
+}
+
+export interface WorksMapProps {
+  projects: Project[];
+  visibleIds?: string[];
+  expanded?: boolean;
+  onToggleExpand?: () => void;
+}
+
 export default function WorksMap({
   projects,
   visibleIds,
@@ -74,7 +117,7 @@ export default function WorksMap({
 }: WorksMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
-  const markersRef = useRef<{ projectId: string; el: HTMLElement }[]>([]);
+  const markersRef = useRef<{ projectIds: string[]; el: HTMLElement }[]>([]);
   const polygonLayersRef = useRef<{ projectId: string; layerIds: string[] }[]>([]);
   const visibleIdsRef = useRef<string[] | undefined>(visibleIds);
   visibleIdsRef.current = visibleIds;
@@ -83,13 +126,12 @@ export default function WorksMap({
   const navigateRef = useRef(navigate);
   navigateRef.current = navigate;
 
-  // Clicking a marker highlights everything belonging to its project and
-  // fades the rest; clicking the basemap (or the marker again) clears it.
   const applyHighlight = () => {
     const map = mapRef.current;
     const selected = selectedRef.current;
-    markersRef.current.forEach(({ projectId, el }) => {
-      el.style.opacity = selected && projectId !== selected ? '0.2' : '1';
+    markersRef.current.forEach(({ projectIds, el }) => {
+      const active = !selected || projectIds.includes(selected);
+      el.style.opacity = active ? '1' : '0.2';
     });
     if (map?.getLayer('project-arcs-line')) {
       map.setPaintProperty(
@@ -130,9 +172,10 @@ export default function WorksMap({
     const map = mapRef.current;
     const ids = visibleIdsRef.current;
     const visible = ids ? new Set(ids) : null;
-    const isVisible = (projectId: string) => !visible || visible.has(projectId);
-    markersRef.current.forEach(({ projectId, el }) => {
-      el.style.display = isVisible(projectId) ? '' : 'none';
+    const isAnyVisible = (projectIds: string[]) =>
+      !visible || projectIds.some((id) => visible.has(id));
+    markersRef.current.forEach(({ projectIds, el }) => {
+      el.style.display = isAnyVisible(projectIds) ? '' : 'none';
     });
     if (map?.getLayer('project-arcs-line')) {
       map.setFilter(
@@ -143,7 +186,11 @@ export default function WorksMap({
     polygonLayersRef.current.forEach(({ projectId, layerIds }) => {
       layerIds.forEach((layerId) => {
         if (map?.getLayer(layerId)) {
-          map.setLayoutProperty(layerId, 'visibility', isVisible(projectId) ? 'visible' : 'none');
+          map.setLayoutProperty(
+            layerId,
+            'visibility',
+            isAnyVisible([projectId]) ? 'visible' : 'none',
+          );
         }
       });
     });
@@ -154,7 +201,6 @@ export default function WorksMap({
     let cancelled = false;
 
     (async () => {
-      // maplibre-gl is heavy — load it only when the map view is shown
       const maplibregl = (await import('maplibre-gl')).default;
       if (cancelled || !containerRef.current) return;
 
@@ -176,27 +222,69 @@ export default function WorksMap({
         if (!map || cancelled) return;
         const arcFeatures: GeoJSON.Feature<GeoJSON.LineString>[] = [];
 
+        // ── Merge projects by shared origin ────────────────────────────
+        const originGroups = new Map<
+          string,
+          { lat: number; lng: number; label: string; projects: Project[] }
+        >();
         projects.forEach((project) => {
-          const { origin, contexts } = project.geography;
-          const originLngLat: [number, number] = [origin.lng, origin.lat];
-          bounds.extend(originLngLat);
+          const { origin } = project.geography;
+          if (!origin) return;
+          const key = `${origin.lat.toFixed(4)},${origin.lng.toFixed(4)}`;
+          if (!originGroups.has(key)) {
+            originGroups.set(key, {
+              lat: origin.lat,
+              lng: origin.lng,
+              label: origin.label,
+              projects: [],
+            });
+          }
+          originGroups.get(key)!.projects.push(project);
+        });
 
-          // Origin: pulsing dot with project card popup
+        // ── One origin marker per location ─────────────────────────────
+        originGroups.forEach((group) => {
+          const lngLat: [number, number] = [group.lng, group.lat];
+          bounds.extend(lngLat);
+
           const originEl = document.createElement('div');
           originEl.className = 'map-origin-marker';
-          originEl.title = `${project.title} — ${origin.label}`;
+          originEl.title = group.label;
+
+          if (group.projects.length > 1) {
+            const badge = document.createElement('span');
+            badge.className = 'map-origin-badge';
+            badge.textContent = String(group.projects.length);
+            originEl.append(badge);
+          }
+
           originEl.addEventListener('click', (e) => {
-            e.stopPropagation(); // keep the basemap click handler from clearing it
-            toggleSelection(project.id);
+            e.stopPropagation();
+            if (group.projects.length === 1) {
+              toggleSelection(group.projects[0].id);
+            }
           });
+
           const popup = new maplibregl.Popup({ offset: 14, maxWidth: '240px' }).setDOMContent(
-            buildPopupCard(project, () => navigateRef.current(`/works/${project.slug}`)),
+            buildOriginPopup(group.projects, group.label, (slug) =>
+              navigateRef.current(`/works/${slug}`),
+            ),
           );
           new maplibregl.Marker({ element: originEl })
-            .setLngLat(originLngLat)
+            .setLngLat(lngLat)
             .setPopup(popup)
             .addTo(map!);
-          markersRef.current.push({ projectId: project.id, el: originEl });
+          markersRef.current.push({
+            projectIds: group.projects.map((p) => p.id),
+            el: originEl,
+          });
+        });
+
+        // ── Arcs + context markers (per project) ───────────────────────
+        projects.forEach((project) => {
+          const { origin, contexts } = project.geography;
+          if (!origin) return;
+          const originLngLat: [number, number] = [origin.lng, origin.lat];
 
           contexts.forEach((context, index) => {
             const target: [number, number] | null =
@@ -210,7 +298,6 @@ export default function WorksMap({
             if (!target) return;
             bounds.extend(target);
 
-            // Arc from origin → context (multiple projects fan out from shared origins)
             arcFeatures.push({
               type: 'Feature',
               properties: { project: project.id },
@@ -225,14 +312,19 @@ export default function WorksMap({
                 e.stopPropagation();
                 toggleSelection(project.id);
               });
-              const contextPopup = new maplibregl.Popup({ offset: 10, maxWidth: '240px' }).setDOMContent(
-                buildPopupCard(project, () => navigateRef.current(`/works/${project.slug}`)),
+              const contextPopup = new maplibregl.Popup({
+                offset: 10,
+                maxWidth: '240px',
+              }).setDOMContent(
+                buildPopupCard(project, () =>
+                  navigateRef.current(`/works/${project.slug}`),
+                ),
               );
               new maplibregl.Marker({ element: contextEl })
                 .setLngLat(target)
                 .setPopup(contextPopup)
                 .addTo(map!);
-              markersRef.current.push({ projectId: project.id, el: contextEl });
+              markersRef.current.push({ projectIds: [project.id], el: contextEl });
             } else if (context.geojsonUrl) {
               const sourceId = `polygon-${project.id}-${index}`;
               fetch(context.geojsonUrl)
@@ -250,7 +342,11 @@ export default function WorksMap({
                     id: `${sourceId}-line`,
                     type: 'line',
                     source: sourceId,
-                    paint: { 'line-color': '#6691c0', 'line-opacity': 0.6, 'line-width': 1 },
+                    paint: {
+                      'line-color': '#6691c0',
+                      'line-opacity': 0.6,
+                      'line-width': 1,
+                    },
                   });
                   polygonLayersRef.current.push({
                     projectId: project.id,
@@ -265,9 +361,7 @@ export default function WorksMap({
                   applyVisibility();
                   applyHighlight();
                 })
-                .catch(() => {
-                  /* placeholder geojson may be missing — non-fatal */
-                });
+                .catch(() => {});
             }
           });
         });
@@ -296,8 +390,6 @@ export default function WorksMap({
         }
       });
 
-      // Clicks: a polygon feature selects its project (with popup, like the
-      // markers); a bare basemap click clears the highlight.
       map.on('click', (e) => {
         if (!map) return;
         const fillLayerIds = polygonLayersRef.current
@@ -317,7 +409,9 @@ export default function WorksMap({
               new maplibregl.Popup({ offset: 8, maxWidth: '240px' })
                 .setLngLat(e.lngLat)
                 .setDOMContent(
-                  buildPopupCard(project, () => navigateRef.current(`/works/${project.slug}`)),
+                  buildPopupCard(project, () =>
+                    navigateRef.current(`/works/${project.slug}`),
+                  ),
                 )
                 .addTo(map!);
             }
@@ -342,13 +436,11 @@ export default function WorksMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects]);
 
-  // Re-apply when search/filter selection changes
   useEffect(() => {
     applyVisibility();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visibleIds]);
 
-  // The canvas must be re-measured when toggling fullscreen
   useEffect(() => {
     const timer = setTimeout(() => mapRef.current?.resize(), 60);
     return () => clearTimeout(timer);
@@ -373,14 +465,32 @@ export default function WorksMap({
           className="absolute right-[var(--space-3)] top-[var(--space-3)] z-[var(--z-raised)] flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(13,19,32,0.85)] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)]"
         >
           {expanded ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M9 4v5H4" />
               <path d="M15 4v5h5" />
               <path d="M9 20v-5H4" />
               <path d="M15 20v-5h5" />
             </svg>
           ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M4 9V4h5" />
               <path d="M20 9V4h-5" />
               <path d="M4 15v5h5" />

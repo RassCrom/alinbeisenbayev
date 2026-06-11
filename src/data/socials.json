@@ -5,7 +5,7 @@
       "platform": "LinkedIn",
       "label": "Alikhan Beisenbayev",
       "url": "https://linkedin.com/in/karasu",
-      "description": "Professional profile — career updates, geospatial articles.",
+      "description": "Maps and stories, weekly, usually every Tuesday",
       "iconUrl": "/images/socials/linkedin.svg",
       "featured": true
     },
@@ -14,7 +14,7 @@
       "platform": "GitHub",
       "label": "rasscrom",
       "url": "https://github.com/rasscrom",
-      "description": "Open source projects and map experiments.",
+      "description": "My web projects and some python",
       "iconUrl": "/images/socials/github.svg",
       "featured": true
     },
@@ -23,7 +23,7 @@
       "platform": "Instagram",
       "label": "tulparmaps",
       "url": "https://instagram.com/tulparmaps",
-      "description": "Map portfolio — prints, interactive stories, cartographic experiments.",
+      "description": "My maps, stories, map design techniques, and other things related to design and cartography",
       "iconUrl": "/images/socials/instagram.svg",
       "featured": true
     },
@@ -32,7 +32,7 @@
       "platform": "Instagram",
       "label": "tulparstories",
       "url": "https://instagram.com/tulparstories",
-      "description": "Behind the scenes, travel, personal stories.",
+      "description": "Storytelling videos about climate, history, geography through map design and visualizations (No publishing so far, July 31)",
       "iconUrl": "/images/socials/instagram.svg",
       "featured": false
     },
@@ -41,7 +41,7 @@
       "platform": "YouTube",
       "label": "tulparstories",
       "url": "https://youtube.com/@tulparstories",
-      "description": "Video content — map-making process, tutorials, journeys.",
+      "description": "Similar to my tulparstories instagram. Longer videos. (Coming Soon, July 31)",
       "iconUrl": "/images/socials/youtube.svg",
       "featured": false
     },
@@ -50,7 +50,7 @@
       "platform": "Telegram",
       "label": "tulparmaps",
       "url": "https://t.me/tulparmaps",
-      "description": "Telegram channel with map drops and cartography news.",
+      "description": "My thoughts, map reviews, more casual stuff here",
       "iconUrl": "/images/socials/telegram.svg",
       "featured": false
     },
@@ -59,7 +59,7 @@
       "platform": "Email",
       "label": "alikhan.beisenbay490@gmail.com",
       "url": "mailto:alikhan.beisenbay490@gmail.com",
-      "description": "For collaboration, job inquiries, and questions.",
+      "description": "Open to job offerings and collaboration opportunities",
       "iconUrl": "/images/socials/email.svg",
       "featured": true
     },
@@ -68,7 +68,7 @@
       "platform": "CV",
       "label": "Download CV",
       "url": "/files/CV.pdf",
-      "description": "Full resume — cartography, GIS engineering, remote sensing.",
+      "description": "Resume from 06.11.26",
       "iconUrl": "/images/socials/cv.svg",
       "featured": true
     }

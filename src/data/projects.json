@@ -4,53 +4,883 @@
       "id": "tigranes-the-greatest",
       "slug": "tigranes-the-greatest",
       "title": "Tigranes the Greatest",
-      "tagline": "Scrollytelling map of an ancient empire at its peak.",
+      "tagline": "Scroll-driven interactive map narrative of the ancient Armenian Empire under Tigranes II",
       "status": "complete",
       "featured": true,
       "type": "website",
       "category": "storytelling map",
-      "keywords": ["scrollytelling", "Armenia", "history", "web"],
+      "keywords": [
+        "storytelling",
+        "Armenia",
+        "history",
+        "web",
+        "Tigranes",
+        "scrollytelling"
+      ],
       "role": "team",
       "startDate": "2025-01",
       "endDate": "2025-03",
-      "awards": ["Armenia Open Data Contest — Winner"],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists. What problem or question drove it.",
-      "idea": "[PLACEHOLDER] The original spark or concept behind the project.",
-      "design": "[PLACEHOLDER] Design decisions — visual language, colors, typography, layout.",
-      "inspiration": "[PLACEHOLDER] What influenced the aesthetic or approach.",
+      "awards": [
+        "Armenia Open Data Contest 2025 - Winner"
+      ],
+      "coverImage": "/images/projects/tigranes-the-greatest/peak.png",
+      "context": "Designed for the Armenia Open Data Contest 2025 together with Tolegen. The contest called for any data visualization in any format - a blank canvas that led us toward interactive cartographic storytelling.",
+      "idea": "The deciding spark was the surprisingly vast territory controlled by the Armenian Empire at its peak. Digging deeper revealed how Tigranes II - facing powerful neighbors on every side - built one of the largest empires in Asian history, however briefly. We wanted that scale and drama to be felt on a map.",
+      "design": "The overall atmosphere was driven by Armenian history and the reddish tones of the Armenian flag from that era. Dark backgrounds emphasize the territorial expanse; warm accent colors mark key events and locations.",
+      "inspiration": "Primary design reference was the TASS storymap 'When Napoleon Ventured East' - its pacing and sense of historical momentum influenced how we structured the narrative scroll.",
       "process": [
         {
           "step": 1,
-          "title": "[PLACEHOLDER] Research & Data",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
+          "title": "Research & Data",
+          "description": "Archival cartographic research into Tigranes II's territorial campaigns - locating and digitizing historical boundary data, city positions, and battle sites from academic sources and historical atlases."
         },
         {
           "step": 2,
-          "title": "[PLACEHOLDER] Prototyping",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
+          "title": "Scroll Narrative Build",
+          "description": "Designed the scroll narrative structure in Figma, then built the interactive map with MapLibre GL JS and React. Synchronized scroll position with map state to guide the reader through the territorial timeline.",
+          "image": "/images/projects/tigranes-the-greatest/table-of-content.png"
         }
       ],
-      "outcome": "[PLACEHOLDER] Result, award, who uses it, any metrics.",
-      "stack": ["MapLibre GL JS", "JavaScript", "QGIS"],
-      "liveUrl": "https://example.com/tigranes",
-      "codeUrl": "https://github.com/rasscrom/tigranes",
+      "outcome": "Won first place at the Armenia Open Data Contest 2025.",
+      "stack": [
+        "MapLibre GL JS",
+        "React",
+        "QGIS"
+      ],
+      "liveUrl": "https://tigranes-great.netlify.app/",
+      "codeUrl": "https://github.com/RassCrom/tighranes2",
       "gallery": [
         {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Description of what this image shows.",
+          "url": "/images/projects/tigranes-the-greatest/mid-story.png",
+          "caption": "Mid story snapshot showing quota and Armenian expansion.",
           "type": "screenshot"
         },
         {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Detail view.",
+          "url": "/images/projects/tigranes-the-greatest/end-of-story.png",
+          "caption": "Ending chapter of the story.",
           "type": "detail"
         }
       ],
       "geography": {
-        "origin": { "lat": 48.2082, "lng": 16.3738, "label": "Vienna, Austria" },
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "polygon",
+            "geojsonUrl": "/data/geo/armenia.geojson",
+            "centroidLat": 40.2,
+            "centroidLng": 44.8,
+            "label": "Armenia / Ancient Near East"
+          }
+        ]
+      }
+    },
+    {
+      "id": "silk-road",
+      "slug": "silk-road",
+      "title": "Silk Road Through Centuries",
+      "tagline": "Print map showcasing the historical Silk Road trade network with a focus on Central Asian routes",
+      "status": "complete",
+      "featured": true,
+      "type": "static-map",
+      "category": "print",
+      "keywords": [
+        "print",
+        "history",
+        "cartography",
+        "silk road",
+        "Central Asia"
+      ],
+      "role": "solo",
+      "startDate": "2025-04",
+      "endDate": "2025-06",
+      "awards": [
+        "British Cartographic Society - Winner"
+      ],
+      "coverImage": "/images/projects/silk-road/preview.png",
+      "context": "Developed under the TU Wien course - Project Map Creation. The task was to produce any map for print. Historical cartography felt like the natural territory.",
+      "idea": "Since childhood I have been fascinated by history - a passion inherited from my grandfather. Among several shortlisted ideas, the Silk Road stood out: it is the oldest form of globalization and runs through the heart of the Central Asian cultures I grew up around.",
+      "design": "The goal was a moody, atmospheric design - achieved by blending a dark base with relief shading and careful typographic hierarchy. Color palettes kept warm and earthy to evoke trade routes and ancient parchment.",
+      "inspiration": "Primary reference was the Silk Road map by Simeon Netchev - admired for its compositional clarity and historical depth.",
+      "process": [
+        {
+          "step": 1,
+          "title": "Historical Research",
+          "description": "Studied the Silk Road trade network through books, academic articles, and historical GIS datasets. Used NotebookLM to organize research across sources. Identified key cities, route variants, and centuries to represent."
+        },
+        {
+          "step": 2,
+          "title": "Map Composition",
+          "description": "Built the base map and spatial layers in QGIS. Exported to Figma for typography, symbology refinement, and final print layout.",
+          "image": "/images/projects/silk-road/close-details.png"
+        }
+      ],
+      "outcome": "Won the British Cartographic Society open map competition, September 2025.",
+      "stack": [
+        "NotebookLM",
+        "QGIS",
+        "Figma"
+      ],
+      "liveUrl": "https://rasscrom.github.io/tulparmaps-collection/#map=silk%20road.png",
+      "gallery": [
+        {
+          "url": "/images/projects/silk-road/wip.png",
+          "caption": "Work-in-progress view of the map composition.",
+          "type": "detail"
+        },
+        {
+          "url": "/images/projects/silk-road/preview.png",
+          "caption": "Preview crop - Central Asian route detail.",
+          "type": "detail"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 34.3416,
+            "lng": 108.9398,
+            "label": "Xi'an, China"
+          },
+          {
+            "connectionType": "point",
+            "lat": 39.6542,
+            "lng": 66.9597,
+            "label": "Samarkand, Uzbekistan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 41.2995,
+            "lng": 69.2401,
+            "label": "Tashkent, Uzbekistan"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ignisatlas",
+      "slug": "ignisatlas",
+      "title": "TabiatGIS - Kazakhstan Environment Platform",
+      "tagline": "Web platform for storytelling, reports, and visualization about Kazakhstan's natural environment",
+      "status": "in-progress",
+      "featured": false,
+      "type": "website",
+      "category": "platform",
+      "keywords": [
+        "wildfire",
+        "remote sensing",
+        "platform",
+        "web",
+        "Kazakhstan",
+        "environment"
+      ],
+      "role": "solo",
+      "startDate": "2025-05",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "Grew out of professional work at the Institute of Ionosphere, where I built a wildfire monitoring platform end-to-end. TabiatGIS expands that into a broader personal platform for environmental geospatial storytelling about Kazakhstan.",
+      "idea": "Kazakhstan is one of the world's largest countries but remains largely invisible in global environmental data narratives. TabiatGIS is the platform to change that - aggregating satellite analysis, interactive reports, and map stories about Kazakhstan's steppes, fires, and climate.",
+      "design": "",
+      "inspiration": "",
+      "process": [
+        {
+          "step": 1,
+          "title": "Data Pipeline",
+          "description": "Automated ingestion of FIRMS fire point data (MODIS & VIIRS) for Kazakhstan, processed with Python/GDAL into analysis-ready formats. PostGIS spatial queries for temporal aggregation.",
+          "image": ""
+        },
+        {
+          "step": 2,
+          "title": "Frontend Build",
+          "description": "React application with MapLibre GL JS for map rendering and OpenLayers for analysis views. Figma prototyping for UI/UX before implementation. Deployed on Netlify.",
+          "image": ""
+        }
+      ],
+      "outcome": "",
+      "stack": [
+        "React",
+        "MapLibre GL JS",
+        "OpenLayers",
+        "Python",
+        "GDAL",
+        "Figma"
+      ],
+      "liveUrl": "https://tabiatgis.netlify.app/",
+      "codeUrl": "https://github.com/RassCrom/ignisatlas-kz",
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "Dashboard view - wildfire density across Kazakhstan.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "Interactive report - temporal wildfire trend panel.",
+          "type": "screenshot"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.1351,
+          "lng": 11.582,
+          "label": "Munich, Germany"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 51.1694,
+            "lng": 71.4704,
+            "label": "Astana, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 43.222,
+            "lng": 76.8512,
+            "label": "Almaty, Kazakhstan"
+          }
+        ]
+      }
+    },
+    {
+      "id": "heat-stress-vienna",
+      "slug": "heat-stress-vienna",
+      "title": "Heat Stress in Vienna",
+      "tagline": "MSc thesis: evaluating user engagement in scroll-driven map narratives of urban heat stress across European cities",
+      "status": "in-progress",
+      "featured": false,
+      "type": "website",
+      "category": "analysis",
+      "keywords": [
+        "urban heat",
+        "Vienna",
+        "thesis",
+        "UHI",
+        "storytelling",
+        "user engagement",
+        "scrollytelling"
+      ],
+      "role": "solo",
+      "startDate": "2026-03",
+      "endDate": "2026-08",
+      "awards": [
+        "MSc Thesis - TU Munchen / TU Wien, Erasmus Mundus"
+      ],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "Master's thesis project for the MSc Cartography program at TU MÃ¼nchen and TU Wien (Erasmus Mundus Joint Master). Investigates how narrative structure in interactive maps affects user engagement with climate data.",
+      "idea": "How does the level of storytelling in an interactive map affect how long and how deeply users engage with climate data? The thesis tests different narrative depths in a scroll-driven map of heat stress across European cities, measuring engagement through interaction logs and eye-tracking.",
+      "design": "",
+      "inspiration": "",
+      "process": [
+        {
+        },
+        {
+        }
+      ],
+      "outcome": "",
+      "stack": [
+        "Python",
+        "Google Earth Engine",
+        "MapLibre GL JS",
+        "React",
+        "Figma"
+      ],
+      "liveUrl": null,
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 48.2082,
+            "lng": 16.3738,
+            "label": "Vienna, Austria"
+          },
+          {
+            "connectionType": "point",
+            "lat": 48.1351,
+            "lng": 11.582,
+            "label": "Munich, Germany"
+          }
+        ]
+      }
+    },
+    {
+      "id": "earth-on-fire",
+      "slug": "earth-on-fire",
+      "title": "Earth on Fire",
+      "tagline": "Global print map of fire ignition points accumulated over a 5-year period",
+      "status": "complete",
+      "featured": true,
+      "type": "static-map",
+      "category": "print",
+      "keywords": [
+        "fire",
+        "global",
+        "print",
+        "FIRMS",
+        "MODIS",
+        "VIIRS"
+      ],
+      "role": "team",
+      "startDate": "2025-05",
+      "endDate": "2025-05",
+      "awards": [
+        "GeoHipster Calendar 2026 - Featured",
+        "Atlas of Sustainability - Featured"
+      ],
+      "coverImage": "/images/projects/earth-on-fire/dark.png",
+      "context": "Developed during the week design challenge in TU Wien with a guest lecture from Wisconsin University - Robert Roth. The topic was about Sustainable Development Goals (SDG)",
+      "idea": "For this map, we had to choose the topic from 17 SDGs and then make a map within 3 days in a group of three people. Climate Action - 13 SDG was general topic. For the map idea, I came up with fire point datasets since I worked with it for another project abut analyzing ignition points in Kazakhstan.",
+      "design": "I was responsible for data collection and processing as well as overall layout and map design. I wanted to create a shining effect since the topic is fire points, so it visually easy to see where the earth burns more often. Map uses persuasive cartographic and text techniques to emphasize the problem with wildfires, agricultural burnings, deforestation, which leads to a higher CO2 level.",
+      "inspiration": "Inspiration was driven from visualization of California 100 years of wildfire.",
+      "process": [
+        {
+          "step": 1,
+          "title": "FIRMS Data Processing",
+          "description": "Downloaded data from FIRMS website for the global view for five years. To clean the data I used python since too many points in QGIS are laggy."
+        },
+        {
+          "step": 2,
+          "title": "Styling & Export",
+          "description": "The task was to visualize millions of points on the map without creating visual noise and keep it visually understandable and pleasant. ",
+          "image": "/images/projects/earth-on-fire/close-details.png"
+        }
+      ],
+      "outcome": "Featured in the GeoHipster 2026 Calendar and in the Atlas of Sustainability book.",
+      "stack": [
+        "QGIS",
+        "Python",
+        "Adobe Illustrator"
+      ],
+      "gallery": [
+        {
+          "url": "/images/projects/earth-on-fire/dark.webp",
+          "downloadUrl": "/images/projects/earth-on-fire/dark.png",
+          "caption": "Earth on Fire - dark version. Global fire ignition density, 5-year accumulation.",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/earth-on-fire/light.webp",
+          "downloadUrl": "/images/projects/earth-on-fire/light.png",
+          "caption": "Earth on Fire - light version.",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 51.1694,
+          "lng": 71.4704,
+          "label": "Astana, Kazakhstan"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": -25.2744,
+            "lng": 133.7751,
+            "label": "Australia"
+          },
+          {
+            "connectionType": "point",
+            "lat": -8.7832,
+            "lng": -55.4915,
+            "label": "Amazon, Brazil"
+          },
+          {
+            "connectionType": "point",
+            "lat": 0,
+            "lng": 20,
+            "label": "Central Africa"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ignition-point-analysis",
+      "slug": "ignition-point-analysis",
+      "title": "Dynamics of Ignition Points in Kazakhstan (2001-2024)",
+      "tagline": "Full pipeline from NASA FIRMS data to interactive geospatial report on 24 years of wildfire patterns in Kazakhstan",
+      "status": "complete",
+      "featured": false,
+      "type": "website",
+      "category": "analysis",
+      "keywords": [
+        "wildfire",
+        "analysis",
+        "GIS",
+        "statistics",
+        "Kazakhstan",
+        "MODIS",
+        "VIIRS"
+      ],
+      "role": "team",
+      "startDate": "2024-11",
+      "endDate": "2026-01",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "Professional analysis project for the Institute of Ionosphere. Full pipeline from raw NASA FIRMS data to an interactive geospatial report documenting spatial-temporal wildfire dynamics in Kazakhstan from 2001 to 2024.",
+      "idea": "To understand where and when Kazakhstan burns - identifying risk clusters, seasonal patterns, and long-term trends across 24 years of satellite fire observations. Results published as an interactive data report for public and institutional access.",
+      "design": "",
+      "inspiration": "",
+      "process": [
+        {
+          "step": 1,
+          "title": "Point Pattern Analysis",
+          "description": "Processed MODIS and VIIRS fire point data in Python."
+        },
+        {
+          "step": 2,
+          "title": "Interactive Report",
+          "description": ""
+        }
+      ],
+      "outcome": "",
+      "stack": [
+        "Python",
+        "QGIS",
+        "geopandas",
+        "MODIS",
+        "VIIRS"
+      ],
+      "codeUrl": "https://karasugis.notion.site/Dynamics-of-Wildfires-in-Kazakhstan-2001-2024-Spatial-Temporal-Patterns-and-Risk-Factors-v2-1c2a7211489880a49e4be5197158a566?source=copy_link",
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.1351,
+          "lng": 11.582,
+          "label": "Munich, Germany"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 51.1694,
+            "lng": 71.4704,
+            "label": "Astana, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 49.8,
+            "lng": 73.1,
+            "label": "Karaganda, Kazakhstan"
+          }
+        ]
+      }
+    },
+    {
+      "id": "astana-buildings",
+      "slug": "astana-buildings",
+      "title": "Building Ages of Astana",
+      "tagline": "Interactive web map about Astana buildings - construction year, height, etc.",
+      "status": "complete",
+      "featured": true,
+      "type": "website",
+      "category": "interactive-map",
+      "keywords": [
+        "Astana",
+        "buildings",
+        "3D",
+        "web",
+        "urban",
+        "PMTiles",
+        "vector tiles"
+      ],
+      "role": "solo",
+      "startDate": "2024-08",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/astana-buildings/intro.png",
+      "context": "Pet project about visualizing Astana through buildings.",
+      "idea": "Idea come from the existing project https://kontikimaps.com/how-old/helsinki. I wanted to create something similar for my city - Astana. But it turned out to be a disaster...",
+      "design": "Dark, cold, steppe design. Gold represents steppe, cold vibes show how could it can be in steppe.",
+      "inspiration": "Kontiki projects - How old is this building",
+      "process": [
+        {
+          "step": 1,
+          "title": "OSM Data Preparation",
+          "description": "I started by downloading buildings from geofabrik (OSM distributor). Next step is to find any source where I could take data. But it turned out that there's no centralized data with information about buildings. Th attempt to contact local city halls, companies responsible for urban development in Astana, and other relevant people from industry was not successful. The decision was rough but simple. Collect all possible information. The data was collected through selling appartement portals and Google earth pro. So methodology is a really weak point of this project. But I can ensure that data collected is relatively accurate."
+        },
+        {
+          "step": 2,
+          "title": "Map Styling & Interactivity",
+          "description": "I started collecting data long time ago. But only recently I was able to start on online map to share it with people. The original ideas expanded to not just construction year of buildings, but has a lot of other information in different formats, including green urban assessment, crime rates, etc. More proud to add 3D model of Kabanbay Mausoleum that we developed with my friend Tolegen.",
+          "image": "/images/projects/astana-buildings/kabanbai-model.png"
+        }
+      ],
+      "outcome": "Published as a live interactive map. Demonstrates full vector tile pipeline: OpenStreetMap â†’ QGIS â†’ Tippecanoe â†’ PMTiles â†’ MapLibre.",
+      "stack": [
+        "MapLibre GL JS",
+        "OpenStreetMap",
+        "Tippecanoe",
+        "PMTiles",
+        "QGIS"
+      ],
+      "liveUrl": "https://kbh-nu.vercel.app/",
+      "codeUrl": "https://github.com/RassCrom/kbh",
+      "gallery": [
+        {
+          "url": "/images/projects/astana-buildings/cyear-preview.png",
+          "downloadUrl": "/images/projects/astana-buildings/cyear-preview.png",
+          "caption": "Year of construction.",
+          "type": "screenshot"
+        },
+        {
+          "url": "/images/projects/astana-buildings/elevation-preview.png",
+          "downloadUrl": "/images/projects/astana-buildings/elevation-preview.png",
+          "caption": "Elevation visualized through buildings.",
+          "type": "screenshot"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 51.1694,
+          "lng": 71.4704,
+          "label": "Astana, Kazakhstan"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 51.128,
+            "lng": 71.43,
+            "label": "Astana Left Bank"
+          },
+          {
+            "connectionType": "point",
+            "lat": 51.18,
+            "lng": 71.45,
+            "label": "Astana Right Bank"
+          }
+        ]
+      }
+    },
+    {
+      "id": "notable-kazakhs",
+      "slug": "notable-kazakhs",
+      "title": "Web Map of Notable Kazakhs",
+      "tagline": "Interactive map of birthplaces and life trajectories of notable people from Kazakhstan",
+      "status": "in-progress",
+      "featured": false,
+      "type": "website",
+      "category": "interactive-map",
+      "keywords": [
+        "Kazakhstan",
+        "people",
+        "biography",
+        "culture",
+        "map"
+      ],
+      "role": "solo",
+      "startDate": "2025-05",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/notable-kazakhs/preview.png",
+      "context": "",
+      "idea": "Kazakhstan's cultural and intellectual heritage is little known inside and outside the country. This map shows notable Kazakhs - athletes, scientists, artists, politicians - attached to the places they were born.",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "MapLibre GL JS",
+        "React"
+      ],
+      "liveUrl": "https://rasscrom.github.io/notable-kazakhs/#4/48.39/67.62",
+      "codeUrl": "https://github.com/RassCrom/notable-kazakhs",
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 51.1694,
+          "lng": 71.4704,
+          "label": "Astana, Kazakhstan"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 51.1694,
+            "lng": 71.4704,
+            "label": "Astana, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 43.222,
+            "lng": 76.8512,
+            "label": "Almaty, Kazakhstan"
+          }
+        ]
+      }
+    },
+    {
+      "id": "alash-orda",
+      "slug": "alash-orda",
+      "title": "Alash Orda Story",
+      "tagline": "Scroll-driven historical map narrative about Kazakhstan's first national government (1917-1920)",
+      "status": "complete",
+      "featured": false,
+      "type": "website",
+      "category": "storytelling map",
+      "keywords": [
+        "Kazakhstan",
+        "history",
+        "storytelling",
+        "scrollytelling",
+        "Alash Orda"
+      ],
+      "role": "solo",
+      "startDate": "2025-04",
+      "endDate": "2025-05",
+      "awards": [],
+      "coverImage": "/images/projects/alash-orda/preview.png",
+      "context": "Personal historical storytelling project about the Alash Orda - the short-lived Kazakh national autonomy government established during the Russian Revolution, suppressed by the Bolsheviks by 1920.",
+      "idea": "The Alash Orda is one of Kazakhstan's most significant but underknown historical chapters - the moment when Kazakh intellectuals tried to build a modern nation-state. A scroll-driven map makes that geography and chronology visceral.",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "JavaScript"
+      ],
+      "liveUrl": "https://rasscrom.github.io/alash-orda/",
+      "codeUrl": "https://github.com/RassCrom/alash-orda",
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 51.1694,
+          "lng": 71.4704,
+          "label": "Astana, Kazakhstan"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 51.1694,
+            "lng": 71.4704,
+            "label": "Astana / Akmola, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 50.4,
+            "lng": 80.2,
+            "label": "Semey (Semipalatinsk), Kazakhstan"
+          }
+        ]
+      }
+    },
+    {
+      "id": "figura-game",
+      "slug": "figura-game",
+      "title": "Figura",
+      "tagline": "History and geography quiz game about famous historical figures, anchored to their places on a map",
+      "status": "in-progress",
+      "featured": false,
+      "type": "website",
+      "category": "game",
+      "keywords": [
+        "game",
+        "history",
+        "map game",
+        "geography",
+        "quiz"
+      ],
+      "role": "solo",
+      "startDate": "2026-05",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/figura/preview.png",
+      "context": "",
+      "idea": "A GeoGuessr-style game but for historical and cultural figures - players are shown a famous person and must locate them on the map, or vice versa. Combines geographic learning with cultural history.",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "MapLibre GL JS",
+        "TypeScript",
+        "Python"
+      ],
+      "liveUrl": "https://figura-eight.vercel.app",
+      "codeUrl": null,
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": []
+      }
+    },
+    {
+      "id": "historical-vienna",
+      "slug": "historical-vienna",
+      "title": "Historical Vienna",
+      "tagline": "Interactive map of Vienna's historical center with architectural and cultural landmark layers",
+      "status": "in-progress",
+      "featured": false,
+      "type": "website",
+      "category": "interactive-map",
+      "keywords": [
+        "Vienna",
+        "history",
+        "architecture",
+        "cultural heritage",
+        "interactive map"
+      ],
+      "role": "solo",
+      "startDate": "2026-05",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/historical-vienna/preview.png",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "MapLibre GL JS",
+        "TypeScript",
+        "Python"
+      ],
+      "liveUrl": "https://rasscrom.github.io/historical-vienna/#14/48.2082/16.3638",
+      "codeUrl": "https://github.com/RassCrom/historical-vienna",
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 48.2082,
+            "lng": 16.3738,
+            "label": "Vienna Innere Stadt"
+          }
+        ]
+      }
+    },
+    {
+      "id": "austria-income",
+      "slug": "austria-income",
+      "title": "Austrian Income by Districts",
+      "tagline": "Choropleth map visualizing income distribution across Austrian administrative districts",
+      "status": "complete",
+      "featured": false,
+      "type": "website",
+      "category": "interactive-map",
+      "keywords": [
+        "Austria",
+        "income",
+        "choropleth",
+        "economics",
+        "data visualization"
+      ],
+      "role": "solo",
+      "startDate": "2025-05",
+      "endDate": "2025-05",
+      "awards": [],
+      "coverImage": "/images/projects/austria-income/image.png",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "d3.js"
+      ],
+      "liveUrl": "https://rasscrom.github.io/austria-income-pct25/income",
+      "codeUrl": "https://github.com/RassCrom/austria-income-pct25",
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 47.8095,
+            "lng": 13.055,
+            "label": "Salzburg, Austria"
+          },
+          {
+            "connectionType": "point",
+            "lat": 47.0707,
+            "lng": 15.4395,
+            "label": "Graz, Austria"
+          }
+        ]
+      }
+    },
+    {
+      "id": "armenia-energy",
+      "slug": "armenia-energy",
+      "title": "Armenia Energy Profile",
+      "tagline": "Interactive storytelling about Armenia's energy production capacity and renewable potential",
+      "status": "complete",
+      "featured": false,
+      "type": "website",
+      "category": "storytelling map",
+      "keywords": [
+        "storytelling",
+        "Armenia",
+        "energy",
+        "renewables",
+        "data visualization"
+      ],
+      "role": "team",
+      "startDate": "2024-01",
+      "endDate": "2024-03",
+      "awards": [
+        "Armenia Open Data Contest 2024 - 3rd place"
+      ],
+      "coverImage": "/images/projects/armenia-energy/preview.png",
+      "context": "Developed for the Armenia Open Data Contest 2024.",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "Third place at the Armenia Open Data Contest 2024.",
+      "stack": [
+        "MapLibre GL JS",
+        "QGIS"
+      ],
+      "liveUrl": "https://rasscrom.github.io/armenia-energy/",
+      "codeUrl": "https://github.com/RassCrom/armenia-energy",
+      "gallery": [
+      ],
+      "geography": {
+        "origin": {
+          "lat": 51.1694,
+          "lng": 71.4704,
+          "label": "Astana, Kazakhstan"
+        },
         "contexts": [
           {
             "connectionType": "polygon",
@@ -63,391 +893,451 @@
       }
     },
     {
-      "id": "silk-road",
-      "slug": "silk-road",
-      "title": "Silk Road through Centuries",
-      "tagline": "[PLACEHOLDER] A print map tracing trade routes across a millennium.",
-      "status": "complete",
-      "featured": true,
-      "type": "static-map",
-      "category": "print",
-      "keywords": ["print", "history", "cartography"],
-      "role": "solo",
-      "startDate": "2025-04",
-      "endDate": "2024-06",
-      "awards": ["British Cartographic Society — Winner"],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists.",
-      "idea": "[PLACEHOLDER] The original spark or concept.",
-      "design": "[PLACEHOLDER] Design decisions for the print layout.",
-      "inspiration": "[PLACEHOLDER] Influences and references.",
-      "process": [
-        {
-          "step": 1,
-          "title": "[PLACEHOLDER] Historical Research",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        },
-        {
-          "step": 2,
-          "title": "[PLACEHOLDER] Map Composition",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        }
-      ],
-      "outcome": "[PLACEHOLDER] Result and recognition.",
-      "stack": ["QGIS", "Adobe Illustrator", "Blender"],
-      "gallery": [
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Full map sheet.",
-          "type": "print"
-        },
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Typography detail.",
-          "type": "detail"
-        }
-      ],
-      "geography": {
-        "origin": { "lat": 48.2082, "lng": 16.3738, "label": "Vienna, Austria" },
-        "contexts": [
-          { "connectionType": "point", "lat": 34.3416, "lng": 108.9398, "label": "Xi'an, China" },
-          { "connectionType": "point", "lat": 39.6542, "lng": 66.9597, "label": "Samarkand, Uzbekistan" },
-          { "connectionType": "point", "lat": 41.0082, "lng": 28.9784, "label": "Istanbul, Türkiye" }
-        ]
-      }
-    },
-    {
-      "id": "ignisatlas",
-      "slug": "ignisatlas",
-      "title": "IgnisAtlas — Wildfire Platform",
-      "tagline": "[PLACEHOLDER] Web platform for monitoring wildfire activity.",
-      "status": "in-progress",
-      "featured": true,
-      "type": "website",
-      "category": "platform",
-      "keywords": ["wildfire", "remote sensing", "platform", "web"],
-      "role": "solo",
-      "startDate": "2025-05",
-      "endDate": "2026-01",
-      "awards": [],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists.",
-      "idea": "[PLACEHOLDER] The original spark or concept.",
-      "design": "[PLACEHOLDER] Design decisions.",
-      "inspiration": "[PLACEHOLDER] Influences and references.",
-      "process": [
-        {
-          "step": 1,
-          "title": "[PLACEHOLDER] Data Pipeline",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        },
-        {
-          "step": 2,
-          "title": "[PLACEHOLDER] Frontend Build",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        }
-      ],
-      "outcome": "[PLACEHOLDER] Current state and roadmap.",
-      "stack": ["React", "MapLibre GL JS", "Python", "GDAL"],
-      "liveUrl": "https://example.com/ignisatlas",
-      "codeUrl": "https://github.com/rasscrom/ignisatlas",
-      "gallery": [
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Dashboard view.",
-          "type": "screenshot"
-        },
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Fire detail panel.",
-          "type": "screenshot"
-        }
-      ],
-      "geography": {
-        "origin": { "lat": 48.1351, "lng": 11.582, "label": "Munich, Germany" },
-        "contexts": [
-          { "connectionType": "point", "lat": 37.9838, "lng": 23.7275, "label": "Athens, Greece" },
-          { "connectionType": "point", "lat": 34.0522, "lng": -118.2437, "label": "Los Angeles, USA" }
-        ]
-      }
-    },
-    {
-      "id": "heat-stress-vienna",
-      "slug": "heat-stress-vienna",
-      "title": "Heat Stress in Vienna",
-      "tagline": "[PLACEHOLDER] MSc thesis on urban heat stress mapping.",
-      "status": "in-progress",
-      "featured": true,
-      "type": "website",
-      "category": "analysis",
-      "keywords": ["urban climate", "Vienna", "thesis", "analysis"],
-      "role": "solo",
-      "startDate": "2026-03",
-      "endDate": "2026-08",
-      "awards": ["MSc Thesis — TU Wien"],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists.",
-      "idea": "[PLACEHOLDER] The original spark or concept.",
-      "design": "[PLACEHOLDER] Design decisions.",
-      "inspiration": "[PLACEHOLDER] Influences and references.",
-      "process": [
-        {
-          "step": 1,
-          "title": "[PLACEHOLDER] Satellite Analysis",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        },
-        {
-          "step": 2,
-          "title": "[PLACEHOLDER] Visualization",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        }
-      ],
-      "outcome": "[PLACEHOLDER] Findings and academic outcome.",
-      "stack": ["Python", "Google Earth Engine", "MapLibre GL JS"],
-      "liveUrl": "https://example.com/heat-vienna",
-      "gallery": [
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Heat map overview.",
-          "type": "screenshot"
-        },
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] District comparison.",
-          "type": "chart"
-        }
-      ],
-      "geography": {
-        "origin": { "lat": 48.1351, "lng": 11.582, "label": "Munich, Germany" },
-        "contexts": [
-          { "connectionType": "point", "lat": 48.2082, "lng": 16.3738, "label": "Vienna, Austria" }
-        ]
-      }
-    },
-    {
-      "id": "earth-on-fire",
-      "slug": "earth-on-fire",
-      "title": "Earth on Fire",
-      "tagline": "[PLACEHOLDER] Static map of global fire activity over one year.",
-      "status": "complete",
-      "featured": true,
-      "type": "static-map",
-      "category": "print",
-      "keywords": ["fire", "global", "print", "remote sensing"],
-      "role": "solo",
-      "startDate": "2025-05",
-      "endDate": "2025-05",
-      "awards": ["GeoHipster Calendar — Featured", "Sustainability Atlas Book"],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists.",
-      "idea": "[PLACEHOLDER] The original spark or concept.",
-      "design": "[PLACEHOLDER] Design decisions.",
-      "inspiration": "[PLACEHOLDER] Influences and references.",
-      "process": [
-        {
-          "step": 1,
-          "title": "[PLACEHOLDER] FIRMS Data Wrangling",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        },
-        {
-          "step": 2,
-          "title": "[PLACEHOLDER] Styling & Export",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        }
-      ],
-      "outcome": "[PLACEHOLDER] Recognition and distribution.",
-      "stack": ["QGIS", "Python", "Adobe Photoshop"],
-      "gallery": [
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Full poster.",
-          "type": "print"
-        },
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Regional close-up.",
-          "type": "detail"
-        }
-      ],
-      "geography": {
-        "origin": { "lat": 51.1694, "lng": 71.4704, "label": "Astana, Kazakhstan" },
-        "contexts": [
-          { "connectionType": "point", "lat": -25.2744, "lng": 133.7751, "label": "Australia" },
-          { "connectionType": "point", "lat": -8.7832, "lng": -55.4915, "label": "Amazon, Brazil" }
-        ]
-      }
-    },
-    {
-      "id": "ignition-point-analysis",
-      "slug": "ignition-point-analysis",
-      "title": "Ignition Point Analysis",
-      "tagline": "[PLACEHOLDER] Spatial analysis of wildfire ignition points.",
+      "id": "maple",
+      "slug": "maple",
+      "title": "MapLe",
+      "tagline": "Geography-based educational game for learning world geography through interactive map challenges",
       "status": "complete",
       "featured": false,
       "type": "website",
-      "category": "analysis",
-      "keywords": ["wildfire", "analysis", "GIS", "statistics"],
-      "role": "solo",
+      "category": "game",
+      "keywords": [
+        "game",
+        "geography",
+        "education",
+        "interactive",
+        "web"
+      ],
+      "role": "team",
       "startDate": "2024-11",
       "endDate": "2025-02",
-      "awards": [],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists.",
-      "idea": "[PLACEHOLDER] The original spark or concept.",
-      "design": "[PLACEHOLDER] Design decisions.",
-      "inspiration": "[PLACEHOLDER] Influences and references.",
-      "process": [
-        {
-          "step": 1,
-          "title": "[PLACEHOLDER] Point Pattern Analysis",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        },
-        {
-          "step": 2,
-          "title": "[PLACEHOLDER] Web Report",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        }
+      "awards": [
+        "TU Wien Web mapping course - 2nd place (~20 teams)"
       ],
-      "outcome": "[PLACEHOLDER] Findings summary.",
-      "stack": ["R", "Python", "QGIS"],
-      "codeUrl": "https://github.com/rasscrom/ignition-analysis",
+      "coverImage": "/images/placeholder.jpg",
+      "context": "Developed as a team of four during the MSc Cartography program at TU Wien. Part of a course competition where teams built interactive cartography projects and presented them to a jury.",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "Achieved 2nd place among approximately 20 competing teams.",
+      "stack": [
+        "React",
+        "MapLibre GL JS",
+        "JavaScript"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
       "gallery": [
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Density surface.",
-          "type": "screenshot"
-        },
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Cluster map.",
-          "type": "screenshot"
-        }
       ],
       "geography": {
-        "origin": { "lat": 48.1351, "lng": 11.582, "label": "Munich, Germany" },
-        "contexts": [
-          { "connectionType": "point", "lat": 40.4168, "lng": -3.7038, "label": "Spain" }
-        ]
+        "origin": {
+          "lat": 48.1351,
+          "lng": 11.582,
+          "label": "Munich, Germany"
+        },
+        "contexts": []
       }
     },
     {
-      "id": "astana-buildings",
-      "slug": "astana-buildings",
-      "title": "Astana Buildings Web Map",
-      "tagline": "[PLACEHOLDER] Interactive 3D building explorer for Astana.",
+      "id": "who-comes-third-akmola",
+      "slug": "who-comes-third-akmola",
+      "title": "Who Comes Third in Akmola",
+      "tagline": "Award-winning printed map showing the most popular ethnicity in Akmola after kazakh and russians",
       "status": "complete",
       "featured": false,
-      "type": "website",
-      "category": "interactive-map",
-      "keywords": ["Astana", "buildings", "3D", "web"],
+      "type": "static-map",
+      "category": "print",
+      "keywords": [
+        "Kazakhstan",
+        "Akmola",
+        "print",
+        "cartography",
+        "data visualization"
+      ],
       "role": "solo",
-      "startDate": "2023-08",
-      "endDate": "2023-11",
-      "awards": [],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists.",
-      "idea": "[PLACEHOLDER] The original spark or concept.",
-      "design": "[PLACEHOLDER] Design decisions.",
-      "inspiration": "[PLACEHOLDER] Influences and references.",
-      "process": [
-        {
-          "step": 1,
-          "title": "[PLACEHOLDER] OSM Data Prep",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        },
-        {
-          "step": 2,
-          "title": "[PLACEHOLDER] Extrusion Styling",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        }
+      "startDate": "2024-10",
+      "endDate": "2024-11",
+      "awards": [
+        "DIRCON Almaty GIS Day 2024 Map Gallery - Winner"
       ],
-      "outcome": "[PLACEHOLDER] Usage and reception.",
-      "stack": ["MapLibre GL JS", "OpenStreetMap", "Tippecanoe"],
-      "liveUrl": "https://example.com/astana-buildings",
-      "codeUrl": "https://github.com/rasscrom/astana-buildings",
+      "coverImage": "/images/projects/who-comes-third-akmola/cover.png",
+      "context": "Submitted to and won the Map Gallery competition at DIRCON Almaty GIS Day 2024 - GIS conference in Kazakhstan.",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "Won the Map Gallery competition at DIRCON Almaty GIS Day 2024.",
+      "stack": [
+        "QGIS",
+        "Adobe Illustrator"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
       "gallery": [
         {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] City overview.",
-          "type": "screenshot"
-        },
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Night mode.",
-          "type": "screenshot"
+          "url": "/images/projects/who-comes-third-akmola/cover.png",
+          "caption": "Who Comes Third in Akmola - full print map.",
+          "type": "print"
         }
       ],
       "geography": {
-        "origin": { "lat": 51.1694, "lng": 71.4704, "label": "Astana, Kazakhstan" },
+        "origin": {
+          "lat": 51.1694,
+          "lng": 71.4704,
+          "label": "Astana, Kazakhstan"
+        },
         "contexts": [
-          { "connectionType": "point", "lat": 51.128, "lng": 71.43, "label": "Astana Left Bank" }
+          {
+            "connectionType": "point",
+            "lat": 51.1694,
+            "lng": 71.4704,
+            "label": "Akmola region, Kazakhstan"
+          }
         ]
       }
     },
     {
-      "id": "kazgisa-geoportal",
-      "slug": "kazgisa-geoportal",
-      "title": "KazGISA National Geoportal",
-      "tagline": "[PLACEHOLDER] Contribution to the national geoportal platform.",
-      "status": "complete",
+      "id": "gulag",
+      "slug": "gulag",
+      "title": "Horror in Gulag series",
+      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
+      "status": "in-progress",
       "featured": false,
-      "type": "platform",
-      "category": "platform",
-      "keywords": ["geoportal", "Kazakhstan", "platform", "infrastructure"],
-      "role": "team — GIS engineer",
-      "startDate": "2021-06",
-      "endDate": "2022-05",
-      "awards": [],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "[PLACEHOLDER] Why this project exists.",
-      "idea": "[PLACEHOLDER] The original spark or concept.",
-      "design": "[PLACEHOLDER] Design decisions.",
-      "inspiration": "[PLACEHOLDER] Influences and references.",
-      "process": [
-        {
-          "step": 1,
-          "title": "[PLACEHOLDER] Data Integration",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        },
-        {
-          "step": 2,
-          "title": "[PLACEHOLDER] Service Publishing",
-          "description": "[PLACEHOLDER] What was done in this step.",
-          "image": "/images/placeholder.jpg"
-        }
+      "type": "static-map",
+      "category": "print",
+      "keywords": [
+        "history",
+        "Soviet",
+        "Gulag",
+        "print",
+        "cartography"
       ],
-      "outcome": "[PLACEHOLDER] Platform scale and impact.",
-      "stack": ["ArcGIS Enterprise", "PostgreSQL", "GeoServer"],
+      "role": "solo",
+      "startDate": "2025-11",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/gulag/cover.webp",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma",
+        "NotebookLM"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
       "gallery": [
         {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Portal home.",
-          "type": "screenshot"
-        },
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "[PLACEHOLDER] Layer catalog.",
-          "type": "screenshot"
+          "url": "/images/projects/gulag/cover.webp",
+          "downloadUrl": "/images/projects/gulag/cover.png",
+          "caption": "Horror in Gulag - map from the series.",
+          "type": "print"
         }
       ],
       "geography": {
-        "origin": { "lat": 51.1694, "lng": 71.4704, "label": "Astana, Kazakhstan" },
-        "contexts": [
-          { "connectionType": "point", "lat": 43.222, "lng": 76.8512, "label": "Almaty, Kazakhstan" }
-        ]
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "asharshylyq",
+      "slug": "asharshylyq",
+      "title": "Asharshylyq, 1931-1933",
+      "tagline": "Historical map shows approximate figures of kazakh loss per region.",
+      "status": "complete",
+      "featured": true,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "history",
+        "Soviet",
+        "Kazakhstan",
+        "print",
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2026-05",
+      "endDate": "2026-06",
+      "awards": [],
+      "coverImage": "/images/projects/asharshylyq/cover.png",
+      "context": "30th May, Kazakhstan has a day of memorial for people who died from soviet union repression and in labour camps due to femine.",
+      "idea": "To support historical awareness and remind kazakh audience to remember who fought for our today's freedom. To show the scale of disaster Kazakh people experienced through those times.",
+      "design": "The orangish effect of old paper was added to make it look like historical archive. Noise and texture were added to keep it dynamic and unbalanced as it is old printed newspaper.",
+      "inspiration": "",
+      "process": [
+        {
+          "step": 1,
+          "title": "Research",
+          "description": "Research was done using NotebookLM and Claude MCP. The numbers are estimated since the regions were keep changing"
+        },
+        {
+          "step": 2,
+          "title": "Map Production",
+          "description": "The regions of Kazakhstan were digitized from printed map of USSR 1939 year. The relief was added to keep the scene more realistic and visually dynamic. As well as water features were added in QGIS. After this it was imported in Figma where typography, effects, and layout design were done.",
+          "image": "/images/projects/asharshylyq/ref-map.png"
+        }
+      ],
+      "outcome": "Highest engagementrate on LinkedIn post reaching more than 450 likes and comments.",
+      "stack": [
+        "QGIS",
+        "Figma",
+        "NotebookLM"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/asharshylyq/cover.png",
+          "caption": "Asharshylyq, 1931-1933 - full map.",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "europe-ignition",
+      "slug": "europe-ignition",
+      "title": "Europe's Ignition Pattern, 2012-2026",
+      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
+      "status": "in-progress",
+      "featured": true,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2026-05",
+      "endDate": "2026-05",
+      "awards": [],
+      "coverImage": "/images/projects/europe-ignition/cover.png",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/europe-ignition/cover.webp",
+          "downloadUrl": "/images/projects/europe-ignition/cover.png",
+          "caption": "Europe's Ignition Pattern, 2012-2026 - full map.",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "heat-mortality",
+      "slug": "heat-mortality",
+      "title": "Heat-related Mortality in Europe",
+      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
+      "status": "complete",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2026-04",
+      "endDate": "2026-04",
+      "awards": [],
+      "coverImage": "/images/projects/heat-mortality/cover.png",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/heat-mortality/cover.png",
+          "caption": "Heat-related Mortality in Europe - full map.",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/heat-mortality/linkedin-3x.webp",
+          "caption": "Heat-related Mortality - LinkedIn post version.",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "old-map-collection",
+      "slug": "old-map-collection",
+      "title": "Heap of random old maps",
+      "tagline": "Old collection of maps designed at the begginning of my journey.",
+      "status": "complete",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2022",
+      "endDate": "2024",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma",
+        "NotebookLM"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "chess-map",
+      "slug": "chess-map",
+      "title": "Chess Mapped",
+      "tagline": "Chess maps dedicated to the finish of Candidates tournament.",
+      "status": "complete",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "chess",
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2026",
+      "endDate": "2026",
+      "awards": [],
+      "coverImage": "/images/projects/chess-map/opening-desktop.webp",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma",
+        "Python"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/chess-map/opening-desktop.webp",
+          "downloadUrl": "/images/projects/chess-map/opening-desktop.png",
+          "caption": "Countries and Chess Openings - desktop version.",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/chess-map/opening-mobile.webp",
+          "downloadUrl": "/images/projects/chess-map/opening-mobile.png",
+          "caption": "Countries and Chess Openings - mobile / portrait version.",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/chess-map/fide-players.webp",
+          "downloadUrl": "/images/projects/chess-map/fide-players.png",
+          "caption": "FIDE-rated Chess Players by Country.",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "challenge-1124",
+      "slug": "challenge-1124",
+      "title": "30-Day Map Challenge 2024",
+      "tagline": "Map-making for different topics for 30 days. (I survived only half way)",
+      "status": "complete",
+      "featured": false,
+      "type": "static-map",
+      "category": "digital-map",
+      "keywords": [
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2024-11",
+      "endDate": "2024-11",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [
+      ],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma",
+        "Aerialod",
+        "ArcGIS Pro",
+        "Adobe Illustrator"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
       }
     }
   ]

@@ -22,7 +22,7 @@ export interface GeoContext {
 }
 
 export interface Geography {
-  origin: GeoOrigin;
+  origin: GeoOrigin | null;
   contexts: GeoContext[];
 }
 
@@ -35,6 +35,8 @@ export interface ProcessStepData {
 
 export interface GalleryImage {
   url: string;
+  /** High-res download URL (e.g. PNG when url is webp). Falls back to url if omitted. */
+  downloadUrl?: string;
   caption: string;
   type: string;
 }
@@ -50,8 +52,8 @@ export interface Project {
   category: ProjectCategory;
   keywords: string[];
   role: string;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
   awards: string[];
   coverImage: string;
   context: string;
@@ -162,7 +164,7 @@ export type BlogPostType = 'post' | 'carousel' | 'reels' | 'video';
 export interface BlogPost {
   id: string;
   account: string;
-  platform: 'instagram' | 'linkedin' | 'youtube';
+  platform: 'youtube' | 'telegram';
   type: BlogPostType;
   title: string;
   text?: string;
@@ -176,9 +178,7 @@ export interface BlogPost {
 
 export interface BlogData {
   feeds: {
-    instagram_tulparmaps: BlogPost[];
-    instagram_tulparstories: BlogPost[];
-    linkedin: BlogPost[];
-    youtube_tulparstories: BlogPost[];
+    youtube: BlogPost[];
+    telegram: BlogPost[];
   };
 }

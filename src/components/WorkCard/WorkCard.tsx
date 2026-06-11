@@ -5,7 +5,7 @@ export interface WorkCardProps {
   id: string;
   slug: string;
   title: string;
-  year: number;
+  year: number | null;
   category: string;
   tagline: string;
   coverImage: string;
@@ -25,7 +25,6 @@ export default function WorkCard({
   slug,
   title,
   year,
-  category,
   tagline,
   coverImage,
   award,
@@ -60,8 +59,6 @@ export default function WorkCard({
     if (el) el.style.transform = '';
   };
 
-  const plate = index !== undefined ? `${String(index + 1).padStart(2, '0')} · ` : '';
-
   return (
     <Link
       ref={cardRef}
@@ -77,17 +74,21 @@ export default function WorkCard({
           width={1200}
           height={630}
           loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        {/* Single flex row so the category and award badges can never overlap */}
-        <div className="absolute inset-x-[var(--space-3)] top-[var(--space-3)] flex items-start justify-between gap-[var(--space-2)]">
-          <span className="shrink-0 rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] tracking-wider text-[var(--color-text-secondary)]">
-            {plate}
-            {category}
-          </span>
+        <div className="absolute inset-x-[var(--space-3)] top-[var(--space-3)] flex items-start gap-[var(--space-2)]">
+          {index !== undefined && (
+            <span className="shrink-0 rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] tracking-wider text-[var(--color-text-secondary)]">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+          )}
           {award && (
-            <span className="max-w-[65%] rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-2)] py-[var(--space-1)] text-right font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-gold)]">
-              ★ {award}
+            <span
+              title={award}
+              className="ml-auto rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-base)] leading-none text-[var(--color-accent-gold)]"
+            >
+              ★
             </span>
           )}
         </div>

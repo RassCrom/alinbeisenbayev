@@ -8,10 +8,8 @@ type FeedKey = keyof BlogData['feeds'];
 
 const TABS: { id: 'all' | FeedKey; label: string }[] = [
   { id: 'all', label: 'All' },
-  { id: 'instagram_tulparmaps', label: 'Instagram (tulparmaps)' },
-  { id: 'instagram_tulparstories', label: 'Instagram (tulparstories)' },
-  { id: 'linkedin', label: 'LinkedIn' },
-  { id: 'youtube_tulparstories', label: 'YouTube' },
+  { id: 'youtube', label: 'YouTube' },
+  { id: 'telegram', label: 'Telegram' },
 ];
 
 function youTubeId(url: string): string | null {
@@ -34,18 +32,23 @@ function PostCard({ post }: { post: BlogPost }) {
           allowFullScreen
           className="aspect-video w-full border-0"
         />
+      ) : post.previewImage ? (
+        <img
+          src={post.previewImage}
+          alt={post.title}
+          width={1200}
+          height={630}
+          loading="lazy"
+          decoding="async"
+          className="aspect-video w-full object-cover"
+        />
       ) : (
-        post.previewImage && (
-          <img
-            src={post.previewImage}
-            alt={post.title}
-            width={1200}
-            height={630}
-            loading="lazy"
-            className="aspect-video w-full object-cover"
-          />
-        )
+        /* Telegram posts without an image — show a subtle placeholder */
+        <div className="flex aspect-video w-full items-center justify-center bg-[var(--color-bg-elevated)]">
+          <img src="/images/socials/telegram.svg" alt="Telegram" width={40} height={40} className="opacity-20" />
+        </div>
       )}
+
       <div className="flex flex-1 flex-col gap-[var(--space-3)] p-[var(--space-6)]">
         <div className="flex flex-wrap items-center gap-[var(--space-2)]">
           <span className="flex items-center gap-[var(--space-2)] rounded-[var(--radius-full)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-[var(--space-3)] py-[var(--space-1)]">
@@ -71,7 +74,7 @@ function PostCard({ post }: { post: BlogPost }) {
             {post.date}
           </time>
           <a href={post.url} target="_blank" rel="noreferrer" className="btn btn-secondary">
-            View Post ↗
+            View ↗
           </a>
         </div>
       </div>
@@ -104,7 +107,6 @@ export default function BlogPage() {
         Blog
       </h1>
 
-      {/* Search */}
       <input
         type="search"
         value={search}
@@ -114,7 +116,6 @@ export default function BlogPage() {
         className="mt-[var(--space-6)] w-full max-w-md rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-[var(--space-4)] py-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] text-[var(--color-text-primary)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)]"
       />
 
-      {/* Tab / filter bar */}
       <div className="mt-[var(--space-4)] flex flex-wrap gap-[var(--space-2)]">
         {TABS.map((t) => (
           <button
@@ -136,7 +137,7 @@ export default function BlogPage() {
         </div>
       ) : (
         <p className="py-[var(--space-16)] text-center text-[var(--color-text-muted)]">
-          {search.trim() ? 'No posts match your search.' : 'No posts in this feed yet.'}
+          {search.trim() ? 'No posts match your search.' : 'No posts yet.'}
         </p>
       )}
     </div>

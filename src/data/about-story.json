@@ -1,77 +1,147 @@
 {
-  "profile": {
-    "name": "Alikhan Beisenbayev",
-    "title": "Cartographer & Data Storyteller",
-    "tagline": "My maps resonate with people through aesthetic designs.",
-    "languages": ["English", "Russian"],
-    "bio": "[PLACEHOLDER] Two paragraph bio text for the end of the about story. Second sentence of the placeholder bio.",
-    "photo": "/images/about/portrait.jpg"
-  },
-  "story": [
-    {
-      "id": 1,
-      "type": "origin",
-      "date": "2000",
-      "title": "Born in Astana",
-      "description": "[PLACEHOLDER] Short text shown alongside the globe as the story begins.",
-      "location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
-      "globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 2.5, "animationDuration": 1500 },
-      "images": ["/images/placeholder.jpg"]
-    },
-    {
-      "id": 2,
-      "type": "education",
-      "date": "2018",
-      "title": "[PLACEHOLDER] BSc Geodesy & Cartography — ENU, Astana",
-      "description": "[PLACEHOLDER] Started undergraduate studies in geodesy and cartography.",
-      "location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
-      "globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 1.5, "animationDuration": 1200 },
-      "images": []
-    },
-    {
-      "id": 3,
-      "type": "work",
-      "date": "2022",
-      "title": "[PLACEHOLDER] Internship at HERE Technologies",
-      "description": "[PLACEHOLDER] Remote internship working on map data.",
-      "location": { "name": "Online / Astana", "lat": 51.1694, "lng": 71.4704 },
-      "globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 2.0, "animationDuration": 1200 },
-      "images": []
-    },
-    {
-      "id": 4,
-      "type": "move",
-      "date": "2022",
-      "title": "[PLACEHOLDER] Exchange at CSULB",
-      "description": "[PLACEHOLDER] Exchange semester at California State University, Long Beach.",
-      "location": { "name": "Long Beach, USA", "lat": 33.7701, "lng": -118.1937 },
-      "globeView": { "lat": 33.7701, "lng": -118.1937, "altitude": 1.8, "animationDuration": 1500 },
-      "images": ["/images/placeholder.jpg"]
-    },
-    {
-      "id": 5,
-      "type": "education",
-      "date": "2024",
-      "title": "[PLACEHOLDER] MSc Cartography + work — Vienna & Munich",
-      "description": "[PLACEHOLDER] Started the international MSc in Cartography while working.",
-      "location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
-      "globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.5, "animationDuration": 1500 },
-      "images": []
-    },
-    {
-      "id": 6,
-      "type": "award",
-      "date": "2026",
-      "title": "[PLACEHOLDER] MSc Thesis — TU München",
-      "description": "[PLACEHOLDER] Finishing the thesis on urban heat stress in Vienna.",
-      "location": { "name": "Munich, Germany", "lat": 48.1351, "lng": 11.582 },
-      "globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.2, "animationDuration": 1200 },
-      "images": ["/images/placeholder.jpg"]
-    }
-  ],
-  "endCta": {
-    "heading": "[PLACEHOLDER] Explore my work or get in touch",
-    "worksLabel": "View Works",
-    "contactLabel": "Contact Me"
-  }
+"profile": {
+"name": "Alikhan Beisenbayev",
+"title": "Cartographer & Data Storyteller",
+"tagline": "I make maps that help people see what data alone cannot.",
+"languages": ["English", "Russian"],
+"bio": "I grew up in Astana, a city still drawing itself on the steppe. I came to maps through geodesy, then stayed for the stories they can tell.\n\nMy work sits between cartography, data visualization, and the browser. I build maps for climate, cities, history, and public data — from wildfire platforms in Kazakhstan to scroll-driven narratives and printed editorial maps.\n\nI am finishing an Erasmus Mundus MSc in Cartography, studying between Munich, Vienna, and Dresden. My thesis looks at how people engage with interactive map stories. I am interested in work where maps are not decoration, but a way to think clearly.",
+"photo": "/images/about/profile-photo.jpg"
+},
+"story": [
+{
+"id": 1,
+"type": "origin",
+"date": "2000",
+"title": "Born in Astana",
+"description": "I grew up in Kazakhstan’s capital, a city rising fast on the open steppe. Geography was never distant there. It was part of daily life.",
+"location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
+"globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 2.5, "animationDuration": 1500 },
+"images": ["/images/placeholder.jpg"]
+},
+{
+"id": 2,
+"type": "education",
+"date": "2018",
+"title": "BSc Geodesy & Cartography — ENU",
+"description": "I began studying geodesy and cartography at L.N. Gumilyov Eurasian National University. Projections, datums, fieldwork, and map design became the base of my practice.",
+"location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
+"globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 1.5, "animationDuration": 1200 },
+"images": []
+},
+{
+"id": 3,
+"type": "work",
+"date": "2022",
+"title": "GIS Intern — HERE Technologies",
+"description": "My first role in the mapping industry. I worked with base map data quality and built interactive web maps with Leaflet.js.",
+"location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
+"globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 2.0, "animationDuration": 1200 },
+"images": []
+},
+{
+"id": 4,
+"type": "move",
+"date": "2022",
+"title": "Work & Study — CSULB",
+"description": "I moved to California for graduate study and teaching. At the Geography department, I taught GIS to more than 100 students and built remote sensing workflows for research projects.",
+"location": { "name": "Long Beach, USA", "lat": 33.7701, "lng": -118.1937 },
+"globeView": { "lat": 33.7701, "lng": -118.1937, "altitude": 1.8, "animationDuration": 1500 },
+"images": ["/images/placeholder.jpg"]
+},
+{
+"id": 5,
+"type": "work",
+"date": "2023",
+"title": "GIS Engineer — Armenia & Kazakhstan",
+"description": "I worked across two countries: building GIS infrastructure for a national geoportal in Kazakhstan and processing DEM data for a construction monitoring platform from Yerevan.",
+"location": { "name": "Yerevan, Armenia", "lat": 40.1792, "lng": 44.4991 },
+"globeView": { "lat": 40.1792, "lng": 44.4991, "altitude": 1.8, "animationDuration": 1500 },
+"images": []
+},
+{
+"id": 6,
+"type": "education",
+"date": "Oct 2024",
+"title": "MSc Cartography — Semester 1, Munich",
+"description": "I began the Erasmus Mundus MSc in Cartography at TU München. The first semester focused on the foundations of cartography, geovisualization, and geospatial thinking.",
+"location": { "name": "Munich, Germany", "lat": 48.1351, "lng": 11.582 },
+"globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.5, "animationDuration": 1500 },
+"images": []
+},
+{
+"id": 7,
+"type": "education",
+"date": "Spring 2025",
+"title": "MSc Cartography — Semester 2, Vienna",
+"description": "The second semester took place at TU Wien, with a focus on multimedia cartography, web mapping, mobile cartography, and location-based services.",
+"location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
+"globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.5, "animationDuration": 1500 },
+"images": []
+},
+{
+"id": 8,
+"type": "award",
+"date": "Mar 2025",
+"title": "Winner — Armenia Open Data Contest",
+"description": "Tigranes the Greatest, my scroll-driven map story about the Armenian Empire under Tigranes II, won first place at the Armenia Open Data Contest.",
+"location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
+"globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.2, "animationDuration": 1200 },
+"images": ["/images/placeholder.jpg"]
+},
+{
+"id": 9,
+"type": "award",
+"date": "Jul 2025",
+"title": "Featured — GeoHipster Calendar & Atlas of Sustainability",
+"description": "Earth on Fire, my wildfire visualization map, was selected for the GeoHipster Calendar and featured in the Atlas of Sustainability.",
+"location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
+"globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.0, "animationDuration": 1200 },
+"images": ["/images/placeholder.jpg"]
+},
+{
+"id": 10,
+"type": "fieldwork",
+"date": "Sep 2025",
+"title": "Alpine Cartography Field School — Ramsau",
+"description": "In Ramsau am Dachstein, we worked with alpine terrain, field observation, and cartographic representation in one of Europe’s clearest mountain landscapes.",
+"location": { "name": "Ramsau am Dachstein, Austria", "lat": 47.4216, "lng": 13.6544 },
+"globeView": { "lat": 47.4216, "lng": 13.6544, "altitude": 1.2, "animationDuration": 1200 },
+"images": ["/images/placeholder.jpg"]
+},
+{
+"id": 11,
+"type": "award",
+"date": "Sep 2025",
+"title": "Winner — British Cartographic Society",
+"description": "Silk Road through Centuries, my printed map of historical trade routes across Central Asia, won a British Cartographic Society competition.",
+"location": { "name": "Vienna, Germany", "lat": 48.2082, "lng": 16.3738 },
+"globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.2, "animationDuration": 1200 },
+"images": ["/images/placeholder.jpg"]
+},
+{
+"id": 12,
+"type": "education",
+"date": "Oct 2025",
+"title": "MSc Cartography — Semester 3, Dresden",
+"description": "The third semester at TU Dresden focused on mobile cartography, 3D cartography, and advanced map communication.",
+"location": { "name": "Dresden, Germany", "lat": 51.0504, "lng": 13.7373 },
+"globeView": { "lat": 51.0504, "lng": 13.7373, "altitude": 1.5, "animationDuration": 1500 },
+"images": []
+},
+{
+"id": 13,
+"type": "education",
+"date": "Sep 2026",
+"title": "MSc Thesis Defense — TU Wien",
+"description": "Expected thesis defense on user engagement in scroll-driven interactive map narratives about urban heat stress in European cities.",
+"location": { "name": "Munich, Germany", "lat": 48.1351, "lng": 11.582 },
+"globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.0, "animationDuration": 1200 },
+"images": []
+}
+],
+"endCta": {
+"heading": "Maps, stories, and selected work.",
+"worksLabel": "View Works",
+"contactLabel": "Contact"
+}
 }

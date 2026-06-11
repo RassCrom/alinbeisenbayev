@@ -8,14 +8,12 @@ import socialsData from '../data/socials.json';
 import type { ProjectsData, AboutStoryData, SocialsData } from '../types';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-// Custom basemap matching the site tokens (CARTO vector tiles, no API key)
 const MAP_STYLE = '/map-styles/portfolio-dark.json';
 
 const { projects } = projectsData as ProjectsData;
 const { profile, endCta } = aboutData as unknown as AboutStoryData;
 const { socials } = socialsData as SocialsData;
 
-/** Subtle animated dark map texture behind the hero (non-interactive, 30% opacity). */
 function HeroMapBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +55,7 @@ function HeroMapBackground() {
 }
 
 export default function LandingPage() {
-  const featured = projects.filter((p) => p.featured).slice(0, 9);
+  const featured = projects.filter((p) => p.featured).slice(0, 6);
   const heroSocials = socials.filter((s) => s.featured && s.platform !== 'CV');
   const worksSectionRef = useRef<HTMLElement>(null);
 
@@ -110,7 +108,6 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-        {/* Scroll indicator → scrolls to the works grid */}
         <button
           type="button"
           aria-label="Scroll to selected works"
@@ -129,7 +126,7 @@ export default function LandingPage() {
         </button>
       </section>
 
-      {/* Featured works — bento grid: lead project spans two columns */}
+      {/* Featured works */}
       <section
         ref={worksSectionRef}
         className="mx-auto max-w-6xl px-[var(--space-6)] py-[var(--space-24)]"
@@ -143,14 +140,14 @@ export default function LandingPage() {
             {endCta.worksLabel} →
           </Link>
         </div>
-        <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-2">
           {featured.map((project, index) => (
-            <div key={project.id} className={index === 0 ? 'md:col-span-2' : ''}>
+            <div key={project.id} className={index === 0 || index === featured.length - 1 ? 'md:col-span-2' : ''}>
               <WorkCard
                 id={project.id}
                 slug={project.slug}
                 title={project.title}
-                year={Number(project.endDate.slice(0, 4))}
+                year={project.endDate ? Number(project.endDate.slice(0, 4)) || null : null}
                 category={project.category}
                 tagline={project.tagline}
                 coverImage={project.coverImage}

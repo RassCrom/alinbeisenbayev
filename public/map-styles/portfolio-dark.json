@@ -42,6 +42,17 @@
       "paint": { "fill-color": "#0a111f" }
     },
     {
+      "id": "water-coastline",
+      "type": "line",
+      "source": "carto",
+      "source-layer": "water",
+      "paint": {
+        "line-color": "#1a2d4a",
+        "line-width": 0.8,
+        "line-opacity": 0.85
+      }
+    },
+    {
       "id": "waterway",
       "type": "line",
       "source": "carto",
