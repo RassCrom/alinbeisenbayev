@@ -26,6 +26,8 @@ export interface GlobeStoryProps {
   activeStoryIndex: number;
   /** Intro mode: slow cinematic spin before the scroll story takes over */
   autoRotate?: boolean;
+  /** Called with the story index when the user clicks a point on the globe */
+  onPointClick?: (index: number) => void;
 }
 
 interface OrbitControlsLike {
@@ -34,7 +36,7 @@ interface OrbitControlsLike {
 }
 
 const GlobeStory = forwardRef<GlobeStoryHandle, GlobeStoryProps>(function GlobeStory(
-  { points, activeStoryIndex, autoRotate = false },
+  { points, activeStoryIndex, autoRotate = false, onPointClick },
   ref,
 ) {
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
@@ -117,6 +119,7 @@ const GlobeStory = forwardRef<GlobeStoryHandle, GlobeStoryProps>(function GlobeS
           pointAltitude={0.015}
           pointRadius={0.5}
           pointLabel={(d) => (d as { label: string }).label}
+          onPointClick={(d) => onPointClick?.((d as { index: number }).index)}
           ringsData={markers}
           ringColor={() => '#6691c0'}
           ringMaxRadius={3}

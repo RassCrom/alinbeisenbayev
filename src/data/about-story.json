@@ -16,7 +16,7 @@
 "description": "I grew up in Kazakhstan’s capital, a city rising fast on the open steppe. Geography was never distant there. It was part of daily life.",
 "location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
 "globeView": { "lat": 51.1694, "lng": 71.4704, "altitude": 2.5, "animationDuration": 1500 },
-"images": ["/images/placeholder.jpg"]
+"images": []
 },
 {
 "id": 2,
@@ -46,15 +46,15 @@
 "description": "I moved to California for graduate study and teaching. At the Geography department, I taught GIS to more than 100 students and built remote sensing workflows for research projects.",
 "location": { "name": "Long Beach, USA", "lat": 33.7701, "lng": -118.1937 },
 "globeView": { "lat": 33.7701, "lng": -118.1937, "altitude": 1.8, "animationDuration": 1500 },
-"images": ["/images/placeholder.jpg"]
+"images": []
 },
 {
 "id": 5,
 "type": "work",
 "date": "2023",
 "title": "GIS Engineer — Armenia & Kazakhstan",
-"description": "I worked across two countries: building GIS infrastructure for a national geoportal in Kazakhstan and processing DEM data for a construction monitoring platform from Yerevan.",
-"location": { "name": "Yerevan, Armenia", "lat": 40.1792, "lng": 44.4991 },
+"description": "I worked across two countries: building GIS infrastructure for a national geoportal in Kazakhstan and processing DEM data for a construction monitoring platform.",
+"location": { "name": "Astana, Kazakhstan", "lat": 51.1694, "lng": 71.4704 },
 "globeView": { "lat": 40.1792, "lng": 44.4991, "altitude": 1.8, "animationDuration": 1500 },
 "images": []
 },
@@ -66,7 +66,7 @@
 "description": "I began the Erasmus Mundus MSc in Cartography at TU München. The first semester focused on the foundations of cartography, geovisualization, and geospatial thinking.",
 "location": { "name": "Munich, Germany", "lat": 48.1351, "lng": 11.582 },
 "globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.5, "animationDuration": 1500 },
-"images": []
+"images": ["/images/about/msc.jpg"]
 },
 {
 "id": 7,
@@ -76,17 +76,17 @@
 "description": "The second semester took place at TU Wien, with a focus on multimedia cartography, web mapping, mobile cartography, and location-based services.",
 "location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
 "globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.5, "animationDuration": 1500 },
-"images": []
+"images": ["/images/about/vienna-one.jpg"]
 },
 {
 "id": 8,
 "type": "award",
 "date": "Mar 2025",
 "title": "Winner — Armenia Open Data Contest",
-"description": "Tigranes the Greatest, my scroll-driven map story about the Armenian Empire under Tigranes II, won first place at the Armenia Open Data Contest.",
+"description": "Tigranes the Greatest, my scroll-driven map story about the Armenian Empire under Tigranes II developed with my friend Tolegen, won first place at the Armenia Open Data Contest.",
 "location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
 "globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.2, "animationDuration": 1200 },
-"images": ["/images/placeholder.jpg"]
+"images": ["/images/projects/tigranes-the-greatest/mid-story.png"]
 },
 {
 "id": 9,
@@ -96,17 +96,17 @@
 "description": "Earth on Fire, my wildfire visualization map, was selected for the GeoHipster Calendar and featured in the Atlas of Sustainability.",
 "location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
 "globeView": { "lat": 48.2082, "lng": 16.3738, "altitude": 1.0, "animationDuration": 1200 },
-"images": ["/images/placeholder.jpg"]
+"images": ["/images/projects/earth-on-fire/dark.png"]
 },
 {
 "id": 10,
 "type": "fieldwork",
 "date": "Sep 2025",
 "title": "Alpine Cartography Field School — Ramsau",
-"description": "In Ramsau am Dachstein, we worked with alpine terrain, field observation, and cartographic representation in one of Europe’s clearest mountain landscapes.",
+"description": "In Ramsau am Dachstein, we worked with alpine terrain, field observation, and cartographic navigation.",
 "location": { "name": "Ramsau am Dachstein, Austria", "lat": 47.4216, "lng": 13.6544 },
 "globeView": { "lat": 47.4216, "lng": 13.6544, "altitude": 1.2, "animationDuration": 1200 },
-"images": ["/images/placeholder.jpg"]
+"images": ["/images/about/field-school.jpg"]
 },
 {
 "id": 11,
@@ -116,7 +116,7 @@
 "description": "Silk Road through Centuries, my printed map of historical trade routes across Central Asia, won a British Cartographic Society competition.",
 "location": { "name": "Vienna, Germany", "lat": 48.2082, "lng": 16.3738 },
 "globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.2, "animationDuration": 1200 },
-"images": ["/images/placeholder.jpg"]
+"images": ["/images/projects/silk-road/preview.png"]
 },
 {
 "id": 12,

@@ -37,5 +37,9 @@ export function useScrollStory(count: number) {
     refs.current[index] = el;
   };
 
-  return { activeIndex, visible, setPanelRef };
+  const scrollToPanel = (index: number) => {
+    refs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  return { activeIndex, visible, setPanelRef, scrollToPanel };
 }

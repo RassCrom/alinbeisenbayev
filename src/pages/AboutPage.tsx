@@ -4,6 +4,9 @@ import { useScrollStory } from '../hooks/useScrollStory';
 import aboutData from '../data/about-story.json';
 import type { AboutStoryData } from '../types';
 
+const fmtCoord = (lat: number, lng: number): string =>
+  `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
+
 // react-globe.gl + three are heavy — load only on this page
 const GlobeStory = lazy(() => import('../components/GlobeStory/GlobeStory'));
 
@@ -12,7 +15,7 @@ const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
 const INTRO_MS = 2600;
 
 export default function AboutPage() {
-  const { activeIndex, visible, setPanelRef } = useScrollStory(story.length);
+  const { activeIndex, visible, setPanelRef, scrollToPanel } = useScrollStory(story.length);
   // Entrance: the globe opens centered and slowly spinning, then settles into
   // its column while the story panels fade in.
   const [intro, setIntro] = useState(true);
@@ -43,7 +46,7 @@ export default function AboutPage() {
             </div>
           }
         >
-          <GlobeStory points={story} activeStoryIndex={activeIndex} autoRotate={intro} />
+          <GlobeStory points={story} activeStoryIndex={activeIndex} autoRotate={intro} onPointClick={scrollToPanel} />
         </Suspense>
       </div>
 
@@ -64,6 +67,9 @@ export default function AboutPage() {
             >
               <p className="font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] tracking-[0.1em] text-[var(--color-accent-light)]">
                 {point.date} — {point.location.name}
+              </p>
+              <p className="coord-label mt-[var(--space-1)]">
+                {fmtCoord(point.location.lat, point.location.lng)}
               </p>
               <h2 className="mt-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-2xl)] font-bold">
                 {point.title}

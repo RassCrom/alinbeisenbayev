@@ -10,8 +10,11 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 const MAP_STYLE = '/map-styles/portfolio-dark.json';
 
+const fmtCoord = (lat: number, lng: number): string =>
+  `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
+
 const { projects } = projectsData as ProjectsData;
-const { profile, endCta } = aboutData as unknown as AboutStoryData;
+const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
 const { socials } = socialsData as SocialsData;
 
 function HeroMapBackground() {
@@ -58,6 +61,7 @@ export default function LandingPage() {
   const featured = projects.filter((p) => p.featured).slice(0, 6);
   const heroSocials = socials.filter((s) => s.featured && s.platform !== 'CV');
   const worksSectionRef = useRef<HTMLElement>(null);
+  const originCoord = story[0]?.location;
 
   return (
     <>
@@ -84,6 +88,11 @@ export default function LandingPage() {
           <p className="max-w-md font-[family-name:var(--font-body)] italic text-[var(--color-text-secondary)]">
             {profile.tagline}
           </p>
+          {originCoord && (
+            <p className="coord-label">
+              {fmtCoord(originCoord.lat, originCoord.lng)}
+            </p>
+          )}
           {profile.languages.length > 0 && (
             <div className="flex flex-wrap items-center justify-center gap-[var(--space-2)]">
               {profile.languages.map((language) => (

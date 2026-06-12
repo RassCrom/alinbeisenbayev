@@ -6,6 +6,24 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 const MAP_STYLE = '/map-styles/portfolio-dark.json';
 
+const HUBS = [
+  { key: 'astana',    lat: 51.1694,  lng: 71.4704,   label: 'Astana, Kazakhstan' },
+  { key: 'longbeach', lat: 33.7701,  lng: -118.1937, label: 'Long Beach, USA' },
+  { key: 'munich',    lat: 48.1351,  lng: 11.582,    label: 'Munich, Germany' },
+  { key: 'vienna',    lat: 48.2082,  lng: 16.3738,   label: 'Vienna, Austria' },
+  { key: 'dresden',   lat: 51.0504,  lng: 13.7373,   label: 'Dresden, Germany' },
+] as const;
+
+type Hub = typeof HUBS[number];
+
+function nearestHub(lat: number, lng: number): Hub {
+  return HUBS.reduce<Hub>((best, hub) => {
+    const d = (hub.lat - lat) ** 2 + (hub.lng - lng) ** 2;
+    const bd = (best.lat - lat) ** 2 + (best.lng - lng) ** 2;
+    return d < bd ? hub : best;
+  }, HUBS[0]);
+}
+
 function arcCoords(
   from: [number, number],
   to: [number, number],
@@ -117,72 +135,77 @@ export default function WorksMap({
 }: WorksMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
-  const markersRef = useRef<{ projectIds: string[]; el: HTMLElement }[]>([]);
-  const polygonLayersRef = useRef<{ projectId: string; layerIds: string[] }[]>([]);
+  // hubKey: null = origin/hub marker; string = the hub this context marker belongs to
+  const markersRef = useRef<{ projectIds: string[]; el: HTMLElement; hubKey: string | null }[]>([]);
+  const polygonLayersRef = useRef<{ projectId: string; hubKey: string; layerIds: string[] }[]>([]);
   const visibleIdsRef = useRef<string[] | undefined>(visibleIds);
   visibleIdsRef.current = visibleIds;
-  const selectedRef = useRef<string | null>(null);
+  const activeHubRef = useRef<string | null>(null);
+  const hubProjectIdsRef = useRef(new Map<string, string[]>());
   const navigate = useNavigate();
   const navigateRef = useRef(navigate);
   navigateRef.current = navigate;
 
-  const applyHighlight = () => {
+  // Recomputes arc filter + opacity from the current activeHub + visibleIds
+  const applyArcs = () => {
     const map = mapRef.current;
-    const selected = selectedRef.current;
-    markersRef.current.forEach(({ projectIds, el }) => {
-      const active = !selected || projectIds.includes(selected);
-      el.style.opacity = active ? '1' : '0.2';
-    });
-    if (map?.getLayer('project-arcs-line')) {
-      map.setPaintProperty(
+    if (!map?.getLayer('project-arcs-line')) return;
+    const activeHub = activeHubRef.current;
+    const ids = visibleIdsRef.current;
+    const visible = ids ? new Set(ids) : null;
+
+    if (activeHub) {
+      const hubIds = hubProjectIdsRef.current.get(activeHub) ?? [];
+      const filteredIds = visible ? hubIds.filter((id) => visible.has(id)) : hubIds;
+      map.setFilter('project-arcs-line', ['in', ['get', 'project'], ['literal', filteredIds]]);
+      map.setPaintProperty('project-arcs-line', 'line-opacity', 0.65);
+      map.setPaintProperty('project-arcs-line', 'line-width', 1.6);
+      map.setPaintProperty('project-arcs-line', 'line-color', '#6691c0');
+    } else {
+      map.setFilter(
         'project-arcs-line',
-        'line-opacity',
-        selected ? ['case', ['==', ['get', 'project'], selected], 0.9, 0.06] : 0.55,
+        visible ? ['in', ['get', 'project'], ['literal', [...visible]]] : null,
       );
-      map.setPaintProperty(
-        'project-arcs-line',
-        'line-color',
-        selected ? ['case', ['==', ['get', 'project'], selected], '#6691c0', '#4472a8'] : '#4472a8',
-      );
-      map.setPaintProperty(
-        'project-arcs-line',
-        'line-width',
-        selected ? ['case', ['==', ['get', 'project'], selected], 2.2, 1] : 1.4,
-      );
+      map.setPaintProperty('project-arcs-line', 'line-opacity', 0.12);
+      map.setPaintProperty('project-arcs-line', 'line-width', 1.2);
+      map.setPaintProperty('project-arcs-line', 'line-color', '#4472a8');
     }
-    polygonLayersRef.current.forEach(({ projectId, layerIds }) => {
-      const dimmed = Boolean(selected) && projectId !== selected;
+  };
+
+  // Hub focus: context markers + polygon layers dim/brighten based on activeHub
+  const applyHubFocus = () => {
+    const map = mapRef.current;
+    const activeHub = activeHubRef.current;
+    markersRef.current.forEach(({ hubKey, el }) => {
+      if (hubKey === null) return; // origin markers are always fully visible
+      const focused = !activeHub || hubKey === activeHub;
+      el.style.opacity = focused ? '1' : '0.3';
+      el.style.transition = 'opacity 0.25s ease';
+    });
+    polygonLayersRef.current.forEach(({ hubKey, layerIds }) => {
+      const focused = !activeHub || hubKey === activeHub;
       layerIds.forEach((layerId) => {
         if (!map?.getLayer(layerId)) return;
         if (layerId.endsWith('-fill')) {
-          map.setPaintProperty(layerId, 'fill-opacity', dimmed ? 0.03 : 0.15);
+          map.setPaintProperty(layerId, 'fill-opacity', focused ? 0.15 : 0.04);
         } else {
-          map.setPaintProperty(layerId, 'line-opacity', dimmed ? 0.08 : 0.6);
+          map.setPaintProperty(layerId, 'line-opacity', focused ? 0.6 : 0.1);
         }
       });
     });
+    applyArcs();
   };
 
-  const toggleSelection = (projectId: string) => {
-    selectedRef.current = selectedRef.current === projectId ? null : projectId;
-    applyHighlight();
-  };
-
+  // Visibility filter from search: controls display:none + reapplies arcs
   const applyVisibility = () => {
     const map = mapRef.current;
     const ids = visibleIdsRef.current;
     const visible = ids ? new Set(ids) : null;
     const isAnyVisible = (projectIds: string[]) =>
-      !visible || projectIds.some((id) => visible.has(id));
+      !visible || projectIds.length === 0 || projectIds.some((id) => visible.has(id));
     markersRef.current.forEach(({ projectIds, el }) => {
       el.style.display = isAnyVisible(projectIds) ? '' : 'none';
     });
-    if (map?.getLayer('project-arcs-line')) {
-      map.setFilter(
-        'project-arcs-line',
-        visible ? ['in', ['get', 'project'], ['literal', [...visible]]] : null,
-      );
-    }
     polygonLayersRef.current.forEach(({ projectId, layerIds }) => {
       layerIds.forEach((layerId) => {
         if (map?.getLayer(layerId)) {
@@ -194,6 +217,7 @@ export default function WorksMap({
         }
       });
     });
+    applyArcs();
   };
 
   useEffect(() => {
@@ -214,6 +238,8 @@ export default function WorksMap({
       mapRef.current = map;
       markersRef.current = [];
       polygonLayersRef.current = [];
+      activeHubRef.current = null;
+      hubProjectIdsRef.current = new Map();
       map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
 
       const bounds: LngLatBounds = new maplibregl.LngLatBounds();
@@ -222,28 +248,29 @@ export default function WorksMap({
         if (!map || cancelled) return;
         const arcFeatures: GeoJSON.Feature<GeoJSON.LineString>[] = [];
 
-        // ── Merge projects by shared origin ────────────────────────────
+        // ── Fixed hub cities — always shown regardless of project data ──
         const originGroups = new Map<
           string,
           { lat: number; lng: number; label: string; projects: Project[] }
-        >();
+        >(
+          HUBS.map((hub) => [hub.key, { lat: hub.lat, lng: hub.lng, label: hub.label, projects: [] }])
+        );
+
+        // Assign each project with an origin to its nearest hub
         projects.forEach((project) => {
           const { origin } = project.geography;
           if (!origin) return;
-          const key = `${origin.lat.toFixed(4)},${origin.lng.toFixed(4)}`;
-          if (!originGroups.has(key)) {
-            originGroups.set(key, {
-              lat: origin.lat,
-              lng: origin.lng,
-              label: origin.label,
-              projects: [],
-            });
-          }
-          originGroups.get(key)!.projects.push(project);
+          const hub = nearestHub(origin.lat, origin.lng);
+          originGroups.get(hub.key)!.projects.push(project);
         });
 
-        // ── One origin marker per location ─────────────────────────────
-        originGroups.forEach((group) => {
+        // Build hubProjectIds lookup (used for arc filtering)
+        originGroups.forEach((group, key) => {
+          hubProjectIdsRef.current.set(key, group.projects.map((p) => p.id));
+        });
+
+        // ── One origin marker per hub city ─────────────────────────────
+        originGroups.forEach((group, hubKey) => {
           const lngLat: [number, number] = [group.lng, group.lat];
           bounds.extend(lngLat);
 
@@ -258,25 +285,27 @@ export default function WorksMap({
             originEl.append(badge);
           }
 
-          originEl.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (group.projects.length === 1) {
-              toggleSelection(group.projects[0].id);
-            }
-          });
+          const marker = new maplibregl.Marker({ element: originEl }).setLngLat(lngLat);
 
-          const popup = new maplibregl.Popup({ offset: 14, maxWidth: '240px' }).setDOMContent(
-            buildOriginPopup(group.projects, group.label, (slug) =>
-              navigateRef.current(`/works/${slug}`),
-            ),
-          );
-          new maplibregl.Marker({ element: originEl })
-            .setLngLat(lngLat)
-            .setPopup(popup)
-            .addTo(map!);
+          if (group.projects.length > 0) {
+            originEl.addEventListener('click', (e) => {
+              e.stopPropagation();
+              activeHubRef.current = activeHubRef.current === hubKey ? null : hubKey;
+              applyHubFocus();
+            });
+            const popup = new maplibregl.Popup({ offset: 14, maxWidth: '240px' }).setDOMContent(
+              buildOriginPopup(group.projects, group.label, (slug) =>
+                navigateRef.current(`/works/${slug}`),
+              ),
+            );
+            marker.setPopup(popup);
+          }
+
+          marker.addTo(map!);
           markersRef.current.push({
             projectIds: group.projects.map((p) => p.id),
             el: originEl,
+            hubKey: null,
           });
         });
 
@@ -284,7 +313,8 @@ export default function WorksMap({
         projects.forEach((project) => {
           const { origin, contexts } = project.geography;
           if (!origin) return;
-          const originLngLat: [number, number] = [origin.lng, origin.lat];
+          const hub = nearestHub(origin.lat, origin.lng);
+          const originLngLat: [number, number] = [hub.lng, hub.lat];
 
           contexts.forEach((context, index) => {
             const target: [number, number] | null =
@@ -308,10 +338,7 @@ export default function WorksMap({
               const contextEl = document.createElement('div');
               contextEl.className = 'map-context-marker';
               contextEl.title = context.label;
-              contextEl.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleSelection(project.id);
-              });
+              contextEl.style.opacity = '0.3';
               const contextPopup = new maplibregl.Popup({
                 offset: 10,
                 maxWidth: '240px',
@@ -324,7 +351,7 @@ export default function WorksMap({
                 .setLngLat(target)
                 .setPopup(contextPopup)
                 .addTo(map!);
-              markersRef.current.push({ projectIds: [project.id], el: contextEl });
+              markersRef.current.push({ projectIds: [project.id], el: contextEl, hubKey: hub.key });
             } else if (context.geojsonUrl) {
               const sourceId = `polygon-${project.id}-${index}`;
               fetch(context.geojsonUrl)
@@ -332,11 +359,12 @@ export default function WorksMap({
                 .then((geojson: GeoJSON.GeoJSON) => {
                   if (!map || cancelled || map.getSource(sourceId)) return;
                   map.addSource(sourceId, { type: 'geojson', data: geojson });
+                  // Polygons start dimmed (hub not selected)
                   map.addLayer({
                     id: `${sourceId}-fill`,
                     type: 'fill',
                     source: sourceId,
-                    paint: { 'fill-color': '#4472a8', 'fill-opacity': 0.15 },
+                    paint: { 'fill-color': '#4472a8', 'fill-opacity': 0.04 },
                   });
                   map.addLayer({
                     id: `${sourceId}-line`,
@@ -344,12 +372,13 @@ export default function WorksMap({
                     source: sourceId,
                     paint: {
                       'line-color': '#6691c0',
-                      'line-opacity': 0.6,
+                      'line-opacity': 0.1,
                       'line-width': 1,
                     },
                   });
                   polygonLayersRef.current.push({
                     projectId: project.id,
+                    hubKey: hub.key,
                     layerIds: [`${sourceId}-fill`, `${sourceId}-line`],
                   });
                   map.on('mouseenter', `${sourceId}-fill`, () => {
@@ -359,7 +388,7 @@ export default function WorksMap({
                     if (map) map.getCanvas().style.cursor = '';
                   });
                   applyVisibility();
-                  applyHighlight();
+                  applyHubFocus();
                 })
                 .catch(() => {});
             }
@@ -376,20 +405,21 @@ export default function WorksMap({
           source: 'project-arcs',
           paint: {
             'line-color': '#4472a8',
-            'line-opacity': 0.55,
-            'line-width': 1.4,
+            'line-opacity': 0.12,
+            'line-width': 1.2,
             'line-dasharray': [2, 2],
           },
         });
 
         applyVisibility();
-        applyHighlight();
+        applyHubFocus();
 
         if (!bounds.isEmpty()) {
           map.fitBounds(bounds, { padding: 64, maxZoom: 5, duration: 800 });
         }
       });
 
+      // Click on polygon region → focus its hub
       map.on('click', (e) => {
         if (!map) return;
         const fillLayerIds = polygonLayersRef.current
@@ -401,11 +431,11 @@ export default function WorksMap({
         if (features.length > 0) {
           const layerId = features[0].layer.id;
           const entry = polygonLayersRef.current.find((p) => p.layerIds.includes(layerId));
-          const project = entry ? projects.find((pr) => pr.id === entry.projectId) : undefined;
-          if (project) {
-            const wasSelected = selectedRef.current === project.id;
-            toggleSelection(project.id);
-            if (!wasSelected) {
+          if (entry) {
+            const project = projects.find((pr) => pr.id === entry.projectId);
+            activeHubRef.current = activeHubRef.current === entry.hubKey ? null : entry.hubKey;
+            applyHubFocus();
+            if (activeHubRef.current && project) {
               new maplibregl.Popup({ offset: 8, maxWidth: '240px' })
                 .setLngLat(e.lngLat)
                 .setDOMContent(
@@ -418,9 +448,10 @@ export default function WorksMap({
             return;
           }
         }
-        if (selectedRef.current) {
-          selectedRef.current = null;
-          applyHighlight();
+        // Background click: deselect hub
+        if (activeHubRef.current) {
+          activeHubRef.current = null;
+          applyHubFocus();
         }
       });
     })();
@@ -456,6 +487,67 @@ export default function WorksMap({
             : 'h-[420px] w-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] md:h-[600px]'
         }
       />
+
+      {/* Map legend */}
+      <div
+        aria-label="Map legend"
+        style={{
+          position: 'absolute',
+          bottom: '2.5rem',
+          left: '0.75rem',
+          zIndex: 10,
+          background: 'rgba(13,19,32,0.88)',
+          border: '1px solid var(--color-border-default)',
+          borderRadius: 'var(--radius-md)',
+          padding: '8px 12px',
+          backdropFilter: 'blur(8px)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '10px',
+          letterSpacing: '0.06em',
+          color: 'var(--color-text-secondary)',
+          userSelect: 'none',
+          pointerEvents: 'none',
+        }}
+      >
+        <div
+          style={{
+            fontVariant: 'small-caps',
+            letterSpacing: '0.14em',
+            marginBottom: '6px',
+            color: 'var(--color-text-muted)',
+            fontSize: '9px',
+          }}
+        >
+          LEGEND
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+          <div
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              background: 'var(--color-accent-light)',
+              boxShadow: '0 0 6px var(--color-accent-light)',
+              flexShrink: 0,
+            }}
+          />
+          <span>Origin city</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              background: 'var(--color-accent-gold)',
+              boxShadow: '0 0 4px var(--color-accent-gold)',
+              flexShrink: 0,
+            }}
+          />
+          <span>Works</span>
+        </div>
+      </div>
+
       {onToggleExpand && (
         <button
           type="button"

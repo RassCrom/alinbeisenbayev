@@ -14,10 +14,27 @@ const LEVEL_COLOR: Record<SkillLevel, string> = {
   learning: 'var(--color-text-muted)',
 };
 
-/**
- * Match a project stack entry against a skill name. Exact match always wins;
- * substring matches need ≥3 chars so "Rust" never matches the stack entry "R".
- */
+const LEVEL_SYMBOL: Record<string, string> = {
+  expert: '◆',
+  advanced: '●',
+  intermediate: '○',
+  learning: '◌',
+};
+
+const LEVEL_SYMBOL_COLOR: Record<string, string> = {
+  expert: 'var(--color-accent-gold)',
+  advanced: 'var(--color-accent-light)',
+  intermediate: 'var(--color-text-secondary)',
+  learning: 'var(--color-text-muted)',
+};
+
+const LEGEND_KEY = [
+  { sym: '◆', col: 'var(--color-accent-gold)',      label: 'Expert' },
+  { sym: '●', col: 'var(--color-accent-light)',     label: 'Advanced' },
+  { sym: '○', col: 'var(--color-text-secondary)',   label: 'Intermediate' },
+  { sym: '◌', col: 'var(--color-text-muted)',       label: 'Learning' },
+];
+
 function stackMatches(stackItem: string, skillName: string): boolean {
   const a = stackItem.toLowerCase();
   const b = skillName.toLowerCase();
@@ -28,7 +45,6 @@ function stackMatches(stackItem: string, skillName: string): boolean {
 
 interface RelatedWork {
   projects: Project[];
-  /** stack term used for the /works?q= deep link */
   term: string;
 }
 
@@ -60,7 +76,6 @@ export default function SkillsPage() {
     return map;
   }, []);
 
-  // Keep the floating card inside the viewport
   const previewLeft = Math.min(cursor.x + 20, window.innerWidth - 250);
   const previewTop = Math.min(Math.max(cursor.y, 130), window.innerHeight - 130);
 
@@ -70,83 +85,91 @@ export default function SkillsPage() {
         Skills
       </h1>
 
-      {categories.map((category) => {
-        const items = skills.filter((skill) => skill.category === category);
-        if (items.length === 0) return null;
-        return (
-          <section key={category} className="mt-[var(--space-12)]">
-            <h2 className="heading-section">{category}</h2>
-            <div className="mt-[var(--space-6)] grid grid-cols-1 gap-[var(--space-4)] sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((skill) => {
-                const related = relatedBySkill.get(skill.id);
-                const interactive = Boolean(related);
-                return (
-                  <div
-                    key={skill.id}
-                    role={interactive ? 'link' : undefined}
-                    tabIndex={interactive ? 0 : undefined}
-                    onClick={
-                      interactive
-                        ? () => navigate(`/works?q=${encodeURIComponent(related!.term)}`)
-                        : undefined
-                    }
-                    onKeyDown={
-                      interactive
-                        ? (e) => {
-                            if (e.key === 'Enter') {
-                              navigate(`/works?q=${encodeURIComponent(related!.term)}`);
+      {/* Symbol key */}
+      <div className="legend-key">
+        {LEGEND_KEY.map((entry, i) => (
+          <span key={entry.label} className="flex items-center gap-1">
+            <span style={{ color: entry.col }} className="font-[family-name:var(--font-mono)]">
+              {entry.sym}
+            </span>
+            <span className="font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-secondary)]">
+              {entry.label}
+            </span>
+            {i < LEGEND_KEY.length - 1 && (
+              <span className="legend-key__sep mx-[var(--space-1)]">·</span>
+            )}
+          </span>
+        ))}
+      </div>
+
+      {/* Legend panels grid */}
+      <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2">
+        {categories.map((category) => {
+          const items = skills.filter((skill) => skill.category === category);
+          if (items.length === 0) return null;
+          return (
+            <div
+              key={category}
+              className={`legend-panel${category === 'Cartography & Design' ? ' topo-card' : ''}`}
+            >
+              <div className="legend-panel__header">{category}</div>
+              <div className="legend-panel__body">
+                {items.map((skill) => {
+                  const related = relatedBySkill.get(skill.id);
+                  const interactive = Boolean(related);
+                  const sym      = LEVEL_SYMBOL[skill.level]      ?? '◌';
+                  const symColor = LEVEL_SYMBOL_COLOR[skill.level] ?? 'var(--color-text-muted)';
+                  const lvlColor = LEVEL_COLOR[skill.level as SkillLevel] ?? 'var(--color-text-muted)';
+                  return (
+                    <div
+                      key={skill.id}
+                      role={interactive ? 'link' : undefined}
+                      tabIndex={interactive ? 0 : undefined}
+                      onClick={
+                        interactive
+                          ? () => navigate(`/works?q=${encodeURIComponent(related!.term)}`)
+                          : undefined
+                      }
+                      onKeyDown={
+                        interactive
+                          ? (e) => {
+                              if (e.key === 'Enter') {
+                                navigate(`/works?q=${encodeURIComponent(related!.term)}`);
+                              }
                             }
-                          }
-                        : undefined
-                    }
-                    onMouseEnter={
-                      interactive
-                        ? () =>
-                            setPreview({
-                              skillId: skill.id,
-                              project: related!.projects[0],
-                              moreCount: related!.projects.length - 1,
-                            })
-                        : undefined
-                    }
-                    onMouseMove={
-                      interactive ? (e) => setCursor({ x: e.clientX, y: e.clientY }) : undefined
-                    }
-                    onMouseLeave={interactive ? () => setPreview(null) : undefined}
-                    className={`flex items-center justify-between gap-[var(--space-3)] rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] bg-[image:var(--gradient-card)] p-[var(--space-4)] ${
-                      interactive
-                        ? 'cursor-none transition-colors hover:border-[var(--color-accent)]'
-                        : ''
-                    }`}
-                  >
-                    <div className="flex min-w-0 items-center gap-[var(--space-3)]">
-                      {skill.iconType === 'image' && skill.iconUrl && (
-                        <img
-                          src={skill.iconUrl}
-                          alt=""
-                          width={28}
-                          height={28}
-                          loading="lazy"
-                          className="h-7 w-7 shrink-0"
-                        />
-                      )}
-                      <span className="truncate font-[family-name:var(--font-heading)] font-semibold">
-                        {skill.name}
+                          : undefined
+                      }
+                      onMouseEnter={
+                        interactive
+                          ? () =>
+                              setPreview({
+                                skillId: skill.id,
+                                project: related!.projects[0],
+                                moreCount: related!.projects.length - 1,
+                              })
+                          : undefined
+                      }
+                      onMouseMove={
+                        interactive ? (e) => setCursor({ x: e.clientX, y: e.clientY }) : undefined
+                      }
+                      onMouseLeave={interactive ? () => setPreview(null) : undefined}
+                      className={`legend-row${interactive ? ' legend-row--interactive' : ''}`}
+                    >
+                      <span className="legend-row__symbol" style={{ color: symColor }}>
+                        {sym}
+                      </span>
+                      <span className="legend-row__name">{skill.name}</span>
+                      <span className="legend-row__level" style={{ color: lvlColor }}>
+                        {skill.level}
                       </span>
                     </div>
-                    <span
-                      className="shrink-0 rounded-[var(--radius-full)] border px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)]"
-                      style={{ color: LEVEL_COLOR[skill.level], borderColor: LEVEL_COLOR[skill.level] }}
-                    >
-                      {skill.level}
-                    </span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </section>
-        );
-      })}
+          );
+        })}
+      </div>
 
       {/* Cursor-following project preview (skills with related works only) */}
       {preview && (
