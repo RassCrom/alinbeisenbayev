@@ -114,7 +114,7 @@
 "date": "Sep 2025",
 "title": "Winner — British Cartographic Society",
 "description": "Silk Road through Centuries, my printed map of historical trade routes across Central Asia, won a British Cartographic Society competition.",
-"location": { "name": "Vienna, Germany", "lat": 48.2082, "lng": 16.3738 },
+"location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
 "globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.2, "animationDuration": 1200 },
 "images": ["/images/projects/silk-road/preview.png"]
 },
@@ -134,7 +134,7 @@
 "date": "Sep 2026",
 "title": "MSc Thesis Defense — TU Wien",
 "description": "Expected thesis defense on user engagement in scroll-driven interactive map narratives about urban heat stress in European cities.",
-"location": { "name": "Munich, Germany", "lat": 48.1351, "lng": 11.582 },
+"location": { "name": "Vienna, Austria", "lat": 48.2082, "lng": 16.3738 },
 "globeView": { "lat": 48.1351, "lng": 11.582, "altitude": 1.0, "animationDuration": 1200 },
 "images": []
 }

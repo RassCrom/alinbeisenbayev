@@ -61,7 +61,7 @@ export default function LandingPage() {
   const featured = projects.filter((p) => p.featured).slice(0, 6);
   const heroSocials = socials.filter((s) => s.featured && s.platform !== 'CV');
   const worksSectionRef = useRef<HTMLElement>(null);
-  const originCoord = story[0]?.location;
+  const originCoord = story[6]?.location;
 
   return (
     <>

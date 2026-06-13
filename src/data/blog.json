@@ -3,24 +3,13 @@
     "youtube": [],
     "telegram": [
       {
-        "id": "tg-68",
-        "account": "tulparmaps",
-        "platform": "telegram",
-        "type": "post",
-        "title": "Telegram post",
-        "text": "",
-        "previewImage": "src/data/telegram_media/tg-68.jpg",
-        "url": "https://t.me/tulparmaps/68",
-        "date": "2026-06-06"
-      },
-      {
         "id": "tg-64",
         "account": "tulparmaps",
         "platform": "telegram",
         "type": "post",
         "title": "Как прокачать картографическую насмотренность? 🗺️ Ниже топ-5 сайтов которые я использую ко…",
         "text": "Как прокачать картографическую насмотренность? 🗺️ Ниже топ-5 сайтов которые я использую когда нужны идеи, вдохновения, референсы 1️⃣ Pinterest – наиболее популярный сервис с различным набором визуалов. Не так много карт как хотелось бы (мои сохраненки: https://pin.it/1OJ9XLydG) 2️⃣ https://30daymapchallenge.com/galleries/ – карты сделанные для 30-дневного челленджа. Много различных работ, необычных визуализаций 3️⃣ https://www.maps.com – большой набор картографических работ, но реально эстетичных, крутых работ не так много, нужно искать. Также можно туда подать свою карт 4️⃣ https://nacis.org/awards/student-map-and-poster-winners/ – конкурс галереи работ 5️⃣ Behance – дизайнерский сервис с вдохновляющими работами Важно не только смотреть карты, но и другие арт работы чтобы понимать дизайн в целом и перенимать некоторые способы на карты",
-        "previewImage": "src/data/telegram_media/tg-64.jpg",
+        "previewImage": "/telegram_media/tg-64.jpg",
         "url": "https://t.me/tulparmaps/64",
         "date": "2026-06-03"
       },
@@ -31,20 +20,9 @@
         "type": "post",
         "title": "🗺 Карта изменения населения Казахстана в первой трети 20 века Идея",
         "text": "🗺 Карта изменения населения Казахстана в первой трети 20 века Идея. Идея пришла из постов в инстаграме о дне памяти в Казахстане 31 мая о людях погибших и пострадавших во времена голодомора и репрессий. Визуал, цвета и типографика. Люблю делать карты в темном стиле. А цветовая палитра частично исходит из тематики. Темные тона, кроваво-оранжевые оттенки, цвет выцветших бумаг. Подбор шрифтов всегда не лёгкий процесс. Все ещё пытаюсь понять как правильно выбирать шрифты. Пытался с Клауди подобрать хороший набор, но он зачастую выдаёт дефолт по типу ибм плекс, инструмент сериф и тд. Можно конечно настроить скиллы что я возможно и сделаю в будущем. Но для этого проекта подбирал шрифты через https://fontpair.co Добавил зернистости и эффект старой бумаги + виньетка Для исторической основы использовал админ карту найденную в интернете за 1939 год. Не очень удобно оцифровывать в кугисе. Было бы классно если бы был инструмент который позволяет просто водить мышкой и он сам определяет перепад цветов.",
-        "previewImage": "src/data/telegram_media/tg-61.jpg",
+        "previewImage": "/telegram_media/tg-61.jpg",
         "url": "https://t.me/tulparmaps/61",
         "date": "2026-06-02"
-      },
-      {
-        "id": "tg-55",
-        "account": "tulparmaps",
-        "platform": "telegram",
-        "type": "post",
-        "title": "Telegram post",
-        "text": "",
-        "previewImage": "src/data/telegram_media/tg-55.jpg",
-        "url": "https://t.me/tulparmaps/55",
-        "date": "2025-03-15"
       },
       {
         "id": "tg-51",
@@ -53,42 +31,9 @@
         "type": "post",
         "title": "👩‍🎓 От села до мегаполиса: как женщины формируют будущее Казахстана В Казахстане наблюдает…",
         "text": "👩‍🎓 От села до мегаполиса: как женщины формируют будущее Казахстана В Казахстане наблюдается любопытный демографический дисбаланс: женщин почти на полмиллиона больше, чем мужчин. По данным на 2023 год, из 19-миллионного населения страны около 10,18 миллиона — представительницы прекрасного пола. Однако этот гендерный дисбаланс распределен неравномерно — как мозаика «женских» и «мужских» регионов. Почему так происходит? Все дело в миграции, рынке труда и даже... образовательных программах. Интересно, что в последние годы ситуация в целом стабилизировалась. Но экономический рост и образовательная революция постепенно меняют правила игры. Все больше девушек выбирают STEM-специальности (наука, технологии, инженерия, математика), превращая города-миллионники в настоящие центры притяжения женских амбиций. Алматы и Астана (и другие города) сегодня — это не просто мегаполисы, а полигоны самореализации, где женщины активно формируют новый социальный ландшафт.",
-        "previewImage": "src/data/telegram_media/tg-51.jpg",
+        "previewImage": "/telegram_media/tg-51.jpg",
         "url": "https://t.me/tulparmaps/51",
         "date": "2025-03-08"
-      },
-      {
-        "id": "tg-50",
-        "account": "tulparmaps",
-        "platform": "telegram",
-        "type": "post",
-        "title": "Telegram post",
-        "text": "",
-        "previewImage": "src/data/telegram_media/tg-50.jpg",
-        "url": "https://t.me/tulparmaps/50",
-        "date": "2025-03-03"
-      },
-      {
-        "id": "tg-45",
-        "account": "tulparmaps",
-        "platform": "telegram",
-        "type": "post",
-        "title": "Telegram post",
-        "text": "",
-        "previewImage": "src/data/telegram_media/tg-45.jpg",
-        "url": "https://t.me/tulparmaps/45",
-        "date": "2025-02-24"
-      },
-      {
-        "id": "tg-41",
-        "account": "tulparmaps",
-        "platform": "telegram",
-        "type": "post",
-        "title": "Telegram post",
-        "text": "",
-        "previewImage": "src/data/telegram_media/tg-41.jpg",
-        "url": "https://t.me/tulparmaps/41",
-        "date": "2025-02-14"
       },
       {
         "id": "tg-37",
@@ -97,7 +42,7 @@
         "type": "post",
         "title": "1️⃣8️⃣ Day 18 — 3D map | Issyk Kul Lake and its surroundings 🗺 Just a 3D visualization of …",
         "text": "1️⃣8️⃣ Day 18 — 3D map | Issyk Kul Lake and its surroundings 🗺 Just a 3D visualization of mountains around the lake in Central Asia (Kyrgyzstan and Kazakhstan) ℹ️ Data Sources: SRTM, Landsat-8 🎨 Tools: QGIS, Aerialod #30DayMapChallenge #30DayMapChallenge2024 #map #cartography #remotesensing",
-        "previewImage": "src/data/telegram_media/tg-37.jpg",
+        "previewImage": "/telegram_media/tg-37.jpg",
         "url": "https://t.me/tulparmaps/37",
         "date": "2024-11-18"
       },
@@ -108,7 +53,7 @@
         "type": "post",
         "title": "1️⃣7️⃣ Day 17 — Collaborative map | Driving time to Marwin by car 🗺 This map illustrates t…",
         "text": "1️⃣7️⃣ Day 17 — Collaborative map | Driving time to Marwin by car 🗺 This map illustrates the driving time to the nearest Marwin store in Astana, where LEGO products are available. While Astana does not currently have an official LEGO store, Marwin serves as a popular retailer for LEGO sets and related merchandise, making it a key destination for LEGO enthusiasts in the city. ℹ️ Data Sources: OSM ℹ️ Data Processed by Tolegen Akynzhanov 🎨 Designed by Alihan Beisenbayev 🎨 Tools: QGIS, Figma #30DayMapChallenge #30DayMapChallenge2024 #map #cartography",
-        "previewImage": "src/data/telegram_media/tg-36.jpg",
+        "previewImage": "/telegram_media/tg-36.jpg",
         "url": "https://t.me/tulparmaps/36",
         "date": "2024-11-17"
       },
@@ -119,7 +64,7 @@
         "type": "post",
         "title": "1️⃣6️⃣ Day 16 — Choropleth | Kazakhstan's Employment and Unemployment: A Regional Comparis…",
         "text": "1️⃣6️⃣ Day 16 — Choropleth | Kazakhstan's Employment and Unemployment: A Regional Comparison 🗺 Regions in dark green (such as North Kazakhstan and Akmola) indicate high employment and low unemployment rates, suggesting a strong job market in these areas. Regions in dark red (such as Kyzylorda, Turkestan, and Zhambyl) have low employment and high unemployment, indicating economic challenges or limited job opportunities. Western and southern regions (e.g., Mangistay, Kyzylorda, and Turkestan) show lower employment rates and higher unemployment, which may reflect a lack of diversification in job opportunities. Northern regions (such as Kostanay and North Kazakhstan) show more favorable employment statistics, which could be due to different economic structures or industries present in these areas. ℹ️ Data Sources: https://stat.gov.kz/ru/industries/labor-and-income/stat-empt-unempl/dynamic-tables/ 🎨 Tools: ArcGIS Pro, Illustrator #30DayMapChallenge #30DayMapChallenge2024 #map #cartography",
-        "previewImage": "src/data/telegram_media/tg-35.jpg",
+        "previewImage": "/telegram_media/tg-35.jpg",
         "url": "https://t.me/tulparmaps/35",
         "date": "2024-11-16"
       },
@@ -130,7 +75,7 @@
         "type": "post",
         "title": "1️⃣5️⃣ Day 15 — Data: My data | 🗺 I am gathering information on building ages in Astana, a…",
         "text": "1️⃣5️⃣ Day 15 — Data: My data | 🗺 I am gathering information on building ages in Astana, and here’s what I’ve found so far. Unfortunately, open data on buildings in Kazakhstan, especially in Astana, is limited. I’ve managed to collect data for over 50% of the buildings in the Nura and Yesil districts, which consist mainly of newer constructions, many built within the last decade. ℹ️ Data Sources: Buildings — OSM 🎨 Tools: QGIS, Illustrator #30DayMapChallenge #30DayMapChallenge2024 #map #cartography",
-        "previewImage": "src/data/telegram_media/tg-34.jpg",
+        "previewImage": "/telegram_media/tg-34.jpg",
         "url": "https://t.me/tulparmaps/34",
         "date": "2024-11-15"
       },
@@ -141,7 +86,7 @@
         "type": "post",
         "title": "1️⃣4️⃣ День 14 — Карта мира | Упавшие звезды Земли: глобальное падение метеоритов 🗺 Уже су…",
         "text": "1️⃣4️⃣ День 14 — Карта мира | Упавшие звезды Земли: глобальное падение метеоритов 🗺 Уже существует много визуализаций метеоритов, но я все же хотел создать две версии: одну с использованием совершенно нового для меня инструмента — Tableau, а другую, чтобы попрактиковаться с Illustrator для финального оформления карты. ℹ️ Data Sources: NASA 🎨 Tools: QGIS, Illustrator #30DayMapChallenge #30DayMapChallenge2024 #map #cartography",
-        "previewImage": "src/data/telegram_media/tg-33.jpg",
+        "previewImage": "/telegram_media/tg-33.jpg",
         "url": "https://t.me/tulparmaps/33",
         "date": "2024-11-14"
       },
@@ -152,7 +97,7 @@
         "type": "post",
         "title": "1️⃣3️⃣ Day 13 — A new tool | Urban Density Peaks: A 3D Visualization of Kazakhstan Populat…",
         "text": "1️⃣3️⃣ Day 13 — A new tool | Urban Density Peaks: A 3D Visualization of Kazakhstan Population Distribution ✍️Today, I chose to create a map of Kazakhstan using the Global Human Settlement Layer and R programming language. Each bar on the map represents the population density in a specific area, with taller bars indicating higher density. Kazakhstan is a vast country with a relatively low population overall, but densely populated urban centers. 🗺Since 1999, Kazakhstan’s population has gradually increased from approximately 15.5 million to 20.7 million this year, with an annual growth rate of around 1%. This steady growth has placed Kazakhstan 64th in the world in terms of population and 9th in terms of land area. However, population growth is highly concentrated in urban areas, with people predominantly migrating to major cities like Astana and Almaty. ℹ️ Data Sources: GHSL 🎨 Tools: R, Figma #30DayMapChallenge #30DayMapChallenge2024 #map #cartography",
-        "previewImage": "src/data/telegram_media/tg-32.jpg",
+        "previewImage": "/telegram_media/tg-32.jpg",
         "url": "https://t.me/tulparmaps/32",
         "date": "2024-11-13"
       },
@@ -163,7 +108,7 @@
         "type": "post",
         "title": "1️⃣2️⃣ Day 12 — Time & space | Development of Almaty city 🗺 I used OSM data from 2014, 201…",
         "text": "1️⃣2️⃣ Day 12 — Time & space | Development of Almaty city 🗺 I used OSM data from 2014, 2017, 2020, and 2024 to visualize changes in building infrastructure and assess the growth of Almaty over the past 10 years. It's important to note that this analysis reflects growth as represented in OSM data, which may not fully capture the exact pace and details of Almaty's development. ℹ️ Data Sources: OSM 🎨 Tools: ArcGIS Pro, Figma #30DayMapChallenge #30DayMapChallenge2024 #map #cartography",
-        "previewImage": "src/data/telegram_media/tg-31.jpg",
+        "previewImage": "/telegram_media/tg-31.jpg",
         "url": "https://t.me/tulparmaps/31",
         "date": "2024-11-12"
       }

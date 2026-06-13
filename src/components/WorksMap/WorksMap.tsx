@@ -166,7 +166,7 @@ export default function WorksMap({
         'project-arcs-line',
         visible ? ['in', ['get', 'project'], ['literal', [...visible]]] : null,
       );
-      map.setPaintProperty('project-arcs-line', 'line-opacity', 0.12);
+      map.setPaintProperty('project-arcs-line', 'line-opacity', 0.3);
       map.setPaintProperty('project-arcs-line', 'line-width', 1.2);
       map.setPaintProperty('project-arcs-line', 'line-color', '#4472a8');
     }
@@ -178,18 +178,20 @@ export default function WorksMap({
     const activeHub = activeHubRef.current;
     markersRef.current.forEach(({ hubKey, el }) => {
       if (hubKey === null) return; // origin markers are always fully visible
-      const focused = !activeHub || hubKey === activeHub;
-      el.style.opacity = focused ? '1' : '0.3';
-      el.style.transition = 'opacity 0.25s ease';
+      // Dim by default; only reveal when the matching hub is explicitly selected
+      const focused = !!activeHub && hubKey === activeHub;
+      // Use filter instead of opacity — MapLibre overwrites inline opacity on every _update
+      el.style.filter = focused ? '' : 'opacity(0.4)';
+      el.style.transition = 'filter 0.25s ease';
     });
     polygonLayersRef.current.forEach(({ hubKey, layerIds }) => {
-      const focused = !activeHub || hubKey === activeHub;
+      const focused = !!activeHub && hubKey === activeHub;
       layerIds.forEach((layerId) => {
         if (!map?.getLayer(layerId)) return;
         if (layerId.endsWith('-fill')) {
-          map.setPaintProperty(layerId, 'fill-opacity', focused ? 0.15 : 0.04);
+          map.setPaintProperty(layerId, 'fill-opacity', focused ? 0.15 : 0);
         } else {
-          map.setPaintProperty(layerId, 'line-opacity', focused ? 0.6 : 0.1);
+          map.setPaintProperty(layerId, 'line-opacity', focused ? 0.6 : 0);
         }
       });
     });
@@ -338,7 +340,7 @@ export default function WorksMap({
               const contextEl = document.createElement('div');
               contextEl.className = 'map-context-marker';
               contextEl.title = context.label;
-              contextEl.style.opacity = '0.3';
+              contextEl.style.filter = 'opacity(0.4)';
               const contextPopup = new maplibregl.Popup({
                 offset: 10,
                 maxWidth: '240px',
@@ -359,12 +361,12 @@ export default function WorksMap({
                 .then((geojson: GeoJSON.GeoJSON) => {
                   if (!map || cancelled || map.getSource(sourceId)) return;
                   map.addSource(sourceId, { type: 'geojson', data: geojson });
-                  // Polygons start dimmed (hub not selected)
+                  // Polygons start hidden until their hub is selected
                   map.addLayer({
                     id: `${sourceId}-fill`,
                     type: 'fill',
                     source: sourceId,
-                    paint: { 'fill-color': '#4472a8', 'fill-opacity': 0.04 },
+                    paint: { 'fill-color': '#4472a8', 'fill-opacity': 0 },
                   });
                   map.addLayer({
                     id: `${sourceId}-line`,
@@ -372,7 +374,7 @@ export default function WorksMap({
                     source: sourceId,
                     paint: {
                       'line-color': '#6691c0',
-                      'line-opacity': 0.1,
+                      'line-opacity': 0,
                       'line-width': 1,
                     },
                   });
@@ -405,7 +407,7 @@ export default function WorksMap({
           source: 'project-arcs',
           paint: {
             'line-color': '#4472a8',
-            'line-opacity': 0.12,
+            'line-opacity': 0.3,
             'line-width': 1.2,
             'line-dasharray': [2, 2],
           },

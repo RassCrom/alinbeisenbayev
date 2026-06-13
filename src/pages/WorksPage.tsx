@@ -14,6 +14,21 @@ const { projects } = projectsData as ProjectsData;
 type ViewMode = 'grid' | 'map';
 type TypeFilter = 'all' | 'web' | 'image';
 
+function dateSortValue(date: string | null): number {
+  if (date === 'Present') return Number.POSITIVE_INFINITY;
+  if (!date) return Number.NEGATIVE_INFINITY;
+
+  const [year, month = '12'] = date.split('-');
+  return Number(year) * 12 + Number(month);
+}
+
+const sortedProjects = [...projects].sort(
+  (a, b) =>
+    dateSortValue(b.endDate) - dateSortValue(a.endDate) ||
+    dateSortValue(b.startDate) - dateSortValue(a.startDate) ||
+    a.title.localeCompare(b.title),
+);
+
 const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'web', label: 'Web' },
@@ -28,9 +43,9 @@ export default function WorksPage() {
   const [searchParams] = useSearchParams();
 
   const typeFiltered = useMemo(() => {
-    if (typeFilter === 'web') return projects.filter((p) => p.type !== 'static-map');
-    if (typeFilter === 'image') return projects.filter((p) => p.type === 'static-map');
-    return projects;
+    if (typeFilter === 'web') return sortedProjects.filter((p) => p.type !== 'static-map');
+    if (typeFilter === 'image') return sortedProjects.filter((p) => p.type === 'static-map');
+    return sortedProjects;
   }, [typeFilter]);
 
   const { search, setSearch, selected, toggleKeyword, keywords, filtered } =
@@ -215,7 +230,7 @@ export default function WorksPage() {
                 }
               >
                 <WorksMap
-                  projects={projects}
+                  projects={sortedProjects}
                   visibleIds={visibleIds}
                   expanded={mapExpanded}
                   onToggleExpand={() => setMapExpanded((v) => !v)}
