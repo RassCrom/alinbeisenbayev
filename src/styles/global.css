@@ -9,7 +9,14 @@
   }
 
   body {
-    background: var(--color-bg-base);
+    background-color: var(--color-bg-base);
+    background-image:
+      linear-gradient(rgba(13, 19, 32, 0.97), rgba(13, 19, 32, 0.97)),
+      url('/astana-contours.png');
+    background-position: center, center top;
+    background-repeat: repeat, repeat-y;
+    background-size: auto, max(100vw, 1200px) auto;
+    background-attachment: fixed;
     color: var(--color-text-primary);
     font-family: var(--font-body);
     font-size: var(--body-font-size);

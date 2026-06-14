@@ -1,14 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import type { Map as MapLibreMap } from 'maplibre-gl';
 import WorkCard from '../components/WorkCard/WorkCard';
 import projectsData from '../data/projects.json';
 import aboutData from '../data/about-story.json';
 import socialsData from '../data/socials.json';
 import type { ProjectsData, AboutStoryData, SocialsData } from '../types';
-import 'maplibre-gl/dist/maplibre-gl.css';
-
-const MAP_STYLE = '/map-styles/portfolio-dark.json';
 
 const fmtCoord = (lat: number, lng: number): string =>
   `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
@@ -17,44 +13,19 @@ const { projects } = projectsData as ProjectsData;
 const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
 const { socials } = socialsData as SocialsData;
 
-function HeroMapBackground() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let map: MapLibreMap | null = null;
-    let cancelled = false;
-
-    (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
-      if (cancelled || !containerRef.current) return;
-      map = new maplibregl.Map({
-        container: containerRef.current,
-        style: MAP_STYLE,
-        center: [71.43, 51.17],
-        zoom: 3,
-        interactive: false,
-        attributionControl: false,
-      });
-      map.on('load', () => {
-        if (!map || cancelled) return;
-        const drift = () => {
-          if (!map) return;
-          const center = map.getCenter();
-          map.easeTo({ center: [center.lng + 10, center.lat], duration: 24000, easing: (t) => t });
-        };
-        map.on('moveend', drift);
-        drift();
-      });
-    })();
-
-    return () => {
-      cancelled = true;
-      map?.remove();
-      map = null;
-    };
-  }, []);
-
-  return <div ref={containerRef} aria-hidden="true" className="absolute inset-0 opacity-30" />;
+function HeroContourBackground() {
+  return (
+    <img
+      src="/vienna-contours.png"
+      alt=""
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.14]"
+      style={{
+        maskImage: 'radial-gradient(ellipse 78% 72% at 50% 46%, black 30%, transparent 82%)',
+        WebkitMaskImage: 'radial-gradient(ellipse 78% 72% at 50% 46%, black 30%, transparent 82%)',
+      }}
+    />
+  );
 }
 
 export default function LandingPage() {
@@ -70,7 +41,7 @@ export default function LandingPage() {
         className="relative flex h-[calc(100vh-4rem)] items-center justify-center overflow-hidden"
         style={{ background: 'var(--gradient-hero)' }}
       >
-        <HeroMapBackground />
+        <HeroContourBackground />
         <div className="relative z-[var(--z-raised)] flex flex-col items-center gap-[var(--space-4)] px-[var(--space-6)] text-center">
           <img
             src={profile.photo}
