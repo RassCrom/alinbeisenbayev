@@ -493,6 +493,63 @@
       }
     },
     {
+      "id": "tropical-night",
+      "slug": "tropical-night",
+      "title": "Number of tropical nights in Europe",
+      "tagline": "Tropical night count for European capitals in 2025",
+      "status": "complete",
+      "featured": true,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "summer",
+        "heat",
+        "social media"
+      ],
+      "role": "solo",
+      "startDate": "2026-06",
+      "endDate": "2026-06",
+      "awards": [
+      ],
+      "coverImage": "/images/projects/tropical-night/preview.png",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "liveUrl": "https://www.linkedin.com/feed/update/urn:li:activity:7473690337421680643/",
+      "process": [
+      ],
+      "outcome": "Gained 4 likes in 4 hours on LinkedIn :(",
+      "stack": [
+        "QGIS",
+        "Python",
+        "Figma"
+      ],
+      "gallery": [
+        {
+          "url": "/images/projects/tropical-night/tropical_nights-2025-v5.png",
+          "downloadUrl": "/images/tropical-night/tropical_nights-2025-v5.png",
+          "caption": "Tropical Nights of Europe",
+          "type": "screenshot"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 54,
+            "lng": 25,
+            "label": "Europe"
+          }
+        ]
+      }
+    },
+    {
       "id": "ignition-point-analysis",
       "slug": "ignition-point-analysis",
       "title": "Dynamics of Ignition Points in Kazakhstan (2001-2024)",
@@ -630,9 +687,9 @@
       ],
       "geography": {
         "origin": {
-          "lat": 51.1694,
-          "lng": 71.4704,
-          "label": "Astana, Kazakhstan"
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
         },
         "contexts": [
           {
@@ -688,9 +745,9 @@
       ],
       "geography": {
         "origin": {
-          "lat": 51.1694,
-          "lng": 71.4704,
-          "label": "Astana, Kazakhstan"
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
         },
         "contexts": [
           {
@@ -745,9 +802,9 @@
       ],
       "geography": {
         "origin": {
-          "lat": 51.1694,
-          "lng": 71.4704,
-          "label": "Astana, Kazakhstan"
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
         },
         "contexts": [
           {
