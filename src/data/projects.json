@@ -23,7 +23,7 @@
       "awards": [
         "Armenia Open Data Contest 2025 - Winner"
       ],
-      "coverImage": "/images/projects/tigranes-the-greatest/peak.png",
+      "coverImage": "/images/projects/tigranes-the-greatest/peak.webp",
       "context": "Designed for the Armenia Open Data Contest 2025 together with Tolegen. The contest called for any data visualization in any format - a blank canvas that led us toward interactive cartographic storytelling.",
       "idea": "The deciding spark was the surprisingly vast territory controlled by the Armenian Empire at its peak. Digging deeper revealed how Tigranes II - facing powerful neighbors on every side - built one of the largest empires in Asian history, however briefly. We wanted that scale and drama to be felt on a map.",
       "design": "The overall atmosphere was driven by Armenian history and the reddish tones of the Armenian flag from that era. Dark backgrounds emphasize the territorial expanse; warm accent colors mark key events and locations.",
@@ -38,7 +38,7 @@
           "step": 2,
           "title": "Scroll Narrative Build",
           "description": "Designed the scroll narrative structure in Figma, then built the interactive map with MapLibre GL JS and React. Synchronized scroll position with map state to guide the reader through the territorial timeline.",
-          "image": "/images/projects/tigranes-the-greatest/table-of-content.png"
+          "image": "/images/projects/tigranes-the-greatest/table-of-content.webp"
         }
       ],
       "outcome": "Won first place at the Armenia Open Data Contest 2025.",
@@ -51,14 +51,16 @@
       "codeUrl": "https://github.com/RassCrom/tighranes2",
       "gallery": [
         {
-          "url": "/images/projects/tigranes-the-greatest/mid-story.png",
+          "url": "/images/projects/tigranes-the-greatest/mid-story.webp",
           "caption": "Mid story snapshot showing quota and Armenian expansion.",
-          "type": "screenshot"
+          "type": "screenshot",
+          "downloadUrl": "/images/projects/tigranes-the-greatest/mid-story.png"
         },
         {
-          "url": "/images/projects/tigranes-the-greatest/end-of-story.png",
+          "url": "/images/projects/tigranes-the-greatest/end-of-story.webp",
           "caption": "Ending chapter of the story.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/tigranes-the-greatest/end-of-story.png"
         }
       ],
       "geography": {
@@ -95,15 +97,13 @@
       "role": "solo",
       "startDate": "2026-05",
       "endDate": "Present",
-      "awards": [
-      ],
-      "coverImage": "/images/projects/orhon-stories/turkic_nomadic-countries.png",
+      "awards": [],
+      "coverImage": "/images/projects/orhon-stories/turkic_nomadic-countries.webp",
       "context": "",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "QGIS",
@@ -112,44 +112,52 @@
       "liveUrl": null,
       "gallery": [
         {
-          "url": "/images/projects/orhon-stories/turkic_nomadic-countries.png",
+          "url": "/images/projects/orhon-stories/turkic_nomadic-countries.webp",
           "caption": "Interesting about Turkic, Central Asian, and Nomadic countries.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/turkic_nomadic-countries.png"
         },
         {
-          "url": "/images/projects/orhon-stories/asian-regions.png",
+          "url": "/images/projects/orhon-stories/asian-regions.webp",
           "caption": "Division of Asia into regions.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/asian-regions.png"
         },
         {
-          "url": "/images/projects/orhon-stories/asia-csmajor-s3-v1.png",
+          "url": "/images/projects/orhon-stories/asia-csmajor-s3-v1.webp",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 3.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s3-v1.png"
         },
         {
-          "url": "/images/projects/orhon-stories/asia-csmajor-s3-v2.png",
+          "url": "/images/projects/orhon-stories/asia-csmajor-s3-v2.webp",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 3, colored logo.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s3-v2.png"
         },
         {
-          "url": "/images/projects/orhon-stories/asia-csmajor-s12-v1.png",
+          "url": "/images/projects/orhon-stories/asia-csmajor-s12-v1.webp",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 1 and 2.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s12-v1.png"
         },
         {
-          "url": "/images/projects/orhon-stories/asia-csmajor-s12-v2.png",
+          "url": "/images/projects/orhon-stories/asia-csmajor-s12-v2.webp",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 1 and 2, colored logo.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s12-v2.png"
         },
         {
-          "url": "/images/projects/orhon-stories/asia-in-wc26.png",
+          "url": "/images/projects/orhon-stories/asia-in-wc26.webp",
           "caption": "Asian teams that qualified for World Cup 2026",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/asia-in-wc26.png"
         },
         {
-          "url": "/images/projects/orhon-stories/asian-teams-base-locations.png",
+          "url": "/images/projects/orhon-stories/asian-teams-base-locations.webp",
           "caption": "Location of stay of Asian teams for World Cup 2026.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/orhon-stories/asian-teams-base-locations.png"
         }
       ],
       "geography": {
@@ -158,8 +166,7 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": [
-        ]
+        "contexts": []
       }
     },
     {
@@ -184,7 +191,7 @@
       "awards": [
         "British Cartographic Society - Winner"
       ],
-      "coverImage": "/images/projects/silk-road/preview.png",
+      "coverImage": "/images/projects/silk-road/preview.webp",
       "context": "Developed under the TU Wien course - Project Map Creation. The task was to produce any map for print. Historical cartography felt like the natural territory.",
       "idea": "Since childhood I have been fascinated by history - a passion inherited from my grandfather. Among several shortlisted ideas, the Silk Road stood out: it is the oldest form of globalization and runs through the heart of the Central Asian cultures I grew up around.",
       "design": "The goal was a moody, atmospheric design - achieved by blending a dark base with relief shading and careful typographic hierarchy. Color palettes kept warm and earthy to evoke trade routes and ancient parchment.",
@@ -199,7 +206,7 @@
           "step": 2,
           "title": "Map Composition",
           "description": "Built the base map and spatial layers in QGIS. Exported to Figma for typography, symbology refinement, and final print layout.",
-          "image": "/images/projects/silk-road/close-details.png"
+          "image": "/images/projects/silk-road/close-details.webp"
         }
       ],
       "outcome": "Won the British Cartographic Society open map competition, September 2025.",
@@ -211,14 +218,16 @@
       "liveUrl": "https://rasscrom.github.io/tulparmaps-collection/#map=silk%20road.png",
       "gallery": [
         {
-          "url": "/images/projects/silk-road/wip.png",
+          "url": "/images/projects/silk-road/wip.webp",
           "caption": "Work-in-progress view of the map composition.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/silk-road/wip.png"
         },
         {
-          "url": "/images/projects/silk-road/preview.png",
+          "url": "/images/projects/silk-road/preview.webp",
           "caption": "Preview crop - Central Asian route detail.",
-          "type": "detail"
+          "type": "detail",
+          "downloadUrl": "/images/projects/silk-road/preview.png"
         }
       ],
       "geography": {
@@ -364,10 +373,8 @@
       "design": "",
       "inspiration": "",
       "process": [
-        {
-        },
-        {
-        }
+        {},
+        {}
       ],
       "outcome": "",
       "stack": [
@@ -378,8 +385,7 @@
         "Figma"
       ],
       "liveUrl": null,
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.2082,
@@ -426,7 +432,7 @@
         "GeoHipster Calendar 2026 - Featured",
         "Atlas of Sustainability - Featured"
       ],
-      "coverImage": "/images/projects/earth-on-fire/dark.png",
+      "coverImage": "/images/projects/earth-on-fire/dark.webp",
       "context": "Developed during the week design challenge in TU Wien with a guest lecture from Wisconsin University - Robert Roth. The topic was about Sustainable Development Goals (SDG)",
       "idea": "For this map, we had to choose the topic from 17 SDGs and then make a map within 3 days in a group of three people. Climate Action - 13 SDG was general topic. For the map idea, I came up with fire point datasets since I worked with it for another project abut analyzing ignition points in Kazakhstan.",
       "design": "I was responsible for data collection and processing as well as overall layout and map design. I wanted to create a shining effect since the topic is fire points, so it visually easy to see where the earth burns more often. Map uses persuasive cartographic and text techniques to emphasize the problem with wildfires, agricultural burnings, deforestation, which leads to a higher CO2 level.",
@@ -441,7 +447,7 @@
           "step": 2,
           "title": "Styling & Export",
           "description": "The task was to visualize millions of points on the map without creating visual noise and keep it visually understandable and pleasant. ",
-          "image": "/images/projects/earth-on-fire/close-details.png"
+          "image": "/images/projects/earth-on-fire/close-details.webp"
         }
       ],
       "outcome": "Featured in the GeoHipster 2026 Calendar and in the Atlas of Sustainability book.",
@@ -509,16 +515,14 @@
       "role": "solo",
       "startDate": "2026-06",
       "endDate": "2026-06",
-      "awards": [
-      ],
-      "coverImage": "/images/projects/tropical-night/preview.png",
+      "awards": [],
+      "coverImage": "/images/projects/tropical-night/preview.webp",
       "context": "",
       "idea": "",
       "design": "",
       "inspiration": "",
       "liveUrl": "https://www.linkedin.com/feed/update/urn:li:activity:7473690337421680643/",
-      "process": [
-      ],
+      "process": [],
       "outcome": "Gained 4 likes in 4 hours on LinkedIn :(",
       "stack": [
         "QGIS",
@@ -527,8 +531,8 @@
       ],
       "gallery": [
         {
-          "url": "/images/projects/tropical-night/tropical_nights-2025-v5.png",
-          "downloadUrl": "/images/tropical-night/tropical_nights-2025-v5.png",
+          "url": "/images/projects/tropical-night/tropical_nights-2025-v5.webp",
+          "downloadUrl": "/images/projects/tropical-night/tropical_nights-2025-v5.png",
           "caption": "Tropical Nights of Europe",
           "type": "screenshot"
         }
@@ -597,8 +601,7 @@
         "VIIRS"
       ],
       "codeUrl": "https://karasugis.notion.site/Dynamics-of-Wildfires-in-Kazakhstan-2001-2024-Spatial-Temporal-Patterns-and-Risk-Factors-v2-1c2a7211489880a49e4be5197158a566?source=copy_link",
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.1351,
@@ -643,7 +646,7 @@
       "startDate": "2026-03",
       "endDate": "Present",
       "awards": [],
-      "coverImage": "/images/projects/astana-buildings/intro.png",
+      "coverImage": "/images/projects/astana-buildings/intro.webp",
       "context": "Pet project about visualizing Astana through buildings.",
       "idea": "Idea come from the existing project https://kontikimaps.com/how-old/helsinki. I wanted to create something similar for my city - Astana. But it turned out to be a disaster...",
       "design": "Dark, cold, steppe design. Gold represents steppe, cold vibes show how could it can be in steppe.",
@@ -658,7 +661,7 @@
           "step": 2,
           "title": "Map Styling & Interactivity",
           "description": "I started collecting data long time ago. But only recently I was able to start on online map to share it with people. The original ideas expanded to not just construction year of buildings, but has a lot of other information in different formats, including green urban assessment, crime rates, etc. More proud to add 3D model of Kabanbay Mausoleum that we developed with my friend Tolegen.",
-          "image": "/images/projects/astana-buildings/kabanbai-model.png"
+          "image": "/images/projects/astana-buildings/kabanbai-model.webp"
         }
       ],
       "outcome": "Published as a live interactive map. Demonstrates full vector tile pipeline: OpenStreetMap â†’ QGIS â†’ Tippecanoe â†’ PMTiles â†’ MapLibre.",
@@ -673,13 +676,13 @@
       "codeUrl": "https://github.com/RassCrom/kbh",
       "gallery": [
         {
-          "url": "/images/projects/astana-buildings/cyear-preview.png",
+          "url": "/images/projects/astana-buildings/cyear-preview.webp",
           "downloadUrl": "/images/projects/astana-buildings/cyear-preview.png",
           "caption": "Year of construction.",
           "type": "screenshot"
         },
         {
-          "url": "/images/projects/astana-buildings/elevation-preview.png",
+          "url": "/images/projects/astana-buildings/elevation-preview.webp",
           "downloadUrl": "/images/projects/astana-buildings/elevation-preview.png",
           "caption": "Elevation visualized through buildings.",
           "type": "screenshot"
@@ -727,13 +730,12 @@
       "startDate": "2025-05",
       "endDate": "Present",
       "awards": [],
-      "coverImage": "/images/projects/notable-kazakhs/preview.png",
+      "coverImage": "/images/projects/notable-kazakhs/preview.webp",
       "context": "",
       "idea": "Kazakhstan's cultural and intellectual heritage is little known inside and outside the country. This map shows notable Kazakhs - athletes, scientists, artists, politicians - attached to the places they were born.",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "MapLibre GL JS",
@@ -741,8 +743,7 @@
       ],
       "liveUrl": "https://rasscrom.github.io/notable-kazakhs/#4/48.39/67.62",
       "codeUrl": "https://github.com/RassCrom/notable-kazakhs",
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.2082,
@@ -785,21 +786,19 @@
       "startDate": "2025-04",
       "endDate": "2025-05",
       "awards": [],
-      "coverImage": "/images/projects/alash-orda/preview.png",
+      "coverImage": "/images/projects/alash-orda/preview.webp",
       "context": "Personal historical storytelling project about the Alash Orda - the short-lived Kazakh national autonomy government established during the Russian Revolution, suppressed by the Bolsheviks by 1920.",
       "idea": "The Alash Orda is one of Kazakhstan's most significant but underknown historical chapters - the moment when Kazakh intellectuals tried to build a modern nation-state. A scroll-driven map makes that geography and chronology visceral.",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "JavaScript"
       ],
       "liveUrl": "https://rasscrom.github.io/alash-orda/",
       "codeUrl": "https://github.com/RassCrom/alash-orda",
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.2082,
@@ -842,13 +841,12 @@
       "startDate": "2026-05",
       "endDate": "Present",
       "awards": [],
-      "coverImage": "/images/projects/figura/preview.png",
+      "coverImage": "/images/projects/figura/preview.webp",
       "context": "",
       "idea": "A GeoGuessr-style game but for historical and cultural figures - players are shown a famous person and must locate them on the map, or vice versa. Combines geographic learning with cultural history.",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "MapLibre GL JS",
@@ -857,8 +855,7 @@
       ],
       "liveUrl": "https://figura-eight.vercel.app",
       "codeUrl": null,
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.2082,
@@ -888,13 +885,12 @@
       "startDate": "2025-05",
       "endDate": "Present",
       "awards": [],
-      "coverImage": "/images/projects/historical-vienna/preview.png",
+      "coverImage": "/images/projects/historical-vienna/preview.webp",
       "context": "",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "MapLibre GL JS",
@@ -903,8 +899,7 @@
       ],
       "liveUrl": "https://rasscrom.github.io/historical-vienna/#14/48.2082/16.3638",
       "codeUrl": "https://github.com/RassCrom/historical-vienna",
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.2082,
@@ -941,21 +936,19 @@
       "startDate": "2025-05",
       "endDate": "2025-05",
       "awards": [],
-      "coverImage": "/images/projects/austria-income/image.png",
+      "coverImage": "/images/projects/austria-income/image.webp",
       "context": "",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "d3.js"
       ],
       "liveUrl": "https://rasscrom.github.io/austria-income-pct25/income",
       "codeUrl": "https://github.com/RassCrom/austria-income-pct25",
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.2082,
@@ -1000,13 +993,12 @@
       "awards": [
         "Armenia Open Data Contest 2024 - 3rd place"
       ],
-      "coverImage": "/images/projects/armenia-energy/preview.png",
+      "coverImage": "/images/projects/armenia-energy/preview.webp",
       "context": "Developed for the Armenia Open Data Contest 2024.",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "Third place at the Armenia Open Data Contest 2024.",
       "stack": [
         "MapLibre GL JS",
@@ -1014,8 +1006,7 @@
       ],
       "liveUrl": "https://rasscrom.github.io/armenia-energy/",
       "codeUrl": "https://github.com/RassCrom/armenia-energy",
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 51.1694,
@@ -1060,8 +1051,7 @@
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "Achieved 2nd place among approximately 20 competing teams.",
       "stack": [
         "React",
@@ -1070,8 +1060,7 @@
       ],
       "liveUrl": null,
       "codeUrl": null,
-      "gallery": [
-      ],
+      "gallery": [],
       "geography": {
         "origin": {
           "lat": 48.1351,
@@ -1103,13 +1092,12 @@
       "awards": [
         "DIRCON Almaty GIS Day 2024 Map Gallery - Winner"
       ],
-      "coverImage": "/images/projects/who-comes-third-akmola/cover.png",
+      "coverImage": "/images/projects/who-comes-third-akmola/cover.webp",
       "context": "Submitted to and won the Map Gallery competition at DIRCON Almaty GIS Day 2024 - GIS conference in Kazakhstan.",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "Won the Map Gallery competition at DIRCON Almaty GIS Day 2024.",
       "stack": [
         "QGIS",
@@ -1119,9 +1107,10 @@
       "codeUrl": null,
       "gallery": [
         {
-          "url": "/images/projects/who-comes-third-akmola/cover.png",
+          "url": "/images/projects/who-comes-third-akmola/cover.webp",
           "caption": "Who Comes Third in Akmola - full print map.",
-          "type": "print"
+          "type": "print",
+          "downloadUrl": "/images/projects/who-comes-third-akmola/cover.png"
         }
       ],
       "geography": {
@@ -1165,8 +1154,7 @@
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "QGIS",
@@ -1208,7 +1196,7 @@
       "startDate": "2026-05",
       "endDate": "2026-06",
       "awards": [],
-      "coverImage": "/images/projects/asharshylyq/cover.png",
+      "coverImage": "/images/projects/asharshylyq/cover.webp",
       "context": "30th May, Kazakhstan has a day of memorial for people who died from soviet union repression and in labour camps due to femine.",
       "idea": "To support historical awareness and remind kazakh audience to remember who fought for our today's freedom. To show the scale of disaster Kazakh people experienced through those times.",
       "design": "The orangish effect of old paper was added to make it look like historical archive. Noise and texture were added to keep it dynamic and unbalanced as it is old printed newspaper.",
@@ -1223,7 +1211,7 @@
           "step": 2,
           "title": "Map Production",
           "description": "The regions of Kazakhstan were digitized from printed map of USSR 1939 year. The relief was added to keep the scene more realistic and visually dynamic. As well as water features were added in QGIS. After this it was imported in Figma where typography, effects, and layout design were done.",
-          "image": "/images/projects/asharshylyq/ref-map.png"
+          "image": "/images/projects/asharshylyq/ref-map.webp"
         }
       ],
       "outcome": "Highest engagementrate on LinkedIn post reaching more than 450 likes and comments.",
@@ -1236,9 +1224,10 @@
       "codeUrl": null,
       "gallery": [
         {
-          "url": "/images/projects/asharshylyq/cover.png",
+          "url": "/images/projects/asharshylyq/cover.webp",
           "caption": "Asharshylyq, 1931-1933 - full map.",
-          "type": "print"
+          "type": "print",
+          "downloadUrl": "/images/projects/asharshylyq/cover.png"
         }
       ],
       "geography": {
@@ -1262,13 +1251,12 @@
       "startDate": "2026-05",
       "endDate": "2026-05",
       "awards": [],
-      "coverImage": "/images/projects/europe-ignition/cover.png",
+      "coverImage": "/images/projects/europe-ignition/cover.webp",
       "context": "",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "QGIS",
@@ -1305,13 +1293,12 @@
       "startDate": "2026-04",
       "endDate": "2026-04",
       "awards": [],
-      "coverImage": "/images/projects/heat-mortality/cover.png",
+      "coverImage": "/images/projects/heat-mortality/cover.webp",
       "context": "",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "QGIS",
@@ -1321,9 +1308,10 @@
       "codeUrl": null,
       "gallery": [
         {
-          "url": "/images/projects/heat-mortality/cover.png",
+          "url": "/images/projects/heat-mortality/cover.webp",
           "caption": "Heat-related Mortality in Europe - full map.",
-          "type": "print"
+          "type": "print",
+          "downloadUrl": "/images/projects/heat-mortality/cover.png"
         },
         {
           "url": "/images/projects/heat-mortality/linkedin-3x.webp",
@@ -1357,8 +1345,7 @@
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "QGIS",
@@ -1393,16 +1380,15 @@
         "cartography"
       ],
       "role": "solo",
-      "startDate": "2026",
-      "endDate": "2026",
+      "startDate": "2026-04",
+      "endDate": "2026-04",
       "awards": [],
       "coverImage": "/images/projects/chess-map/opening-desktop.webp",
       "context": "",
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "QGIS",
@@ -1457,8 +1443,7 @@
       "idea": "",
       "design": "",
       "inspiration": "",
-      "process": [
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "QGIS",
@@ -1474,6 +1459,252 @@
           "url": "/images/placeholder.jpg",
           "caption": "",
           "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "coral-city-roads",
+      "slug": "coral-city-roads",
+      "title": "Coral City Roads",
+      "tagline": "City street networks rendered as coral colonies - animated portraits of how cities branch and grow",
+      "status": "in-progress",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "cartography",
+        "street networks",
+        "OpenStreetMap",
+        "animation",
+        "Central Asia"
+      ],
+      "role": "solo",
+      "startDate": "2026-07",
+      "endDate": "current",
+      "awards": [],
+      "coverImage": "/images/projects/coral-city-roads/cover.webp",
+      "context": "PLACEHOLDER - A series of short social-format animations exploring what a city's road network looks like when stripped of everything else. Series covers Kazakh and Central Asian cities alongside international counterparts.",
+      "idea": "PLACEHOLDER - Road networks share a visual grammar with coral: a dense core, thinning branches, an organic outline shaped by terrain and history. Removing every other map layer makes that resemblance impossible to miss, and lets very different cities be compared at a glance.",
+      "design": "PLACEHOLDER - Dark backgrounds with a warm-to-cool gradient keyed to distance from the city centre. Each clip animates the network drawing itself outward from the core.",
+      "inspiration": "Inspired by Craig Taylor's coral-style road network visualizations, which reimagine city street grids as organic, branching forms.",
+      "process": [],
+      "outcome": "PLACEHOLDER - Ongoing series; new cities added over time.",
+      "stack": [
+        "Python",
+        "OSMnx",
+        "QGIS",
+        "Blender"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [],
+      "videos": [
+        {
+          "url": "/videos/coral-city-roads/almaty.mp4",
+          "poster": "/images/projects/coral-city-roads/almaty.webp",
+          "caption": "Almaty",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/coral-city-roads/astana.mp4",
+          "poster": "/images/projects/coral-city-roads/astana.webp",
+          "caption": "Astana",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/coral-city-roads/shymkent.mp4",
+          "poster": "/images/projects/coral-city-roads/shymkent.webp",
+          "caption": "Shymkent",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/coral-city-roads/atyrau.mp4",
+          "poster": "/images/projects/coral-city-roads/atyrau.webp",
+          "caption": "Atyrau",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/coral-city-roads/pavlodar.mp4",
+          "poster": "/images/projects/coral-city-roads/pavlodar.webp",
+          "caption": "Pavlodar",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/coral-city-roads/petropavlovsk.mp4",
+          "poster": "/images/projects/coral-city-roads/petropavlovsk.webp",
+          "caption": "Petropavlovsk",
+          "width": 1280,
+          "height": 1280
+        },
+        {
+          "url": "/videos/coral-city-roads/turkestan.mp4",
+          "poster": "/images/projects/coral-city-roads/turkestan.webp",
+          "caption": "Turkestan",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/coral-city-roads/tashkent.mp4",
+          "poster": "/images/projects/coral-city-roads/tashkent.webp",
+          "caption": "Tashkent",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/coral-city-roads/tokyo.mp4",
+          "poster": "/images/projects/coral-city-roads/tokyo.webp",
+          "caption": "Tokyo",
+          "width": 1080,
+          "height": 1920
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "metro-animation",
+      "slug": "metro-animation",
+      "title": "Metro Animation",
+      "tagline": "Metro networks morphing between their true geography and their schematic map",
+      "status": "in-progress",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "transit",
+        "metro",
+        "schematic",
+        "animation",
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2026-06",
+      "endDate": "current",
+      "awards": [],
+      "coverImage": "/images/projects/metro-animation/cover.webp",
+      "context": "PLACEHOLDER - Short animations comparing each metro system as it exists on the ground with the schematic diagram riders actually navigate by.",
+      "idea": "PLACEHOLDER - A transit diagram is a deliberate lie: angles are straightened, distances are evened out, the city is bent to fit the map. Animating the transition between the geographic and schematic versions shows exactly how much distortion that convention buys.",
+      "design": "PLACEHOLDER - Official line colours on a dark canvas, stations as open circles, rivers kept as the one geographic anchor that survives the morph.",
+      "inspiration": "PLACEHOLDER - Harry Beck's 1933 London Underground diagram and the tradition of schematic transit design that followed it.",
+      "process": [],
+      "outcome": "PLACEHOLDER - Ongoing series; more networks in progress.",
+      "stack": [
+        "Python",
+        "D3.js",
+        "QGIS"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [],
+      "videos": [
+        {
+          "url": "/videos/metro-animation/vienna.mp4",
+          "poster": "/images/projects/metro-animation/vienna.webp",
+          "caption": "Vienna U-Bahn - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/prague.mp4",
+          "poster": "/images/projects/metro-animation/prague.webp",
+          "caption": "Prague Metro - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/stockholm.mp4",
+          "poster": "/images/projects/metro-animation/stockholm.webp",
+          "caption": "Stockholm Tunnelbana - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        }
+      ],
+      "geography": {
+        "origin": null,
+        "contexts": []
+      }
+    },
+    {
+      "id": "football-mapped",
+      "slug": "football-mapped",
+      "title": "Football Mapped",
+      "tagline": "World Cup 2026 matches visualised as territory - momentum, xG and pitch control in one animated frame",
+      "status": "done",
+      "featured": false,
+      "type": "analysis",
+      "category": "social media",
+      "keywords": [
+        "football",
+        "sports analytics",
+        "data visualization",
+        "World Cup",
+        "animation"
+      ],
+      "role": "solo",
+      "startDate": "2026-07",
+      "endDate": "2026-07",
+      "awards": [],
+      "coverImage": "/images/projects/football-mapped/cover.webp",
+      "context": "PLACEHOLDER - Match-by-match visualisations from the 2026 World Cup, built from FotMob, Opta and WhoScored event data.",
+      "idea": "PLACEHOLDER - A scoreline says almost nothing about how a match was actually played. Treating momentum as a moving border across the pitch turns 90 minutes of pressure, shots and territory into a single readable shape.",
+      "design": "PLACEHOLDER - Team colours flood their share of the pitch, the seam between them tracks smoothed momentum, shots lift the surface into 3D relief, and goals wash the whole field in the scorer's colour.",
+      "inspiration": "Inspired by Alexander Bogachev's World Cup 2026 pitch-control visualizations (https://wc26.bogachev.fr/index.html), which render match momentum as a shifting territorial boundary across the pitch.",
+      "process": [],
+      "outcome": "PLACEHOLDER - Ongoing series through the tournament.",
+      "stack": [
+        "Python",
+        "Blender",
+        "Pandas"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [],
+      "videos": [
+        {
+          "url": "/videos/football-mapped/norway-england.mp4",
+          "poster": "/images/projects/football-mapped/norway-england.webp",
+          "caption": "Norway 1-2 England",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/football-mapped/england-argentina.mp4",
+          "poster": "/images/projects/football-mapped/england-argentina.webp",
+          "caption": "England vs Argentina",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/football-mapped/spain-argentina.mp4",
+          "poster": "/images/projects/football-mapped/spain-argentina.webp",
+          "caption": "Spain vs Argentina",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/football-mapped/france-spain.mp4",
+          "poster": "/images/projects/football-mapped/france-spain.webp",
+          "caption": "France vs Spain",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/football-mapped/argentina-switzerland.mp4",
+          "poster": "/images/projects/football-mapped/argentina-switzerland.webp",
+          "caption": "Argentina vs Switzerland",
+          "width": 1080,
+          "height": 1920
         }
       ],
       "geography": {

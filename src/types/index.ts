@@ -41,6 +41,17 @@ export interface GalleryImage {
   type: string;
 }
 
+export interface VideoItem {
+  /** Compressed, faststart MP4 under /videos/<slug>/ */
+  url: string;
+  /** Poster frame shown until the viewer presses play — the video itself is never fetched before that. */
+  poster: string;
+  caption: string;
+  /** Intrinsic dimensions, used to reserve grid space and avoid layout shift. */
+  width: number;
+  height: number;
+}
+
 export interface Project {
   id: string;
   slug: string;
@@ -66,6 +77,7 @@ export interface Project {
   liveUrl?: string;
   codeUrl?: string;
   gallery: GalleryImage[];
+  videos?: VideoItem[];
   geography: Geography;
 }
 
@@ -149,6 +161,7 @@ export interface Social {
   label: string;
   url: string;
   description: string;
+  followers?: string;
   iconUrl: string;
   featured: boolean;
 }

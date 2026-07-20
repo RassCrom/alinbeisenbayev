@@ -24,15 +24,15 @@ function dateSortValue(date: string | null): number {
 
 const sortedProjects = [...projects].sort(
   (a, b) =>
-    dateSortValue(b.endDate) - dateSortValue(a.endDate) ||
     dateSortValue(b.startDate) - dateSortValue(a.startDate) ||
+    dateSortValue(b.endDate) - dateSortValue(a.endDate) ||
     a.title.localeCompare(b.title),
 );
 
 const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'web', label: 'Web' },
-  { key: 'image', label: 'Image' },
+  { key: 'image', label: 'Data Viz' },
 ];
 
 export default function WorksPage() {

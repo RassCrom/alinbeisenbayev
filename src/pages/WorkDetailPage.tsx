@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import ProcessStep from '../components/ProcessStep/ProcessStep';
 import ImageGallery from '../components/ImageGallery/ImageGallery';
+import VideoGallery from '../components/VideoGallery/VideoGallery';
 import StackRow from '../components/StackRow/StackRow';
 import WorkCard from '../components/WorkCard/WorkCard';
 import projectsData from '../data/projects.json';
@@ -137,6 +138,12 @@ export default function WorkDetailPage() {
         {project.outcome && (
           <Section heading="Outcome">
             <p className="text-[var(--color-text-secondary)]">{project.outcome}</p>
+          </Section>
+        )}
+
+        {project.videos && project.videos.length > 0 && (
+          <Section heading="Animations">
+            <VideoGallery videos={project.videos} />
           </Section>
         )}
 

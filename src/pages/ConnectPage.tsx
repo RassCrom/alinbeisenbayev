@@ -34,6 +34,11 @@ export default function ConnectPage() {
                 </div>
               </div>
               <p className="flex-1 font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
+                {social.followers && (
+                  <span className="mb-[var(--space-2)] block font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] font-medium text-xs tracking-[0.08em] text-[var(--color-accent-light)]">
+                    Followers: {social.followers}
+                  </span>
+                )}
                 {social.description}
               </p>
               <a

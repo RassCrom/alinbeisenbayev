@@ -84,6 +84,9 @@ coverage/
 # yarn.lock
 # pnpm-lock.yaml
 
+# Original (pre-compression) media masters — web versions live in public/videos
+assets-src/
+
 # Misc
 *.pem
 *.key
