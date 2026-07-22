@@ -4,7 +4,9 @@ import socialsData from '../../data/socials.json';
 import type { SocialsData } from '../../types';
 
 const { socials } = socialsData as SocialsData;
-const DRAWER_SOCIALS = socials.filter((s) => s.featured && s.platform !== 'CV');
+const DRAWER_SOCIALS = socials.filter(
+  (s) => s.featured && s.platform !== 'CV' && s.platform !== 'GitHub',
+);
 
 const NAV_LINKS = [
   { to: '/works', label: 'Works' },
@@ -103,7 +105,14 @@ export default function Nav() {
                 title={social.platform}
                 className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] opacity-80 transition-all hover:border-[var(--color-accent)] hover:opacity-100 active:scale-95"
               >
-                <img src={social.iconUrl} alt="" width={20} height={20} loading="lazy" />
+                <img
+                  src={social.iconUrl}
+                  alt=""
+                  width={20}
+                  height={20}
+                  loading="lazy"
+                  className={social.platform === 'TikTok' ? 'pt-1' : undefined}
+                />
               </a>
             ))}
           </div>

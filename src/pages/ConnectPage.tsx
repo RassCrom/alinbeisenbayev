@@ -36,7 +36,7 @@ export default function ConnectPage() {
               <p className="flex-1 font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
                 {social.followers && (
                   <span className="mb-[var(--space-2)] block font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] font-medium text-xs tracking-[0.08em] text-[var(--color-accent-light)]">
-                    Followers: {social.followers}
+                    Followers: {social.followers} <span className='text-[9px] text-[var(--color-text-muted)'>{social.follower_date}</span>
                   </span>
                 )}
                 {social.description}

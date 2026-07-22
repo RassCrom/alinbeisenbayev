@@ -6,7 +6,8 @@
       "label": "Alikhan Beisenbayev",
       "url": "https://linkedin.com/in/karasu",
       "description": "Maps and stories, weekly, usually every Tuesday",
-      "followers": "1538",
+      "followers": "1544",
+      "follower_date": "(07.22.26)",
       "iconUrl": "/images/socials/linkedin.svg",
       "featured": true
     },
@@ -25,7 +26,8 @@
       "label": "tulparmaps",
       "url": "https://instagram.com/tulparmaps",
       "description": "My maps, stories, map design techniques, and other things related to design and cartography",
-      "followers": "91",
+      "followers": "1163",
+      "follower_date": "(07.22.26)",
       "iconUrl": "/images/socials/instagram.svg",
       "featured": true
     },
@@ -35,7 +37,8 @@
       "label": "tulparmaps",
       "url": "https://www.tiktok.com/@tulparmaps",
       "description": "Map animations and visualization",
-      "followers": "530",
+      "followers": "1157",
+      "follower_date": "(07.22.26)",
       "iconUrl": "/images/socials/tiktok.svg",
       "featured": true
     },
@@ -63,7 +66,9 @@
       "platform": "Telegram",
       "label": "tulparmaps",
       "url": "https://t.me/tulparmaps",
-      "description": "My thoughts, map reviews, more casual stuff here",
+      "description": "My thoughts, interesting things in cartography, more maps about Kazakhstan. In russian.",
+      "followers": "8",
+      "follower_date": "(07.22.26)",
       "iconUrl": "/images/socials/telegram.svg",
       "featured": false
     },

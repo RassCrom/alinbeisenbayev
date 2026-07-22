@@ -1,0 +1,57 @@
+{
+  "projects": [
+    {
+      "id": "armenia-energy",
+      "slug": "armenia-energy",
+      "title": "Armenia Energy Profile",
+      "tagline": "Interactive storytelling about Armenia's energy production capacity and renewable potential",
+      "status": "complete",
+      "featured": false,
+      "type": "website",
+      "category": "storytelling map",
+      "keywords": [
+        "storytelling",
+        "Armenia",
+        "energy",
+        "renewables",
+        "data visualization"
+      ],
+      "role": "team",
+      "startDate": "2024-01",
+      "endDate": "2024-03",
+      "awards": [
+        "Armenia Open Data Contest 2024 - 3rd place"
+      ],
+      "coverImage": "/images/projects/armenia-energy/preview.webp",
+      "context": "Developed for the Armenia Open Data Contest 2024.",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [],
+      "outcome": "Third place at the Armenia Open Data Contest 2024.",
+      "stack": [
+        "MapLibre GL JS",
+        "QGIS"
+      ],
+      "liveUrl": "https://rasscrom.github.io/armenia-energy/",
+      "codeUrl": "https://github.com/RassCrom/armenia-energy",
+      "gallery": [],
+      "geography": {
+        "origin": {
+          "lat": 51.1694,
+          "lng": 71.4704,
+          "label": "Astana, Kazakhstan"
+        },
+        "contexts": [
+          {
+            "connectionType": "polygon",
+            "geojsonUrl": "/data/geo/armenia.geojson",
+            "centroidLat": 40.2,
+            "centroidLng": 44.8,
+            "label": "Armenia"
+          }
+        ]
+      }
+    }
+  ]
+}

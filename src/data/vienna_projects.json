@@ -1,86 +1,6 @@
 {
   "projects": [
     {
-      "id": "tigranes-the-greatest",
-      "slug": "tigranes-the-greatest",
-      "title": "Tigranes the Greatest",
-      "tagline": "Scroll-driven interactive map narrative of the ancient Armenian Empire under Tigranes II",
-      "status": "complete",
-      "featured": true,
-      "type": "website",
-      "category": "storytelling map",
-      "keywords": [
-        "storytelling",
-        "Armenia",
-        "history",
-        "web",
-        "Tigranes",
-        "scrollytelling"
-      ],
-      "role": "team",
-      "startDate": "2025-01",
-      "endDate": "2025-03",
-      "awards": [
-        "Armenia Open Data Contest 2025 - Winner"
-      ],
-      "coverImage": "/images/projects/tigranes-the-greatest/peak.webp",
-      "context": "Designed for the Armenia Open Data Contest 2025 together with Tolegen. The contest called for any data visualization in any format - a blank canvas that led us toward interactive cartographic storytelling.",
-      "idea": "The deciding spark was the surprisingly vast territory controlled by the Armenian Empire at its peak. Digging deeper revealed how Tigranes II - facing powerful neighbors on every side - built one of the largest empires in Asian history, however briefly. We wanted that scale and drama to be felt on a map.",
-      "design": "The overall atmosphere was driven by Armenian history and the reddish tones of the Armenian flag from that era. Dark backgrounds emphasize the territorial expanse; warm accent colors mark key events and locations.",
-      "inspiration": "Primary design reference was the TASS storymap 'When Napoleon Ventured East' - its pacing and sense of historical momentum influenced how we structured the narrative scroll.",
-      "process": [
-        {
-          "step": 1,
-          "title": "Research & Data",
-          "description": "Archival cartographic research into Tigranes II's territorial campaigns - locating and digitizing historical boundary data, city positions, and battle sites from academic sources and historical atlases."
-        },
-        {
-          "step": 2,
-          "title": "Scroll Narrative Build",
-          "description": "Designed the scroll narrative structure in Figma, then built the interactive map with MapLibre GL JS and React. Synchronized scroll position with map state to guide the reader through the territorial timeline.",
-          "image": "/images/projects/tigranes-the-greatest/table-of-content.webp"
-        }
-      ],
-      "outcome": "Won first place at the Armenia Open Data Contest 2025.",
-      "stack": [
-        "MapLibre GL JS",
-        "React",
-        "QGIS"
-      ],
-      "liveUrl": "https://tigranes-great.netlify.app/",
-      "codeUrl": "https://github.com/RassCrom/tighranes2",
-      "gallery": [
-        {
-          "url": "/images/projects/tigranes-the-greatest/mid-story.webp",
-          "caption": "Mid story snapshot showing quota and Armenian expansion.",
-          "type": "screenshot",
-          "downloadUrl": "/images/projects/tigranes-the-greatest/mid-story.png"
-        },
-        {
-          "url": "/images/projects/tigranes-the-greatest/end-of-story.webp",
-          "caption": "Ending chapter of the story.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/tigranes-the-greatest/end-of-story.png"
-        }
-      ],
-      "geography": {
-        "origin": {
-          "lat": 48.1351,
-          "lng": 11.582,
-          "label": "Munich, Germany"
-        },
-        "contexts": [
-          {
-            "connectionType": "polygon",
-            "geojsonUrl": "/data/geo/armenia.geojson",
-            "centroidLat": 40.2,
-            "centroidLng": 44.8,
-            "label": "Armenia / Ancient Near East"
-          }
-        ]
-      }
-    },
-    {
       "id": "orhon-stories",
       "slug": "orhon-stories",
       "title": "Orhon Stories (Stories about Asia)",
@@ -368,7 +288,7 @@
         "MSc Thesis - TU Munchen / TU Wien, Erasmus Mundus"
       ],
       "coverImage": "/images/placeholder.jpg",
-      "context": "Master's thesis project for the MSc Cartography program at TU MÃ¼nchen and TU Wien (Erasmus Mundus Joint Master). Investigates how narrative structure in interactive maps affects user engagement with climate data.",
+      "context": "Master's thesis project for the MSc Cartography program at TU München and TU Wien (Erasmus Mundus Joint Master). Investigates how narrative structure in interactive maps affects user engagement with climate data.",
       "idea": "How does the level of storytelling in an interactive map affect how long and how deeply users engage with climate data? The thesis tests different narrative depths in a scroll-driven map of heat stress across European cities, measuring engagement through interaction logs and eye-tracking.",
       "design": "",
       "inspiration": "",
@@ -554,77 +474,6 @@
       }
     },
     {
-      "id": "ignition-point-analysis",
-      "slug": "ignition-point-analysis",
-      "title": "Dynamics of Ignition Points in Kazakhstan (2001-2024)",
-      "tagline": "Full pipeline from NASA FIRMS data to interactive geospatial report on 24 years of wildfire patterns in Kazakhstan",
-      "status": "complete",
-      "featured": false,
-      "type": "website",
-      "category": "analysis",
-      "keywords": [
-        "wildfire",
-        "analysis",
-        "GIS",
-        "statistics",
-        "Kazakhstan",
-        "MODIS",
-        "VIIRS"
-      ],
-      "role": "team",
-      "startDate": "2024-11",
-      "endDate": "2026-01",
-      "awards": [],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "Professional analysis project for the Institute of Ionosphere. Full pipeline from raw NASA FIRMS data to an interactive geospatial report documenting spatial-temporal wildfire dynamics in Kazakhstan from 2001 to 2024.",
-      "idea": "To understand where and when Kazakhstan burns - identifying risk clusters, seasonal patterns, and long-term trends across 24 years of satellite fire observations. Results published as an interactive data report for public and institutional access.",
-      "design": "",
-      "inspiration": "",
-      "process": [
-        {
-          "step": 1,
-          "title": "Point Pattern Analysis",
-          "description": "Processed MODIS and VIIRS fire point data in Python."
-        },
-        {
-          "step": 2,
-          "title": "Interactive Report",
-          "description": ""
-        }
-      ],
-      "outcome": "",
-      "stack": [
-        "Python",
-        "QGIS",
-        "geopandas",
-        "MODIS",
-        "VIIRS"
-      ],
-      "codeUrl": "https://karasugis.notion.site/Dynamics-of-Wildfires-in-Kazakhstan-2001-2024-Spatial-Temporal-Patterns-and-Risk-Factors-v2-1c2a7211489880a49e4be5197158a566?source=copy_link",
-      "gallery": [],
-      "geography": {
-        "origin": {
-          "lat": 48.1351,
-          "lng": 11.582,
-          "label": "Munich, Germany"
-        },
-        "contexts": [
-          {
-            "connectionType": "point",
-            "lat": 51.1694,
-            "lng": 71.4704,
-            "label": "Astana, Kazakhstan"
-          },
-          {
-            "connectionType": "point",
-            "lat": 49.8,
-            "lng": 73.1,
-            "label": "Karaganda, Kazakhstan"
-          }
-        ]
-      }
-    },
-    {
       "id": "astana-buildings",
       "slug": "astana-buildings",
       "title": "Building Ages of Astana",
@@ -664,7 +513,7 @@
           "image": "/images/projects/astana-buildings/kabanbai-model.webp"
         }
       ],
-      "outcome": "Published as a live interactive map. Demonstrates full vector tile pipeline: OpenStreetMap â†’ QGIS â†’ Tippecanoe â†’ PMTiles â†’ MapLibre.",
+      "outcome": "Published as a live interactive map. Demonstrates full vector tile pipeline: OpenStreetMap → QGIS → Tippecanoe → PMTiles → MapLibre.",
       "stack": [
         "MapLibre GL JS",
         "OpenStreetMap",
@@ -972,215 +821,6 @@
       }
     },
     {
-      "id": "armenia-energy",
-      "slug": "armenia-energy",
-      "title": "Armenia Energy Profile",
-      "tagline": "Interactive storytelling about Armenia's energy production capacity and renewable potential",
-      "status": "complete",
-      "featured": false,
-      "type": "website",
-      "category": "storytelling map",
-      "keywords": [
-        "storytelling",
-        "Armenia",
-        "energy",
-        "renewables",
-        "data visualization"
-      ],
-      "role": "team",
-      "startDate": "2024-01",
-      "endDate": "2024-03",
-      "awards": [
-        "Armenia Open Data Contest 2024 - 3rd place"
-      ],
-      "coverImage": "/images/projects/armenia-energy/preview.webp",
-      "context": "Developed for the Armenia Open Data Contest 2024.",
-      "idea": "",
-      "design": "",
-      "inspiration": "",
-      "process": [],
-      "outcome": "Third place at the Armenia Open Data Contest 2024.",
-      "stack": [
-        "MapLibre GL JS",
-        "QGIS"
-      ],
-      "liveUrl": "https://rasscrom.github.io/armenia-energy/",
-      "codeUrl": "https://github.com/RassCrom/armenia-energy",
-      "gallery": [],
-      "geography": {
-        "origin": {
-          "lat": 51.1694,
-          "lng": 71.4704,
-          "label": "Astana, Kazakhstan"
-        },
-        "contexts": [
-          {
-            "connectionType": "polygon",
-            "geojsonUrl": "/data/geo/armenia.geojson",
-            "centroidLat": 40.2,
-            "centroidLng": 44.8,
-            "label": "Armenia"
-          }
-        ]
-      }
-    },
-    {
-      "id": "maple",
-      "slug": "maple",
-      "title": "MapLe",
-      "tagline": "Geography-based educational game for learning world geography through interactive map challenges",
-      "status": "complete",
-      "featured": false,
-      "type": "website",
-      "category": "game",
-      "keywords": [
-        "game",
-        "geography",
-        "education",
-        "interactive",
-        "web"
-      ],
-      "role": "team",
-      "startDate": "2024-11",
-      "endDate": "2025-02",
-      "awards": [
-        "TU Wien Web mapping course - 2nd place (~20 teams)"
-      ],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "Developed as a team of four during the MSc Cartography program at TU Wien. Part of a course competition where teams built interactive cartography projects and presented them to a jury.",
-      "idea": "",
-      "design": "",
-      "inspiration": "",
-      "process": [],
-      "outcome": "Achieved 2nd place among approximately 20 competing teams.",
-      "stack": [
-        "React",
-        "MapLibre GL JS",
-        "JavaScript"
-      ],
-      "liveUrl": null,
-      "codeUrl": null,
-      "gallery": [],
-      "geography": {
-        "origin": {
-          "lat": 48.1351,
-          "lng": 11.582,
-          "label": "Munich, Germany"
-        },
-        "contexts": []
-      }
-    },
-    {
-      "id": "who-comes-third-akmola",
-      "slug": "who-comes-third-akmola",
-      "title": "Who Comes Third in Akmola",
-      "tagline": "Award-winning printed map showing the most popular ethnicity in Akmola after kazakh and russians",
-      "status": "complete",
-      "featured": false,
-      "type": "static-map",
-      "category": "print",
-      "keywords": [
-        "Kazakhstan",
-        "Akmola",
-        "print",
-        "cartography",
-        "data visualization"
-      ],
-      "role": "solo",
-      "startDate": "2024-10",
-      "endDate": "2024-11",
-      "awards": [
-        "DIRCON Almaty GIS Day 2024 Map Gallery - Winner"
-      ],
-      "coverImage": "/images/projects/who-comes-third-akmola/cover.webp",
-      "context": "Submitted to and won the Map Gallery competition at DIRCON Almaty GIS Day 2024 - GIS conference in Kazakhstan.",
-      "idea": "",
-      "design": "",
-      "inspiration": "",
-      "process": [],
-      "outcome": "Won the Map Gallery competition at DIRCON Almaty GIS Day 2024.",
-      "stack": [
-        "QGIS",
-        "Adobe Illustrator"
-      ],
-      "liveUrl": null,
-      "codeUrl": null,
-      "gallery": [
-        {
-          "url": "/images/projects/who-comes-third-akmola/cover.webp",
-          "caption": "Who Comes Third in Akmola - full print map.",
-          "type": "print",
-          "downloadUrl": "/images/projects/who-comes-third-akmola/cover.png"
-        }
-      ],
-      "geography": {
-        "origin": {
-          "lat": 48.1351,
-          "lng": 11.582,
-          "label": "Munich, Germany"
-        },
-        "contexts": [
-          {
-            "connectionType": "point",
-            "lat": 51.1694,
-            "lng": 71.4704,
-            "label": "Akmola region, Kazakhstan"
-          }
-        ]
-      }
-    },
-    {
-      "id": "gulag",
-      "slug": "gulag",
-      "title": "Horror in Gulag series",
-      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
-      "status": "in-progress",
-      "featured": false,
-      "type": "static-map",
-      "category": "print",
-      "keywords": [
-        "history",
-        "Soviet",
-        "Gulag",
-        "print",
-        "cartography"
-      ],
-      "role": "solo",
-      "startDate": "2025-11",
-      "endDate": "Present",
-      "awards": [],
-      "coverImage": "/images/projects/gulag/cover.webp",
-      "context": "",
-      "idea": "",
-      "design": "",
-      "inspiration": "",
-      "process": [],
-      "outcome": "",
-      "stack": [
-        "QGIS",
-        "Figma",
-        "NotebookLM"
-      ],
-      "liveUrl": null,
-      "codeUrl": null,
-      "gallery": [
-        {
-          "url": "/images/projects/gulag/cover.webp",
-          "downloadUrl": "/images/projects/gulag/cover.png",
-          "caption": "Horror in Gulag - map from the series.",
-          "type": "print"
-        }
-      ],
-      "geography": {
-        "origin": {
-          "lat": 51.0504,
-          "lng": 13.7373,
-          "label": "Dresden, Germany"
-        },
-        "contexts": []
-      }
-    },
-    {
       "id": "asharshylyq",
       "slug": "asharshylyq",
       "title": "Asharshylyq, 1931-1933",
@@ -1341,48 +981,6 @@
       }
     },
     {
-      "id": "old-map-collection",
-      "slug": "old-map-collection",
-      "title": "Heap of random old maps",
-      "tagline": "Old collection of maps designed at the begginning of my journey.",
-      "status": "complete",
-      "featured": false,
-      "type": "static-map",
-      "category": "social media",
-      "keywords": [
-        "cartography"
-      ],
-      "role": "solo",
-      "startDate": "2022",
-      "endDate": "2024",
-      "awards": [],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "",
-      "idea": "",
-      "design": "",
-      "inspiration": "",
-      "process": [],
-      "outcome": "",
-      "stack": [
-        "QGIS",
-        "Figma",
-        "NotebookLM"
-      ],
-      "liveUrl": null,
-      "codeUrl": null,
-      "gallery": [
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "",
-          "type": "print"
-        }
-      ],
-      "geography": {
-        "origin": null,
-        "contexts": []
-      }
-    },
-    {
       "id": "chess-map",
       "slug": "chess-map",
       "title": "Chess Mapped",
@@ -1438,54 +1036,6 @@
           "lat": 48.2082,
           "lng": 16.3738,
           "label": "Vienna, Austria"
-        },
-        "contexts": []
-      }
-    },
-    {
-      "id": "challenge-1124",
-      "slug": "challenge-1124",
-      "title": "30-Day Map Challenge 2024",
-      "tagline": "Map-making for different topics for 30 days. (I survived only half way)",
-      "status": "complete",
-      "featured": false,
-      "type": "static-map",
-      "category": "digital-map",
-      "keywords": [
-        "cartography"
-      ],
-      "role": "solo",
-      "startDate": "2024-11",
-      "endDate": "2024-11",
-      "awards": [],
-      "coverImage": "/images/placeholder.jpg",
-      "context": "",
-      "idea": "",
-      "design": "",
-      "inspiration": "",
-      "process": [],
-      "outcome": "",
-      "stack": [
-        "QGIS",
-        "Figma",
-        "Aerialod",
-        "ArcGIS Pro",
-        "Adobe Illustrator"
-      ],
-      "liveUrl": null,
-      "codeUrl": null,
-      "gallery": [
-        {
-          "url": "/images/placeholder.jpg",
-          "caption": "",
-          "type": "print"
-        }
-      ],
-      "geography": {
-        "origin": {
-          "lat": 48.1351,
-          "lng": 11.582,
-          "label": "Munich, Germany"
         },
         "contexts": []
       }

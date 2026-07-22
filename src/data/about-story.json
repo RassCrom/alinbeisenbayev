@@ -7,7 +7,7 @@
       "English",
       "Russian"
     ],
-    "bio": "I grew up in Astana, a city still drawing itself on the steppe. I came to maps through geodesy, then stayed for the stories they can tell.\n\nMy work sits between cartography, data visualization, and the browser. I build maps for climate, cities, history, and public data — from wildfire platforms in Kazakhstan to scroll-driven narratives and printed editorial maps.\n\nI am finishing an Erasmus Mundus MSc in Cartography, studying between Munich, Vienna, and Dresden. My thesis looks at how people engage with interactive map stories. I am interested in work where maps are not decoration, but a way to think clearly.",
+    "bio": "I realized that I like creativity relatively late, at the end of my bachelor's and only after I started first steps in this direction, making meaningful maps, writing stories, visualizing complex data, and raising awareness about climate, history and surrounding things. \n\n Today I have solid foundation in cartography, analyzing climate data, and creating engaging stories.",
     "photo": "/images/about/profile-photo.webp"
   },
   "story": [
@@ -16,7 +16,7 @@
       "type": "origin",
       "date": "2000",
       "title": "Born in Astana",
-      "description": "I grew up in Kazakhstan’s capital, a city rising fast on the open steppe. Geography was never distant there. It was part of daily life.",
+      "description": "I grew up in Kazakhstan’s capital, a city where vast steppes raised a futuristic place, called Astana",
       "location": {
         "name": "Astana, Kazakhstan",
         "lat": 51.1694,
@@ -35,7 +35,7 @@
       "type": "education",
       "date": "2018",
       "title": "BSc Geodesy & Cartography — ENU",
-      "description": "I began studying geodesy and cartography at L.N. Gumilyov Eurasian National University. Projections, datums, fieldwork, and map design became the base of my practice.",
+      "description": "I began studying geodesy and cartography at L.N. Gumilyov Eurasian National University. Projections, datums, fieldwork, survey equipment (total station, theodolite, GPS), and map design became the base of my practice.",
       "location": {
         "name": "Astana, Kazakhstan",
         "lat": 51.1694,
@@ -132,7 +132,7 @@
       "type": "education",
       "date": "Spring 2025",
       "title": "MSc Cartography — Semester 2, Vienna",
-      "description": "The second semester took place at TU Wien, with a focus on multimedia cartography, web mapping, mobile cartography, and location-based services.",
+      "description": "The second semester took place at TU Wien, with a focus on multimedia cartography, web mapping, map design, and location-based services.",
       "location": {
         "name": "Vienna, Austria",
         "lat": 48.2082,
@@ -216,7 +216,7 @@
       "type": "award",
       "date": "Sep 2025",
       "title": "Winner — British Cartographic Society",
-      "description": "Silk Road through Centuries, my printed map of historical trade routes across Central Asia, won a British Cartographic Society competition.",
+      "description": "Silk Road through Centuries, my printed map of historical trade routes across Central Asia, won a British Cartographic Society award.",
       "location": {
         "name": "Vienna, Austria",
         "lat": 48.2082,
@@ -237,7 +237,7 @@
       "type": "education",
       "date": "Oct 2025",
       "title": "MSc Cartography — Semester 3, Dresden",
-      "description": "The third semester at TU Dresden focused on mobile cartography, 3D cartography, and advanced map communication.",
+      "description": "The third semester at TU Dresden focused on mobile cartography, remote sensing, and advanced map communication.",
       "location": {
         "name": "Dresden, Germany",
         "lat": 51.0504,
@@ -254,9 +254,9 @@
     {
       "id": 13,
       "type": "education",
-      "date": "Sep 2026",
+      "date": "Mar 2026",
       "title": "MSc Thesis Defense — TU Wien",
-      "description": "Expected thesis defense on user engagement in scroll-driven interactive map narratives about urban heat stress in European cities.",
+      "description": "Expected thesis defense on user engagement in scroll-driven interactive map narratives about urban heat stress in Vienna.",
       "location": {
         "name": "Vienna, Austria",
         "lat": 48.2082,

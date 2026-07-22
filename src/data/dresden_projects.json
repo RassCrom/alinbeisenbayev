@@ -1,0 +1,55 @@
+{
+  "projects": [
+    {
+      "id": "gulag",
+      "slug": "gulag",
+      "title": "Horror in Gulag series",
+      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
+      "status": "in-progress",
+      "featured": false,
+      "type": "static-map",
+      "category": "print",
+      "keywords": [
+        "history",
+        "Soviet",
+        "Gulag",
+        "print",
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2025-11",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/gulag/cover.webp",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma",
+        "NotebookLM"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/gulag/cover.webp",
+          "downloadUrl": "/images/projects/gulag/cover.png",
+          "caption": "Horror in Gulag - map from the series.",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 51.0504,
+          "lng": 13.7373,
+          "label": "Dresden, Germany"
+        },
+        "contexts": []
+      }
+    }
+  ]
+}
