@@ -162,6 +162,7 @@ export interface Social {
   url: string;
   description: string;
   followers?: string;
+  follower_date?: string;
   iconUrl: string;
   featured: boolean;
 }
