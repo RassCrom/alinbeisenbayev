@@ -166,7 +166,14 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 34.0479,
+            "lng": 100.6197,
+            "label": "Asia - series coverage"
+          }
+        ]
       }
     },
     {
@@ -348,7 +355,7 @@
       "slug": "heat-stress-vienna",
       "title": "Heat Stress in Vienna",
       "tagline": "MSc thesis: evaluating user engagement in scroll-driven map narratives of urban heat stress across European cities",
-      "status": "in-progress",
+      "status": "done",
       "featured": false,
       "type": "website",
       "category": "analysis",
@@ -363,11 +370,11 @@
       ],
       "role": "solo",
       "startDate": "2026-03",
-      "endDate": "2026-08",
+      "endDate": "2026-07",
       "awards": [
         "MSc Thesis - TU Munchen / TU Wien, Erasmus Mundus"
       ],
-      "coverImage": "/images/placeholder.jpg",
+      "coverImage": "/images/projects/heat-stress-vienna/sth-vienna-hero-img.webp",
       "context": "Master's thesis project for the MSc Cartography program at TU MÃ¼nchen and TU Wien (Erasmus Mundus Joint Master). Investigates how narrative structure in interactive maps affects user engagement with climate data.",
       "idea": "How does the level of storytelling in an interactive map affect how long and how deeply users engage with climate data? The thesis tests different narrative depths in a scroll-driven map of heat stress across European cities, measuring engagement through interaction logs and eye-tracking.",
       "design": "",
@@ -862,7 +869,14 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide historical figures"
+          }
+        ]
       }
     },
     {
@@ -1067,7 +1081,14 @@
           "lng": 11.582,
           "label": "Munich, Germany"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide geography challenges"
+          }
+        ]
       }
     },
     {
@@ -1177,7 +1198,14 @@
           "lng": 13.7373,
           "label": "Dresden, Germany"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 61,
+            "lng": 90,
+            "label": "Former Soviet Union - Gulag system"
+          }
+        ]
       }
     },
     {
@@ -1240,7 +1268,14 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 48.0196,
+            "lng": 66.9237,
+            "label": "Kazakhstan"
+          }
+        ]
       }
     },
     {
@@ -1286,7 +1321,14 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 54.526,
+            "lng": 15.2551,
+            "label": "Europe"
+          }
+        ]
       }
     },
     {
@@ -1337,7 +1379,14 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 54.526,
+            "lng": 15.2551,
+            "label": "Europe"
+          }
+        ]
       }
     },
     {
@@ -1378,8 +1427,19 @@
         }
       ],
       "geography": {
-        "origin": null,
-        "contexts": []
+        "origin": {
+          "lat": 33.7701,
+          "lng": -118.1937,
+          "label": "Long Beach, USA"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide - assorted early maps"
+          }
+        ]
       }
     },
     {
@@ -1439,7 +1499,14 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide chess geography"
+          }
+        ]
       }
     },
     {
@@ -1487,7 +1554,14 @@
           "lng": 11.582,
           "label": "Munich, Germany"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide - multiple challenge topics"
+          }
+        ]
       }
     },
     {
@@ -1597,7 +1671,62 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 43.222,
+            "lng": 76.8512,
+            "label": "Almaty, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 51.1694,
+            "lng": 71.4704,
+            "label": "Astana, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 42.3417,
+            "lng": 69.5901,
+            "label": "Shymkent, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 47.0945,
+            "lng": 51.9238,
+            "label": "Atyrau, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 52.2873,
+            "lng": 76.9674,
+            "label": "Pavlodar, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 54.865,
+            "lng": 69.1339,
+            "label": "Petropavl, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 43.2973,
+            "lng": 68.2518,
+            "label": "Turkistan, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 41.2995,
+            "lng": 69.2401,
+            "label": "Tashkent, Uzbekistan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 35.6762,
+            "lng": 139.6503,
+            "label": "Tokyo, Japan"
+          }
+        ]
       }
     },
     {
@@ -1664,7 +1793,26 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 48.2082,
+            "lng": 16.3738,
+            "label": "Vienna U-Bahn"
+          },
+          {
+            "connectionType": "point",
+            "lat": 50.0755,
+            "lng": 14.4378,
+            "label": "Prague Metro"
+          },
+          {
+            "connectionType": "point",
+            "lat": 59.3293,
+            "lng": 18.0686,
+            "label": "Stockholm Tunnelbana"
+          }
+        ]
       }
     },
     {
@@ -1674,7 +1822,7 @@
       "tagline": "World Cup 2026 matches visualised as heatmap",
       "status": "done",
       "featured": false,
-      "type": "animaton",
+      "type": "animation",
       "category": "social media",
       "keywords": [
         "football",
@@ -1745,7 +1893,26 @@
           "lng": 16.3738,
           "label": "Vienna, Austria"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 56.1304,
+            "lng": -106.3468,
+            "label": "Canada - 2026 World Cup host"
+          },
+          {
+            "connectionType": "point",
+            "lat": 23.6345,
+            "lng": -102.5528,
+            "label": "Mexico - 2026 World Cup host"
+          },
+          {
+            "connectionType": "point",
+            "lat": 37.0902,
+            "lng": -95.7129,
+            "label": "United States - 2026 World Cup host"
+          }
+        ]
       }
     },
     {

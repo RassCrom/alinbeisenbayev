@@ -387,18 +387,32 @@
 /* ---- Third-party DOM styling (unlayered on purpose: must beat the
         plain imported maplibre-gl / medium-zoom stylesheets) ---- */
 
-/* Pulsing map marker (WorksMap origin points) */
-.map-origin-marker {
+/* WorksMap markers use a 44px interaction target around a smaller map symbol. */
+.map-origin-marker,
+.map-context-marker {
   position: relative;
-  width: 14px;
-  height: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: transparent;
   cursor: pointer;
+  touch-action: manipulation;
+  transition: filter var(--transition-fast);
+}
+
+.map-origin-marker:focus-visible,
+.map-context-marker:focus-visible {
+  outline: 2px solid var(--color-text-primary);
+  outline-offset: 2px;
 }
 
 .map-origin-marker::before {
   content: '';
   position: absolute;
-  inset: 0;
+  left: 15px;
+  top: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: var(--radius-full);
   background: var(--color-accent-light);
   animation: pulse-dot 2s ease-out infinite;
@@ -407,18 +421,67 @@
 .map-origin-marker::after {
   content: '';
   position: absolute;
-  inset: 3px;
+  left: 18px;
+  top: 18px;
+  width: 8px;
+  height: 8px;
   border-radius: var(--radius-full);
   background: var(--color-accent-light);
   box-shadow: 0 0 8px var(--color-accent-light);
 }
 
+.map-origin-name {
+  position: absolute;
+  left: 32px;
+  top: 12px;
+  padding: 2px 6px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: rgba(13, 19, 32, 0.84);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.map-origin-marker.is-active .map-origin-name {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+/* The three European creation hubs sit close together at the world view. */
+.map-origin-marker--dresden .map-origin-name {
+  left: 8px;
+  top: -10px;
+}
+
+.map-origin-marker--munich .map-origin-name {
+  right: 28px;
+  left: auto;
+  top: 29px;
+}
+
+.map-origin-marker--vienna .map-origin-name {
+  left: 28px;
+  top: 29px;
+}
+
+.map-origin-marker.is-muted {
+  filter: opacity(0.45);
+}
+
 .map-origin-badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 14px;
-  height: 14px;
+  top: 5px;
+  left: 27px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
   border-radius: var(--radius-full);
   background: var(--color-accent);
   color: #fff;
@@ -433,12 +496,47 @@
 }
 
 .map-context-marker {
+  filter: opacity(1);
+}
+
+.map-context-marker::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 17px;
   width: 10px;
   height: 10px;
   border-radius: var(--radius-full);
   background: var(--color-accent-gold);
   box-shadow: 0 0 6px var(--color-accent-gold);
-  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.map-context-marker.is-active::before {
+  transform: scale(1.35);
+  box-shadow: 0 0 10px var(--color-accent-gold);
+}
+
+.map-context-marker.is-muted {
+  filter: opacity(0.28);
+}
+
+.map-context-badge {
+  position: absolute;
+  left: 25px;
+  top: 5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-gold);
+  color: var(--color-bg-base);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
 }
 
 /* MapLibre popup theming */
@@ -453,9 +551,103 @@
   overflow: hidden;
 }
 
+.map-popup-card,
+.map-popup-list {
+  width: min(240px, calc(100vw - 48px));
+}
+
+.map-popup-card {
+  cursor: pointer;
+}
+
+.map-popup-card:focus-visible {
+  outline: 2px solid var(--color-accent-light);
+  outline-offset: -2px;
+}
+
+.map-popup-location {
+  display: grid;
+  gap: 2px;
+  padding: 9px 38px 8px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: rgba(13, 19, 32, 0.58);
+}
+
+.map-popup-location__kind,
+.map-popup-location__coordinates {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.09em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.map-popup-location__name {
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.map-popup-list__item {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.map-popup-list__item:last-child {
+  border-bottom: none;
+}
+
+.map-popup-list__item:hover,
+.map-popup-list__item:focus-visible {
+  background: var(--color-accent-glow);
+  outline: none;
+}
+
+.maplibregl-popup-close-button {
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-secondary);
+  font-size: 20px;
+}
+
+.maplibregl-ctrl-group {
+  overflow: hidden;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md) !important;
+  background: rgba(13, 19, 32, 0.9) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(8px);
+}
+
+.maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+  border-color: var(--color-border-subtle) !important;
+}
+
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1) opacity(0.72);
+}
+
+.maplibregl-ctrl-group button:hover,
+.maplibregl-ctrl-group button:focus-visible {
+  background-color: var(--color-accent-glow) !important;
+}
+
 .maplibregl-popup-tip {
   border-top-color: var(--color-bg-overlay) !important;
   border-bottom-color: var(--color-bg-overlay) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-origin-marker::before {
+    animation: none;
+  }
 }
 
 /* medium-zoom overlay above everything */

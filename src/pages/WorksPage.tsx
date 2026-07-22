@@ -12,7 +12,7 @@ const WorksMap = lazy(() => import('../components/WorksMap/WorksMap'));
 const { projects } = projectsData as ProjectsData;
 
 type ViewMode = 'grid' | 'map';
-type TypeFilter = 'all' | 'web' | 'image';
+type TypeFilter = 'all' | 'web' | 'image' | 'animation';
 
 function dateSortValue(date: string | null): number {
   if (date === 'Present') return Number.POSITIVE_INFINITY;
@@ -20,6 +20,23 @@ function dateSortValue(date: string | null): number {
 
   const [year, month = '12'] = date.split('-');
   return Number(year) * 12 + Number(month);
+}
+
+function contextCoordinates(project: (typeof projects)[number]): [number, number] | null {
+  const context = project.geography.contexts[0];
+  if (!context) return null;
+  if (context.connectionType === 'polygon') {
+    return context.centroidLat !== undefined && context.centroidLng !== undefined
+      ? [context.centroidLat, context.centroidLng]
+      : null;
+  }
+  return context.lat !== undefined && context.lng !== undefined
+    ? [context.lat, context.lng]
+    : null;
+}
+
+function compactCoordinates(lat: number, lng: number): string {
+  return `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? 'N' : 'S'} · ${Math.abs(lng).toFixed(2)}°${lng >= 0 ? 'E' : 'W'}`;
 }
 
 const sortedProjects = [...projects].sort(
@@ -32,19 +49,28 @@ const sortedProjects = [...projects].sort(
 const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'web', label: 'Web' },
-  { key: 'image', label: 'Data Viz' },
+  { key: 'image', label: 'Map' },
+  { key: 'animation', label: 'Animation' },
 ];
 
+const TYPE_FILTER_COUNTS: Record<TypeFilter, number> = {
+  all: sortedProjects.length,
+  web: sortedProjects.filter((project) => project.type !== 'static-map' && String(project.type) !== 'animation').length,
+  image: sortedProjects.filter((project) => project.type === 'static-map').length,
+  animation: sortedProjects.filter((project) => String(project.type) === 'animation').length,
+};
+
 export default function WorksPage() {
-  const [view, setView] = useState<ViewMode>('grid');
+  // Keep the map view shareable without discarding an existing search query.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view: ViewMode = searchParams.get('view') === 'map' ? 'map' : 'grid';
   const [mapExpanded, setMapExpanded] = useState(false);
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
-  // ?q= lets other pages (e.g. Skills) deep-link into a pre-filtered list
-  const [searchParams] = useSearchParams();
 
   const typeFiltered = useMemo(() => {
-    if (typeFilter === 'web') return sortedProjects.filter((p) => p.type !== 'static-map');
+    if (typeFilter === 'web') return sortedProjects.filter((p) => p.type !== 'static-map' && String(p.type) !== 'animation');
     if (typeFilter === 'image') return sortedProjects.filter((p) => p.type === 'static-map');
+    if (typeFilter === 'animation') return sortedProjects.filter((p) => String(p.type) === 'animation');
     return sortedProjects;
   }, [typeFilter]);
 
@@ -52,6 +78,24 @@ export default function WorksPage() {
     useProjectFilter(typeFiltered, searchParams.get('q') ?? '');
 
   const visibleIds = useMemo(() => filtered.map((p) => p.id), [filtered]);
+  const geographyStats = useMemo(() => {
+    const creationCities = new Set(
+      filtered.map((project) => project.geography.origin?.label).filter(Boolean),
+    );
+    const mappedPlaces = new Set(
+      filtered.flatMap((project) =>
+        project.geography.contexts.map((context) => {
+          const coordinates = context.connectionType === 'polygon'
+            ? [context.centroidLat, context.centroidLng]
+            : [context.lat, context.lng];
+          return coordinates.every((value) => value !== undefined)
+            ? `${coordinates[0]}:${coordinates[1]}`
+            : context.label;
+        }),
+      ),
+    );
+    return { creationCities: creationCities.size, mappedPlaces: mappedPlaces.size };
+  }, [filtered]);
 
   // Fullscreen map: Esc closes, body scroll locked while open
   useEffect(() => {
@@ -68,12 +112,15 @@ export default function WorksPage() {
   }, [mapExpanded]);
 
   const switchView = (mode: ViewMode) => {
-    setView(mode);
+    const nextParams = new URLSearchParams(searchParams);
+    if (mode === 'map') nextParams.set('view', 'map');
+    else nextParams.delete('view');
+    setSearchParams(nextParams, { replace: true });
     if (mode === 'grid') setMapExpanded(false);
   };
 
   const toggleClass = (active: boolean) =>
-    `flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] border transition-colors ${
+    `flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] ${
       active
         ? 'border-[var(--color-accent)] bg-[var(--color-accent-glow)] text-[var(--color-accent-light)]'
         : 'border-[var(--color-border-default)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
@@ -93,13 +140,13 @@ export default function WorksPage() {
               key={key}
               type="button"
               onClick={() => setTypeFilter(key)}
-              className={`-mb-px pb-[var(--space-3)] font-[family-name:var(--font-mono)] text-[10px] tracking-[0.12em] uppercase transition-colors ${
+              className={`-mb-px flex min-h-11 items-center border-b-2 border-transparent px-0 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.12em] uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] ${
                 typeFilter === key
-                  ? 'border-b-2 border-[var(--color-accent)] text-[var(--color-text-primary)]'
+                  ? 'border-[var(--color-accent)] text-[var(--color-text-primary)]'
                   : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'
               }`}
             >
-              {label}
+              {label} ({TYPE_FILTER_COUNTS[key]})
             </button>
           ))}
         </div>
@@ -184,12 +231,34 @@ export default function WorksPage() {
             }
           >
             {/* Search & filter sidebar — fullscreen mode only */}
+            {!mapExpanded && (
+              <div className="mb-[var(--space-4)] flex flex-col gap-[var(--space-3)] rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] px-[var(--space-4)] py-[var(--space-3)] sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] font-semibold text-[var(--color-text-primary)]">
+                    Where the work was made, and what each project maps
+                  </p>
+                  <p className="mt-1 max-w-2xl text-[length:var(--text-xs)] leading-relaxed text-[var(--color-text-muted)]">
+                    Blue cities are creation hubs. Gold points and regions are the geographic subjects connected to those works.
+                  </p>
+                </div>
+                <p className="shrink-0 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.08em] text-[var(--color-text-secondary)] uppercase">
+                  {geographyStats.creationCities} hubs · {geographyStats.mappedPlaces} places
+                </p>
+              </div>
+            )}
+
             {mapExpanded && (
               <aside
                 key="sidebar"
                 className="max-h-[45%] shrink-0 overflow-y-auto border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] p-[var(--space-6)] md:h-full md:max-h-none md:w-80 md:border-b-0 md:border-r"
               >
-                <h2 className="mono-label">Search &amp; Filters</h2>
+                <h2 className="font-[family-name:var(--font-heading)] text-[length:var(--text-lg)] font-bold">
+                  Project map
+                </h2>
+                <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed text-[var(--color-text-muted)]">
+                  Filter the portfolio, then explore where each work was created and the places it maps.
+                </p>
+                <p className="mono-label mt-[var(--space-6)]">Search &amp; Filters</p>
                 <div className="mt-[var(--space-4)]">
                   <SearchFilter
                     keywords={keywords}
@@ -207,7 +276,7 @@ export default function WorksPage() {
                     <li key={project.id}>
                       <Link
                         to={`/works/${project.slug}`}
-                        className="block rounded-[var(--radius-sm)] px-[var(--space-2)] py-[var(--space-2)] transition-colors hover:bg-[var(--color-bg-elevated)]"
+                        className="block min-h-11 rounded-[var(--radius-sm)] border border-transparent px-[var(--space-2)] py-[var(--space-2)] transition-colors hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                       >
                         <span className="font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] font-semibold">
                           {project.title}
@@ -215,6 +284,23 @@ export default function WorksPage() {
                         <span className="ml-[var(--space-2)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
                           {project.endDate?.slice(0, 4) ?? '—'}
                         </span>
+                        {project.geography.contexts[0] && contextCoordinates(project) ? (
+                          <span className="mt-1 block font-[family-name:var(--font-mono)] text-[9px] leading-relaxed tracking-[0.04em] text-[var(--color-text-muted)]">
+                            Maps {project.geography.contexts[0].label}
+                            {project.geography.contexts.length > 1
+                              ? ` +${project.geography.contexts.length - 1}`
+                              : ''}
+                            {' · '}
+                            {compactCoordinates(
+                              contextCoordinates(project)![0],
+                              contextCoordinates(project)![1],
+                            )}
+                          </span>
+                        ) : project.geography.origin ? (
+                          <span className="mt-1 block font-[family-name:var(--font-mono)] text-[9px] leading-relaxed tracking-[0.04em] text-[var(--color-text-muted)]">
+                            Created in {project.geography.origin.label}
+                          </span>
+                        ) : null}
                       </Link>
                     </li>
                   ))}
