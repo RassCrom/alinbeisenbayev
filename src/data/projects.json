@@ -86,7 +86,7 @@
       "title": "Orhon Stories (Stories about Asia)",
       "tagline": "Orhon Stories is series of maps specifically focused on Asia.",
       "status": "in-progress",
-      "featured": true,
+      "featured": false,
       "type": "static-map",
       "category": "social media",
       "keywords": [
@@ -356,16 +356,14 @@
       "title": "Heat Stress in Vienna",
       "tagline": "MSc thesis: evaluating user engagement in scroll-driven map narratives of urban heat stress across European cities",
       "status": "done",
-      "featured": false,
+      "featured": true,
       "type": "website",
-      "category": "analysis",
+      "category": "storytelling",
       "keywords": [
         "urban heat",
         "Vienna",
         "thesis",
-        "UHI",
         "storytelling",
-        "user engagement",
         "scrollytelling"
       ],
       "role": "solo",
@@ -385,13 +383,12 @@
       ],
       "outcome": "",
       "stack": [
-        "Python",
-        "Google Earth Engine",
         "MapLibre GL JS",
         "React",
-        "Figma"
+        "Figma",
+        "Supabase"
       ],
-      "liveUrl": null,
+      "liveUrl": "https://sth-vienna.vercel.app/",
       "gallery": [],
       "geography": {
         "origin": {
@@ -405,12 +402,6 @@
             "lat": 48.2082,
             "lng": 16.3738,
             "label": "Vienna, Austria"
-          },
-          {
-            "connectionType": "point",
-            "lat": 48.1351,
-            "lng": 11.582,
-            "label": "Munich, Germany"
           }
         ]
       }
@@ -421,7 +412,7 @@
       "title": "Earth on Fire",
       "tagline": "Global print map of fire ignition points accumulated over a 5-year period",
       "status": "complete",
-      "featured": true,
+      "featured": false,
       "type": "static-map",
       "category": "print",
       "keywords": [
@@ -511,7 +502,7 @@
       "title": "Number of tropical nights in Europe",
       "tagline": "Tropical night count for European capitals in 2025",
       "status": "complete",
-      "featured": true,
+      "featured": false,
       "type": "static-map",
       "category": "social media",
       "keywords": [
@@ -1155,20 +1146,18 @@
       "slug": "gulag",
       "title": "Horror in Gulag series",
       "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
-      "status": "in-progress",
-      "featured": false,
+      "status": "done",
+      "featured": true,
       "type": "static-map",
       "category": "print",
       "keywords": [
         "history",
-        "Soviet",
         "Gulag",
-        "print",
         "cartography"
       ],
       "role": "solo",
       "startDate": "2025-11",
-      "endDate": "Present",
+      "endDate": "2026-07",
       "awards": [],
       "coverImage": "/images/projects/gulag/cover.webp",
       "context": "",
@@ -1735,7 +1724,7 @@
       "title": "Metro Animation",
       "tagline": "Metro networks morphing between true geography and schematic map",
       "status": "in-progress",
-      "featured": false,
+      "featured": true,
       "type": "animation",
       "category": "social media",
       "keywords": [
