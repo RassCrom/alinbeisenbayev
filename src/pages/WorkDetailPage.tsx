@@ -119,9 +119,9 @@ export default function WorkDetailPage() {
       <div className="mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-24)]">
         {/* Meta row — pill badges */}
         <div className="mt-[var(--space-8)] flex flex-wrap items-center gap-[var(--space-2)]">
-          {year && <span className="meta-pill">📅 {year}</span>}
-          {project.category && <span className="meta-pill">🗂 {project.category}</span>}
-          {project.role && <span className="meta-pill">👤 {project.role}</span>}
+          {year && <span className="meta-pill">{year}</span>}
+          {project.category && <span className="meta-pill">{project.category}</span>}
+          {project.role && <span className="meta-pill">{project.role}</span>}
         </div>
 
         {/* Stack chips */}
