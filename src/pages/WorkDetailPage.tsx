@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ProcessStep from '../components/ProcessStep/ProcessStep';
 import ImageGallery from '../components/ImageGallery/ImageGallery';
@@ -9,11 +10,56 @@ import type { ProjectsData } from '../types';
 
 const { projects } = projectsData as ProjectsData;
 
-function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
+/* ---- Scroll-reveal hook ---- */
+function useSectionReveal() {
+  const ref = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('is-visible');
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return ref;
+}
+
+/* ---- Section wrapper with eyebrow label + accent bar + reveal ---- */
+function Section({
+  eyebrow,
+  heading,
+  children,
+  delay = 0,
+}: {
+  eyebrow: string;
+  heading: string;
+  children: React.ReactNode;
+  delay?: number;
+}) {
+  const ref = useSectionReveal() as React.RefObject<HTMLElement>;
+
   return (
-    <section className="mt-[var(--space-16)]">
-      <h2 className="heading-section">{heading}</h2>
-      <div className="mt-[var(--space-4)]">{children}</div>
+    <section
+      ref={ref as React.RefObject<HTMLElement>}
+      className="section-reveal mt-[var(--space-16)]"
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="section-heading-wrap mb-[var(--space-4)]">
+        <span className="section-eyebrow">{eyebrow}</span>
+        <h2 className="heading-section">{heading}</h2>
+      </div>
+      {children}
     </section>
   );
 }
@@ -61,7 +107,7 @@ export default function WorkDetailPage() {
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-6xl px-[var(--space-6)] pb-[var(--space-8)]">
           {award && (
             <span className="mb-[var(--space-3)] inline-block rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-3)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-gold)]">
-            ★ {award}
+              ★ {award}
             </span>
           )}
           <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-3xl)] font-extrabold md:text-[length:var(--text-4xl)]">
@@ -71,17 +117,19 @@ export default function WorkDetailPage() {
       </header>
 
       <div className="mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-24)]">
-        {/* Meta row */}
-        <div className="mt-[var(--space-8)] flex flex-wrap items-center gap-[var(--space-4)]">
-          <span className="mono-label">{year}</span>
-          <span className="mono-label">·</span>
-          <span className="mono-label">{project.category}</span>
-          <span className="mono-label">·</span>
-          <span className="mono-label">{project.role}</span>
+        {/* Meta row — pill badges */}
+        <div className="mt-[var(--space-8)] flex flex-wrap items-center gap-[var(--space-2)]">
+          {year && <span className="meta-pill">📅 {year}</span>}
+          {project.category && <span className="meta-pill">🗂 {project.category}</span>}
+          {project.role && <span className="meta-pill">👤 {project.role}</span>}
         </div>
+
+        {/* Stack chips */}
         <div className="mt-[var(--space-4)]">
           <StackRow stack={project.stack} />
         </div>
+
+        {/* CTA buttons */}
         <div className="mt-[var(--space-4)] flex flex-wrap gap-[var(--space-3)]">
           {project.liveUrl && project.type === 'website' && (
             <a href={project.liveUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
@@ -95,33 +143,45 @@ export default function WorkDetailPage() {
           )}
         </div>
 
+        {/* Context — blockquote style */}
         {project.context && (
-          <Section heading="Context">
-            <p className="text-[var(--color-text-secondary)]">{project.context}</p>
+          <Section eyebrow="Background" heading="Context">
+            <blockquote className="context-card">
+              {project.context}
+            </blockquote>
           </Section>
         )}
 
+        {/* Idea — large italic pull-quote */}
         {project.idea && (
-          <Section heading="Idea">
-            <p className="text-[var(--color-text-secondary)]">{project.idea}</p>
+          <Section eyebrow="Concept" heading="Idea">
+            <div className="idea-pullquote">
+              {project.idea}
+            </div>
           </Section>
         )}
 
+        {/* Design — standard body with accent treatment */}
         {project.design && (
-          <Section heading="Design">
-            <p className="text-[var(--color-text-secondary)]">{project.design}</p>
+          <Section eyebrow="Aesthetics" heading="Design">
+            <p className="text-[var(--color-text-secondary)] leading-relaxed">{project.design}</p>
           </Section>
         )}
 
+        {/* Inspiration — icon callout card */}
         {project.inspiration && (
-          <Section heading="Inspiration">
-            <p className="text-[var(--color-text-secondary)]">{project.inspiration}</p>
+          <Section eyebrow="Reference" heading="Inspiration">
+            <div className="inspiration-card">
+              <div className="inspiration-card-icon" aria-hidden="true">✦</div>
+              <p>{project.inspiration}</p>
+            </div>
           </Section>
         )}
 
+        {/* Process — vertical timeline */}
         {project.process?.length > 0 && (
-          <Section heading="Process">
-            <div className="flex flex-col gap-[var(--space-6)]">
+          <Section eyebrow="How it was built" heading="Process">
+            <div className="process-timeline">
               {project.process.map((step) => (
                 <ProcessStep
                   key={step.step}
@@ -135,26 +195,33 @@ export default function WorkDetailPage() {
           </Section>
         )}
 
+        {/* Outcome — gold achievement banner */}
         {project.outcome && (
-          <Section heading="Outcome">
-            <p className="text-[var(--color-text-secondary)]">{project.outcome}</p>
+          <Section eyebrow="Result" heading="Outcome">
+            <div className="outcome-banner">
+              <span className="outcome-banner-star" aria-hidden="true">★</span>
+              <p>{project.outcome}</p>
+            </div>
           </Section>
         )}
 
+        {/* Videos */}
         {project.videos && project.videos.length > 0 && (
-          <Section heading="Animations">
+          <Section eyebrow="Motion" heading="Animations">
             <VideoGallery videos={project.videos} />
           </Section>
         )}
 
+        {/* Gallery */}
         {project.gallery?.length > 0 && (
-          <Section heading="Gallery">
+          <Section eyebrow="Visuals" heading="Gallery">
             <ImageGallery images={project.gallery} zoomable={project.type === 'static-map'} />
           </Section>
         )}
 
+        {/* Stack detail */}
         {project.stack?.length > 0 && (
-          <Section heading="Stack">
+          <Section eyebrow="Technology" heading="Stack">
             <StackRow stack={project.stack} />
           </Section>
         )}

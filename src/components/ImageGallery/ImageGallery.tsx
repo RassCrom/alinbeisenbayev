@@ -134,15 +134,26 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
               className="w-full"
               onClick={() => setLightboxIndex(index)}
             >
-              <img
-                src={image.url}
-                alt={image.caption || `Gallery image ${index + 1}`}
-                width={1200}
-                height={630}
-                loading="lazy"
-                decoding="async"
-                className="aspect-video w-full cursor-zoom-in rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] object-cover transition-opacity hover:opacity-90"
-              />
+              {image.url.endsWith('.webm') || image.url.endsWith('.mp4') ? (
+                <video
+                  src={image.url}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="aspect-video w-full cursor-zoom-in rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] object-cover transition-opacity hover:opacity-90"
+                />
+              ) : (
+                <img
+                  src={image.url}
+                  alt={image.caption || `Gallery image ${index + 1}`}
+                  width={1200}
+                  height={630}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-video w-full cursor-zoom-in rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] object-cover transition-opacity hover:opacity-90"
+                />
+              )}
             </button>
             <div className="mt-[var(--space-2)] flex items-start justify-between gap-[var(--space-3)]">
               {image.caption && (
@@ -186,21 +197,40 @@ export default function ImageGallery({ images }: ImageGalleryProps) {
             onClick={(e) => e.stopPropagation()}
             style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
           >
-            <img
-              src={active.url}
-              alt={active.caption || 'Gallery image'}
-              draggable={false}
-              style={{
-                transform: `translate(${panX}px, ${panY}px) scale(${scale})`,
-                transformOrigin: 'center center',
-                transition: isDragging ? 'none' : 'transform 0.15s ease-out',
-                maxHeight: '88vh',
-                maxWidth: '92vw',
-                width: 'auto',
-                userSelect: 'none',
-                touchAction: 'none',
-              }}
-            />
+            {active.url.endsWith('.webm') || active.url.endsWith('.mp4') ? (
+              <video
+                src={active.url}
+                controls
+                autoPlay
+                loop
+                muted
+                playsInline
+                style={{
+                  transform: `translate(${panX}px, ${panY}px) scale(${scale})`,
+                  transformOrigin: 'center center',
+                  transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+                  maxHeight: '88vh',
+                  maxWidth: '92vw',
+                  width: 'auto',
+                }}
+              />
+            ) : (
+              <img
+                src={active.url}
+                alt={active.caption || 'Gallery image'}
+                draggable={false}
+                style={{
+                  transform: `translate(${panX}px, ${panY}px) scale(${scale})`,
+                  transformOrigin: 'center center',
+                  transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+                  maxHeight: '88vh',
+                  maxWidth: '92vw',
+                  width: 'auto',
+                  userSelect: 'none',
+                  touchAction: 'none',
+                }}
+              />
+            )}
           </div>
 
           {/* Caption */}

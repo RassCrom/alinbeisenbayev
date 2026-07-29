@@ -1942,6 +1942,81 @@
         },
         "contexts": []
       }
+    },
+    {
+      "id": "pie-clock",
+      "slug": "pie-clock",
+      "title": "Pie Clock",
+      "tagline": "Poster generator of satellite images. All seasons of the city in one image",
+      "status": "done",
+      "featured": false,
+      "type": "website",
+      "category": "posters",
+      "keywords": [
+        "poster",
+        "design"
+      ],
+      "role": "solo",
+      "startDate": "2026-07",
+      "endDate": "current",
+      "awards": [],
+      "coverImage": "/images/projects/pie-clock/year-clock-astana-classic.webp",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [],
+      "outcome": "",
+      "stack": [],
+      "liveUrl": "https://pie-clock-seven.vercel.app/",
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/pie-clock/year-clock-astana-classic.webp",
+          "caption": "Year Clock of Astana (Classic layout)",
+          "type": "detail",
+          "downloadUrl": "/images/projects/pie-clock/year-clock-astana-classic.png"
+        },
+        {
+          "url": "/images/projects/pie-clock/year-clock-karaganda-region-classic.webp",
+          "caption": "Year Clock of Karaganda Region (Classic layout)",
+          "type": "detail",
+          "downloadUrl": "/images/projects/pie-clock/year-clock-karaganda-region-classic.png"
+        },
+        {
+          "url": "/images/projects/pie-clock/year-clock-karaganda-region-classic-sweep.webm",
+          "caption": "Year Clock of Karaganda Region (Classic sweep animation)",
+          "type": "detail",
+          "downloadUrl": "/images/projects/pie-clock/year-clock-karaganda-region-classic-sweep.webm"
+        },
+        {
+          "url": "/images/projects/pie-clock/year-clock-oslo-portrait.webp",
+          "caption": "Year Clock of Oslo (Portrait layout)",
+          "type": "detail",
+          "downloadUrl": "/images/projects/pie-clock/year-clock-oslo-portrait.png"
+        },
+        {
+          "url": "/images/projects/pie-clock/year-clock-shymkent-classic.webp",
+          "caption": "Year Clock of Shymkent (Classic layout)",
+          "type": "detail",
+          "downloadUrl": "/images/projects/pie-clock/year-clock-shymkent-classic.png"
+        },
+        {
+          "url": "/images/projects/pie-clock/year-clock-vienna-portrait.webp",
+          "caption": "Year Clock of Vienna (Portrait layout)",
+          "type": "detail",
+          "downloadUrl": "/images/projects/pie-clock/year-clock-vienna-portrait.png"
+        }
+      ],
+      "videos": [],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": []
+      }
     }
   ]
 }
