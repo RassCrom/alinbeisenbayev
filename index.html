@@ -9,7 +9,22 @@
       name="description"
       content="[PLACEHOLDER] Portfolio of Alikhan Beisenbayev — cartographer and GIS engineer."
     />
+    <meta name="color-scheme" content="dark light" />
     <title>Alikhan Beisenbayev — Cartographer &amp; GIS Engineer</title>
+    <script>
+      // Runs before first paint so the page never flashes the wrong theme.
+      // Kept in sync with the storage key/logic in src/hooks/useTheme.ts.
+      (function () {
+        var stored = localStorage.getItem('theme');
+        var theme =
+          stored === 'light' || stored === 'dark'
+            ? stored
+            : matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

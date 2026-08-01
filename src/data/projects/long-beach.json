@@ -1,0 +1,57 @@
+{
+  "projects": [
+    {
+      "id": "old-map-collection",
+      "slug": "old-map-collection",
+      "title": "Heap of random old maps",
+      "tagline": "Old collection of maps designed at the begginning of my journey.",
+      "status": "complete",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "cartography"
+      ],
+      "role": "solo",
+      "startDate": "2022",
+      "endDate": "2024",
+      "awards": [],
+      "coverImage": "/images/placeholder.jpg",
+      "context": "",
+      "idea": "",
+      "design": "",
+      "inspiration": "",
+      "process": [],
+      "outcome": "",
+      "stack": [
+        "QGIS",
+        "Figma",
+        "NotebookLM"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/placeholder.jpg",
+          "caption": "",
+          "type": "print"
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 33.7701,
+          "lng": -118.1937,
+          "label": "Long Beach, USA"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide - assorted early maps"
+          }
+        ]
+      }
+    }
+  ]
+}

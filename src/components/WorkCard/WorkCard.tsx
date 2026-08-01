@@ -79,14 +79,14 @@ export default function WorkCard({
         />
         <div className="absolute inset-x-[var(--space-3)] top-[var(--space-3)] flex items-start gap-[var(--space-2)]">
           {index !== undefined && (
-            <span className="shrink-0 rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] tracking-wider text-[var(--color-text-secondary)]">
+            <span className="shrink-0 rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] tracking-wider text-[var(--color-text-secondary)]">
               {String(index + 1).padStart(2, '0')}
             </span>
           )}
           {award && (
             <span
               title={award}
-              className="ml-auto rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-base)] leading-none text-[var(--color-accent-gold)]"
+              className="ml-auto rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-base)] leading-none text-[var(--color-accent-gold)]"
             >
               ★
             </span>
@@ -124,7 +124,7 @@ export default function WorkCard({
         className="pointer-events-none absolute inset-0 z-[var(--z-raised)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
           background:
-            'radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(102, 145, 192, 0.12), transparent 65%)',
+            'radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--color-accent-light-rgb), 0.12), transparent 65%)',
         }}
       />
     </Link>

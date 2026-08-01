@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import skillsData from '../data/skills.json';
-import projectsData from '../data/projects.json';
-import type { SkillsData, SkillLevel, Project, ProjectsData } from '../types';
+import { projects } from '../data/projects';
+import type { SkillsData, SkillLevel, Project } from '../types';
 
 const { categories, skills } = skillsData as SkillsData;
-const { projects } = projectsData as ProjectsData;
 
 const LEVEL_COLOR: Record<SkillLevel, string> = {
   expert: 'var(--color-accent)',
@@ -43,6 +42,13 @@ function stackMatches(stackItem: string, skillName: string): boolean {
   return shorter.length >= 3 && longer.includes(shorter);
 }
 
+const PRIMARY_PROJECT_FOR_SKILL: Record<string, string> = {
+  storytelling: 'heat-stress-vienna',
+  mapbox: 'armenia-energy',
+  qgis: 'asharshylyq',
+  mapmaking: 'tropical-night',
+};
+
 interface RelatedWork {
   projects: Project[];
   term: string;
@@ -71,6 +77,24 @@ export default function SkillsPage() {
           if (!term) term = hit;
         }
       });
+
+      const primaryId = PRIMARY_PROJECT_FOR_SKILL[skill.id];
+      if (primaryId) {
+        const primaryProject = projects.find(
+          (p) => p.id === primaryId || p.slug === primaryId,
+        );
+        if (primaryProject) {
+          const idx = matched.findIndex((p) => p.id === primaryProject.id);
+          if (idx > 0) {
+            const [p] = matched.splice(idx, 1);
+            matched.unshift(p);
+          } else if (idx === -1) {
+            matched.unshift(primaryProject);
+          }
+          if (!term) term = skill.name;
+        }
+      }
+
       if (matched.length > 0 && term) map.set(skill.id, { projects: matched, term });
     });
     return map;

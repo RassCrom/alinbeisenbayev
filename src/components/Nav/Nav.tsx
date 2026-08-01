@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useTheme } from '../../hooks/useTheme';
 import socialsData from '../../data/socials.json';
 import type { SocialsData } from '../../types';
 
@@ -19,6 +20,7 @@ const NAV_LINKS = [
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     setOpen(false);
@@ -31,14 +33,35 @@ export default function Nav() {
 
   return (
     <>
-    <header className="fixed inset-x-0 top-0 z-[var(--z-overlay)] border-b border-[var(--color-border-subtle)] bg-[rgba(13,19,32,0.85)] backdrop-blur-md">
+    <header className="fixed inset-x-0 top-0 z-[var(--z-overlay)] border-b border-[var(--color-border-subtle)] bg-[rgba(var(--color-chrome-rgb),0.85)] backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-[var(--space-6)]">
-        <Link
-          to="/"
-          className="font-[family-name:var(--font-heading)] text-[length:var(--text-lg)] font-extrabold tracking-tight"
-        >
-          alin<span className="text-[var(--color-accent-light)]">beisenbayev</span>
-        </Link>
+        <div className="flex items-center gap-[var(--space-3)]">
+          <Link
+            to="/"
+            className="font-[family-name:var(--font-heading)] text-[length:var(--text-lg)] font-extrabold tracking-tight"
+          >
+            alin<span className="text-[var(--color-accent-light)]">beisenbayev</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-full)] border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent-light)]"
+          >
+            {theme === 'dark' ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
+        </div>
 
         {/* Desktop links */}
         <div className="hidden items-center gap-[var(--space-8)] md:flex">

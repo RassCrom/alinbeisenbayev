@@ -57,7 +57,7 @@ export default function VideoGallery({ videos }: VideoGalleryProps) {
                     className="h-full w-full object-cover transition-opacity group-hover:opacity-80"
                   />
                   <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[rgba(13,19,32,0.78)] text-[var(--color-text-primary)] transition-transform duration-200 group-hover:scale-110">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[rgba(var(--color-chrome-rgb),0.78)] text-[var(--color-text-primary)] transition-transform duration-200 group-hover:scale-110">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M8 5v14l11-7z" />
                       </svg>

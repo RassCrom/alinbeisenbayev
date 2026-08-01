@@ -223,28 +223,28 @@ export default function WorksMap({
   const navigateRef = useRef(navigate);
   navigateRef.current = navigate;
 
-  const visibleStats = useMemo(() => {
-    const visible = visibleIds ? new Set(visibleIds) : null;
-    const visibleProjects = projects.filter((project) => !visible || visible.has(project.id));
-    const hubs = new Set<string>();
-    const places = new Set<string>();
+  // const visibleStats = useMemo(() => {
+  //   const visible = visibleIds ? new Set(visibleIds) : null;
+  //   const visibleProjects = projects.filter((project) => !visible || visible.has(project.id));
+  //   const hubs = new Set<string>();
+  //   const places = new Set<string>();
 
-    visibleProjects.forEach((project) => {
-      if (project.geography.origin) {
-        hubs.add(nearestHub(project.geography.origin.lat, project.geography.origin.lng).key);
-      }
-      project.geography.contexts.forEach((context) => {
-        const target = contextTarget(context);
-        if (target) places.add(`${target[0].toFixed(4)}:${target[1].toFixed(4)}`);
-      });
-    });
+  //   visibleProjects.forEach((project) => {
+  //     if (project.geography.origin) {
+  //       hubs.add(nearestHub(project.geography.origin.lat, project.geography.origin.lng).key);
+  //     }
+  //     project.geography.contexts.forEach((context) => {
+  //       const target = contextTarget(context);
+  //       if (target) places.add(`${target[0].toFixed(4)}:${target[1].toFixed(4)}`);
+  //     });
+  //   });
 
-    return {
-      projectCount: visibleProjects.length,
-      hubCount: hubs.size,
-      placeCount: places.size,
-    };
-  }, [projects, visibleIds]);
+  //   return {
+  //     projectCount: visibleProjects.length,
+  //     hubCount: hubs.size,
+  //     placeCount: places.size,
+  //   };
+  // }, [projects, visibleIds]);
 
   const activeHub = activeHubKey
     ? HUBS.find((hub) => hub.key === activeHubKey) ?? null
@@ -764,7 +764,7 @@ export default function WorksMap({
       <div
         id="works-map-instructions"
         aria-live="polite"
-        className="pointer-events-none absolute right-[var(--space-3)] top-[4.25rem] z-[var(--z-raised)] max-w-none rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(13,19,32,0.9)] px-[var(--space-3)] py-[var(--space-2)] backdrop-blur-md max-sm:left-[var(--space-3)] sm:right-auto sm:top-[var(--space-3)] sm:left-14 sm:max-w-96"
+        className="pointer-events-none absolute right-[var(--space-3)] top-[4.25rem] z-[var(--z-raised)] max-w-none rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(var(--color-chrome-rgb),0.9)] px-[var(--space-3)] py-[var(--space-2)] backdrop-blur-md max-sm:left-[var(--space-3)] sm:right-auto sm:top-[var(--space-3)] sm:left-14 sm:max-w-96"
       >
         <p className="font-[family-name:var(--font-mono)] text-[10px] tracking-[0.14em] text-[var(--color-accent-light)] uppercase">
           Project geography
@@ -780,9 +780,9 @@ export default function WorksMap({
           </>
         ) : (
           <>
-            <p className="mt-1 font-[family-name:var(--font-mono)] text-[10px] leading-relaxed text-[var(--color-text-secondary)]">
+            {/* <p className="mt-1 font-[family-name:var(--font-mono)] text-[10px] leading-relaxed text-[var(--color-text-secondary)]">
               {visibleStats.projectCount} works · {visibleStats.hubCount} creation hubs · {visibleStats.placeCount} mapped places
-            </p>
+            </p> */}
             <p className="mt-0.5 hidden text-[11px] leading-relaxed text-[var(--color-text-muted)] sm:block">
               Choose a blue city to trace its projects.
             </p>
@@ -792,7 +792,7 @@ export default function WorksMap({
 
       <div
         aria-label="Map legend"
-        className="pointer-events-none absolute bottom-10 left-[var(--space-3)] z-[var(--z-raised)] rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(13,19,32,0.9)] px-[var(--space-3)] py-[var(--space-2)] font-[family-name:var(--font-mono)] text-[10px] tracking-[0.06em] text-[var(--color-text-secondary)] backdrop-blur-md"
+        className="pointer-events-none absolute bottom-10 left-[var(--space-3)] z-[var(--z-raised)] rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(var(--color-chrome-rgb),0.9)] px-[var(--space-3)] py-[var(--space-2)] font-[family-name:var(--font-mono)] text-[10px] tracking-[0.06em] text-[var(--color-text-secondary)] backdrop-blur-md"
       >
         <div className="flex items-center gap-[var(--space-2)]">
           <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--color-accent-light)] shadow-[0_0_6px_var(--color-accent-light)]" />
@@ -817,7 +817,7 @@ export default function WorksMap({
             setHubFocus(null, false);
             fitVisibleRef.current();
           }}
-          className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(13,19,32,0.9)] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] disabled:cursor-wait disabled:opacity-50"
+          className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(var(--color-chrome-rgb),0.9)] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] disabled:cursor-wait disabled:opacity-50"
         >
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M3 12a9 9 0 1 0 3-6.7" />
@@ -831,7 +831,7 @@ export default function WorksMap({
             aria-label={expanded ? 'Exit fullscreen' : 'Expand map to fullscreen'}
             title={expanded ? 'Exit fullscreen (Esc)' : 'Expand map'}
             onClick={onToggleExpand}
-            className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(13,19,32,0.9)] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+            className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[rgba(var(--color-chrome-rgb),0.9)] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
           >
             {expanded ? (
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

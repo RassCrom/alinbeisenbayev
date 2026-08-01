@@ -11,6 +11,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const SkillsPage = lazy(() => import('./pages/SkillsPage'));
 const ConnectPage = lazy(() => import('./pages/ConnectPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="/skills" element={<SkillsPage />} />
             <Route path="/connect" element={<ConnectPage />} />
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>

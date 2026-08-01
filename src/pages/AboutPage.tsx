@@ -63,7 +63,7 @@ export default function AboutPage() {
             className="flex min-h-[80vh] items-center px-[var(--space-6)] py-[var(--space-12)] lg:min-h-[calc(100vh-4rem)] lg:px-[var(--space-12)]"
           >
             <div
-              className={`story-reveal ${visible[index] ? 'is-visible' : ''} w-full rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[rgba(18,26,45,0.92)] p-[var(--space-8)] shadow-[var(--shadow-card)] backdrop-blur-sm`}
+              className={`story-reveal ${visible[index] ? 'is-visible' : ''} w-full rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[rgba(var(--color-surface-rgb),0.92)] p-[var(--space-8)] shadow-[var(--shadow-card)] backdrop-blur-sm`}
             >
               <p className="font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] tracking-[0.1em] text-[var(--color-accent-light)]">
                 {point.date} — {point.location.name}
@@ -98,7 +98,7 @@ export default function AboutPage() {
 
         {/* End of story: bio + CTA */}
         <section className="flex min-h-[80vh] items-center px-[var(--space-6)] py-[var(--space-12)] lg:min-h-[calc(100vh-4rem)] lg:px-[var(--space-12)]">
-          <div className="w-full rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[rgba(18,26,45,0.92)] p-[var(--space-8)] shadow-[var(--shadow-card)] backdrop-blur-sm">
+          <div className="w-full rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[rgba(var(--color-surface-rgb),0.92)] p-[var(--space-8)] shadow-[var(--shadow-card)] backdrop-blur-sm">
             <img
               src={profile.photo}
               alt={profile.name}

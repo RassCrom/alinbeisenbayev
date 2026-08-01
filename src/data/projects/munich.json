@@ -194,7 +194,14 @@
           "lng": 11.582,
           "label": "Munich, Germany"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide geography challenges"
+          }
+        ]
       }
     },
     {
@@ -301,7 +308,14 @@
           "lng": 11.582,
           "label": "Munich, Germany"
         },
-        "contexts": []
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20,
+            "lng": 0,
+            "label": "Worldwide - multiple challenge topics"
+          }
+        ]
       }
     }
   ]

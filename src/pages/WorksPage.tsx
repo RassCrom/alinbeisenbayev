@@ -3,13 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 import WorkCard from '../components/WorkCard/WorkCard';
 import SearchFilter from '../components/SearchFilter/SearchFilter';
 import { useProjectFilter } from '../hooks/useProjectFilter';
-import projectsData from '../data/projects.json';
-import type { ProjectsData } from '../types';
+import { projects } from '../data/projects';
 
 // MapLibre bundle loads only when the map view is opened
 const WorksMap = lazy(() => import('../components/WorksMap/WorksMap'));
-
-const { projects } = projectsData as ProjectsData;
 
 type ViewMode = 'grid' | 'map';
 type TypeFilter = 'all' | 'web' | 'image' | 'animation';

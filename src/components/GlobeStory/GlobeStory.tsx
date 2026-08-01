@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import Globe, { type GlobeMethods } from 'react-globe.gl';
+import type { PerspectiveCamera } from 'three';
 import type { StoryPoint } from '../../types';
 
 // NASA Black Marble (public domain) — dark earth texture.
@@ -35,6 +36,23 @@ interface OrbitControlsLike {
   autoRotateSpeed: number;
 }
 
+/**
+ * The smallest `altitude` (globe-radius units, per react-globe.gl's
+ * pointOfView) that keeps the full sphere inside a frame of the given
+ * aspect ratio and vertical FOV, plus a margin so it doesn't touch the
+ * edges. Distance = radius * (1 + altitude), and to fit a sphere of
+ * radius r at distance d within a half-angle theta: sin(theta) = r/d.
+ * Solving for altitude with theta = the *narrower* of the frame's two
+ * half-FOVs (whichever axis is tighter) and radius cancelling out of
+ * both sides leaves a formula independent of the globe's actual size.
+ */
+function minAltitudeForFrame(cameraFovDeg: number, aspect: number, margin = 1.05): number {
+  const vHalf = (cameraFovDeg * Math.PI) / 360;
+  const hHalf = Math.atan(Math.tan(vHalf) * aspect);
+  const tightestHalf = Math.min(vHalf, hHalf);
+  return margin / Math.sin(tightestHalf) - 1;
+}
+
 const GlobeStory = forwardRef<GlobeStoryHandle, GlobeStoryProps>(function GlobeStory(
   { points, activeStoryIndex, autoRotate = false, onPointClick },
   ref,
@@ -60,14 +78,19 @@ const GlobeStory = forwardRef<GlobeStoryHandle, GlobeStoryProps>(function GlobeS
   }));
 
   // Fly to the story point for the panel currently in view (paused while the
-  // intro spin is running)
+  // intro spin is running). The requested altitude is a floor, not a fixed
+  // value — narrow/tall columns (mobile, or the 35% desktop rail) need more
+  // distance than the data specifies to keep the sphere from clipping.
   useEffect(() => {
     if (autoRotate) return;
     const point = points[activeStoryIndex];
-    if (!point || !globeRef.current) return;
+    const globe = globeRef.current;
+    if (!point || !globe || size.width === 0 || size.height === 0) return;
     const { lat, lng, altitude, animationDuration } = point.globeView;
-    globeRef.current.pointOfView({ lat, lng, altitude }, animationDuration);
-  }, [activeStoryIndex, points, autoRotate]);
+    const fov = (globe.camera() as PerspectiveCamera).fov;
+    const minAltitude = minAltitudeForFrame(fov, size.width / size.height);
+    globe.pointOfView({ lat, lng, altitude: Math.max(altitude, minAltitude) }, animationDuration);
+  }, [activeStoryIndex, points, autoRotate, size]);
 
   // Intro spin on/off
   useEffect(() => {
@@ -134,13 +157,16 @@ const GlobeStory = forwardRef<GlobeStoryHandle, GlobeStoryProps>(function GlobeS
           arcDashAnimateTime={4000}
           onGlobeReady={() => {
             const first = points[0];
-            if (first) {
+            const globe = globeRef.current;
+            if (first && globe) {
+              const fov = (globe.camera() as PerspectiveCamera).fov;
+              const minAltitude = minAltitudeForFrame(fov, size.width / size.height);
               // Wide framing during the intro spin; the story effect zooms in after
-              globeRef.current?.pointOfView(
+              globe.pointOfView(
                 {
                   lat: first.globeView.lat,
                   lng: first.globeView.lng,
-                  altitude: autoRotate ? 2.8 : first.globeView.altitude,
+                  altitude: Math.max(autoRotate ? 2.8 : first.globeView.altitude, minAltitude),
                 },
                 0,
               );

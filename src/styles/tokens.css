@@ -20,6 +20,17 @@
   --color-accent-gold:    #9e7f4a;
   --color-accent-glow:    rgba(68, 114, 168, 0.12);
 
+  /* RGB triplets for one-off rgba() uses (translucent "glass" chrome,
+     decorative glows) that can't just reference the hex custom properties
+     above — rgba() needs the channels split out. Every one of these must
+     stay in lockstep with its hex counterpart, in both this block and the
+     light override below. */
+  --color-chrome-rgb:       13, 19, 32;     /* = --color-bg-base */
+  --color-surface-rgb:      18, 26, 45;     /* = --color-bg-surface */
+  --color-accent-rgb:       68, 114, 168;   /* = --color-accent */
+  --color-accent-light-rgb: 102, 145, 192;  /* = --color-accent-light */
+  --color-accent-gold-rgb:  158, 127, 74;   /* = --color-accent-gold */
+
   /* Gradients */
   --gradient-hero:    linear-gradient(160deg, #0d1320 0%, #121d33 60%, #0f1928 100%);
   --gradient-card:    linear-gradient(145deg, #121a2d 0%, #192236 100%);
@@ -73,4 +84,52 @@
   --z-raised:  10;
   --z-overlay: 100;
   --z-modal:   1000;
+}
+
+/*
+ * Light theme — steppe/Turkic palette (warm gold accent, sky-blue-adjacent
+ * hues reserved for the globe/map which stay theme-constant, cream/beige
+ * surfaces). Only the color roles are overridden; everything else (type
+ * scale, spacing, radii, transitions, z-index) is theme-independent.
+ *
+ * Every value here was checked against WCAG AA contrast (4.5:1 body text,
+ * 3:1 large text/UI) against both --color-bg-base and --color-bg-elevated
+ * before being picked — see the conversation this was built in for the
+ * numbers. Two components (GlobeStory's WebGL globe and WorksMap's MapLibre
+ * paint colors) use hardcoded hex outside the CSS cascade entirely and are
+ * intentionally left blue/gold in both themes, matching how the Lightbox's
+ * dark photo-viewer backdrop is also intentionally not themed.
+ */
+:root[data-theme='light'] {
+  --color-bg-base:     #faf3e2;
+  --color-bg-surface:  #f1e6cd;
+  --color-bg-elevated: #ffffff;
+  --color-bg-overlay:  #fdf9ef;
+
+  --color-border-subtle:  #e4d3a7;
+  --color-border-default: #cbb37e;
+
+  --color-text-primary:   #2b2011;
+  --color-text-secondary: #5c4b2c;
+  --color-text-muted:     #766340;
+
+  --color-accent:         #a35d16;
+  --color-accent-light:   #96600d;
+  --color-accent-gold:    #83571a;
+  --color-accent-glow:    rgba(163, 93, 22, 0.14);
+
+  --color-chrome-rgb:       250, 243, 226;
+  --color-surface-rgb:      241, 230, 205;
+  --color-accent-rgb:       163, 93, 22;
+  --color-accent-light-rgb: 150, 96, 13;
+  --color-accent-gold-rgb:  131, 87, 26;
+
+  --gradient-hero:    linear-gradient(160deg, #faf3e2 0%, #f1e6cd 60%, #ffffff 100%);
+  --gradient-card:    linear-gradient(145deg, #ffffff 0%, #f7ecd6 100%);
+  --gradient-overlay: linear-gradient(to bottom, transparent 0%, #faf3e2 100%);
+
+  /* Warm-tinted and lower-opacity than the dark theme's black shadows,
+     which read as muddy smudges on a light background. */
+  --shadow-card:     0 4px 24px rgba(90, 66, 30, 0.10);
+  --shadow-elevated: 0 8px 40px rgba(90, 66, 30, 0.16);
 }

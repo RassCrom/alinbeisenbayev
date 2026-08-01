@@ -1,4 +1,4 @@
-/* ---- projects.json ---- */
+/* ---- src/data/projects/*.json (merged by src/data/projects.ts) ---- */
 
 export type ProjectType = 'website' | 'static-map' | 'platform' | 'analysis' | 'game';
 export type ProjectCategory = 'interactive-map' | 'print' | 'platform' | 'analysis' | 'game';

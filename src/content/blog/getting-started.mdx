@@ -1,0 +1,65 @@
+---
+title: "Getting Started With This Blog"
+date: "2026-08-01"
+excerpt: "A scaffold post showing what the MDX pipeline can do — replace this with your first real post."
+tags: ["meta"]
+---
+
+import { useState } from 'react';
+
+export const CounterDemo = () => {
+  const [count, setCount] = useState(0);
+  return (
+    <button
+      type="button"
+      onClick={() => setCount((c) => c + 1)}
+      className="rounded-[var(--radius-sm)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-[var(--space-4)] py-[var(--space-2)] font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] text-[var(--color-accent-light)] transition-colors hover:border-[var(--color-accent)]"
+    >
+      Clicked {count} times
+    </button>
+  );
+};
+
+This post is a **scaffold**, not real content — delete it once you've written your first
+real one. It exists to prove the pipeline end to end: this file is plain Markdown with
+a YAML frontmatter block (title, date, excerpt, tags) at the top, compiled through
+[MDX](https://mdxjs.com) at build time into a real React component.
+
+## Text and structure
+
+Because it's Markdown, ordinary formatting works exactly as you'd expect: **bold**,
+*italic*, `inline code`, [links](/works), and lists.
+
+- Guides and tutorials
+- Data or visual stories
+- Tips and tricks from actual project work
+
+> Blockquotes work too, styled to match the rest of the site.
+
+## Interaction
+
+MDX isn't just Markdown — a file can `export` a real, stateful React component and use
+it right in the body. Nothing external was imported here; this button is defined a few
+lines above, in this same file:
+
+<CounterDemo />
+
+That's the whole point of MDX for this blog: a post can drop in a live map, a
+before/after image slider, a small chart, or any other component from the codebase,
+inline with the prose explaining it — not just static text and images.
+
+## Code
+
+```
+const example = "syntax-highlighting isn't wired up yet — plain monospace for now";
+```
+
+## Where this lives
+
+- New posts: add a `.mdx` file to `src/content/blog/`. The filename becomes the URL
+  slug, so `my-post.mdx` becomes `/blog/my-post`.
+- The frontmatter block at the top of this file is required — `title`, `date`,
+  `excerpt` at minimum. `tags` is optional.
+- Everything else (list styling, code blocks, a real syntax highlighter, a table of
+  contents, reading time) is intentionally left for later — this is the foundation,
+  not the finished product.

@@ -5,10 +5,7 @@ import ImageGallery from '../components/ImageGallery/ImageGallery';
 import VideoGallery from '../components/VideoGallery/VideoGallery';
 import StackRow from '../components/StackRow/StackRow';
 import WorkCard from '../components/WorkCard/WorkCard';
-import projectsData from '../data/projects.json';
-import type { ProjectsData } from '../types';
-
-const { projects } = projectsData as ProjectsData;
+import { projects } from '../data/projects';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -106,7 +103,7 @@ export default function WorkDetailPage() {
         <div className="absolute inset-0" style={{ background: 'var(--gradient-overlay)' }} />
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-6xl px-[var(--space-6)] pb-[var(--space-8)]">
           {award && (
-            <span className="mb-[var(--space-3)] inline-block rounded-[var(--radius-sm)] bg-[rgba(13,19,32,0.8)] px-[var(--space-3)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-gold)]">
+            <span className="mb-[var(--space-3)] inline-block rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-3)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-gold)]">
               ★ {award}
             </span>
           )}
@@ -116,7 +113,7 @@ export default function WorkDetailPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-24)]">
+      <div className="mx-auto max-w-4xl px-[var(--space-6)]">
         {/* Meta row — pill badges */}
         <div className="mt-[var(--space-8)] flex flex-wrap items-center gap-[var(--space-2)]">
           {year && <span className="meta-pill">{year}</span>}
@@ -212,13 +209,20 @@ export default function WorkDetailPage() {
           </Section>
         )}
 
-        {/* Gallery */}
-        {project.gallery?.length > 0 && (
+      </div>
+
+      {/* Gallery — full-bleed: breaks out of the article's reading column
+          (max-w-4xl) into the wider max-w-6xl used elsewhere on the site,
+          so images get meaningfully more room than the prose above. */}
+      {project.gallery?.length > 0 && (
+        <div className="mx-auto max-w-6xl px-[var(--space-6)]">
           <Section eyebrow="Visuals" heading="Gallery">
             <ImageGallery images={project.gallery} zoomable={project.type === 'static-map'} />
           </Section>
-        )}
+        </div>
+      )}
 
+      <div className="mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-24)]">
         {/* Stack detail */}
         {project.stack?.length > 0 && (
           <Section eyebrow="Technology" heading="Stack">

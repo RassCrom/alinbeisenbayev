@@ -30,6 +30,7 @@
       "process": [],
       "outcome": "Third place at the Armenia Open Data Contest 2024.",
       "stack": [
+        "Mapbox",
         "MapLibre GL JS",
         "QGIS"
       ],

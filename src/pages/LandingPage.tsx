@@ -1,15 +1,14 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import WorkCard from '../components/WorkCard/WorkCard';
-import projectsData from '../data/projects.json';
+import { projects } from '../data/projects';
 import aboutData from '../data/about-story.json';
 import socialsData from '../data/socials.json';
-import type { ProjectsData, AboutStoryData, SocialsData } from '../types';
+import type { AboutStoryData, SocialsData } from '../types';
 
 const fmtCoord = (lat: number, lng: number): string =>
   `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
 
-const { projects } = projectsData as ProjectsData;
 const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
 const { socials } = socialsData as SocialsData;
 

@@ -1,13 +1,17 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import blogData from '../data/blog.json';
+import { articles } from '../content/blog';
 import type { BlogData, BlogPost } from '../types';
 
 const { feeds } = blogData as BlogData;
 
 type FeedKey = keyof BlogData['feeds'];
+type TabId = 'all' | FeedKey | 'articles';
 
-const TABS: { id: 'all' | FeedKey; label: string }[] = [
+const TABS: { id: TabId; label: string }[] = [
   { id: 'all', label: 'All' },
+  { id: 'articles', label: 'Articles' },
   { id: 'youtube', label: 'YouTube' },
   { id: 'telegram', label: 'Telegram' },
 ];
@@ -82,13 +86,66 @@ function PostCard({ post }: { post: BlogPost }) {
   );
 }
 
+function ArticleCard({ article }: { article: (typeof articles)[number] }) {
+  const { slug, frontmatter } = article;
+
+  return (
+    <Link
+      to={`/blog/${slug}`}
+      className="flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[image:var(--gradient-card)] shadow-[var(--shadow-card)] transition-colors hover:border-[var(--color-accent)]"
+    >
+      {frontmatter.cover ? (
+        <img
+          src={frontmatter.cover}
+          alt=""
+          width={1200}
+          height={630}
+          loading="lazy"
+          decoding="async"
+          className="aspect-video w-full object-cover"
+        />
+      ) : (
+        <div className="flex aspect-video w-full items-center justify-center bg-[var(--color-bg-elevated)]">
+          <span className="font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)] opacity-50">
+            {frontmatter.title}
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-1 flex-col gap-[var(--space-3)] p-[var(--space-6)]">
+        {frontmatter.tags && frontmatter.tags.length > 0 && (
+          <div className="flex flex-wrap gap-[var(--space-2)]">
+            {frontmatter.tags.map((tag) => (
+              <span
+                key={tag}
+                className="font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+        <h3 className="font-[family-name:var(--font-heading)] text-[length:var(--text-xl)] font-bold">
+          {frontmatter.title}
+        </h3>
+        <p className="clamp-3 font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
+          {frontmatter.excerpt}
+        </p>
+        <time className="mt-auto pt-[var(--space-3)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
+          {frontmatter.date}
+        </time>
+      </div>
+    </Link>
+  );
+}
+
 export default function BlogPage() {
-  const [tab, setTab] = useState<'all' | FeedKey>('all');
+  const [tab, setTab] = useState<TabId>('all');
   const [search, setSearch] = useState('');
 
   const posts = useMemo(() => {
     const list: BlogPost[] =
-      tab === 'all' ? Object.values(feeds).flat() : [...feeds[tab]];
+      tab === 'all' ? Object.values(feeds).flat() : tab === 'articles' ? [] : [...feeds[tab]];
     const q = search.trim().toLowerCase();
     const matching = q
       ? list.filter((post) =>
@@ -99,6 +156,16 @@ export default function BlogPage() {
         )
       : list;
     return matching.sort((a, b) => b.date.localeCompare(a.date));
+  }, [tab, search]);
+
+  const filteredArticles = useMemo(() => {
+    if (tab !== 'articles') return [];
+    const q = search.trim().toLowerCase();
+    return q
+      ? articles.filter((a) =>
+          [a.frontmatter.title, a.frontmatter.excerpt].join(' ').toLowerCase().includes(q),
+        )
+      : articles;
   }, [tab, search]);
 
   return (
@@ -129,7 +196,19 @@ export default function BlogPage() {
         ))}
       </div>
 
-      {posts.length > 0 ? (
+      {tab === 'articles' ? (
+        filteredArticles.length > 0 ? (
+          <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
+            {filteredArticles.map((article) => (
+              <ArticleCard key={article.slug} article={article} />
+            ))}
+          </div>
+        ) : (
+          <p className="py-[var(--space-16)] text-center text-[var(--color-text-muted)]">
+            {search.trim() ? 'No posts match your search.' : 'No posts yet.'}
+          </p>
+        )
+      ) : posts.length > 0 ? (
         <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
