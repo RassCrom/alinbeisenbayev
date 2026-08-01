@@ -6,6 +6,8 @@ export interface ArticleFrontmatter {
   excerpt: string;
   cover?: string;
   tags?: string[];
+  draft?: boolean;
+  hidden?: boolean;
 }
 
 export interface Article {
@@ -31,4 +33,5 @@ export const articles: Article[] = Object.entries(modules)
     frontmatter: mod.frontmatter,
     Component: mod.default,
   }))
+  .filter((article) => !article.frontmatter.draft && !article.frontmatter.hidden)
   .sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date));
