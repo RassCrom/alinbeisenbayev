@@ -1,0 +1,253 @@
+---
+title: "Stockholm Metro Guide: Morphing a Geographic Map into a Schematic One"
+date: "2026-08-07"
+excerpt: "A full walkthrough of how I turn OSM subway data into a geographic-to-schematic morph animation, from QGIS filtering to Figma tracing to rendering the final video."
+cover: "/images/blog/stockholm-metro-guide/01-source-map.png"
+tags: ["cartography", "QGIS", "tutorial"]
+---
+
+The idea of a morph transition between a geographic subway map and its schematic counterpart isn't new, yet I couldn't find a working guide or a nicely designed animation on the topic. That's why I started making this series of metro animations.
+
+If you want my thoughts and plans on this topic, expand the sections below. Otherwise, skip straight to the tutorial.
+
+This approach isn't the most optimized, but it works. As I cover more cities I run into new challenges and adjust it. I'm writing this after finishing the Berlin metro, so the workflow may change later. Read with a bit of skepticism.
+
+## 1. Data collection
+
+### Get the schematic map
+
+First, I googled the Stockholm metro map and took the first result I saw. Later I found out it was a future expansion plan, not the current network — but by then I'd already published the animation. Make sure you're using the right scheme before you commit to it.
+
+![The Stockholm metro schematic map I traced from, showing the current and planned lines](/images/blog/stockholm-metro-guide/01-source-map.png)
+
+### Download geographic data for lines and stations
+
+For the subway dataset I usually use OSM data, though sometimes a local government has an official dataset that's more organized and complete.
+
+For Stockholm, I downloaded data from the Geofabrik distributor, but you can source it from anywhere you're comfortable with:
+
+- [Geofabrik — Sweden extract](https://download.geofabrik.de/europe/sweden.html)
+- [BBBike — Stockholm extract](https://download.bbbike.org/osm/bbbike/Stockholm/)
+
+I prefer working with the gpkg format.
+
+For complete newbies: upload the gpkg to QGIS and choose the railways and transport layers.
+
+![Selecting the railway and transport layers to add from the Stockholm gpkg in QGIS](/images/blog/stockholm-metro-guide/02-qgis-import.png)
+
+Then filter the data using these queries.
+
+For the railway layer:
+
+```sql
+"fclass" = 'subway'
+```
+
+For the transport layer (the stations):
+
+```sql
+"fclass" = 'railway_station'
+```
+
+![Opening the layer filter dialog in QGIS](/images/blog/stockholm-metro-guide/03-filter-menu.png)
+
+![The query builder with the fclass = 'subway' filter expression applied](/images/blog/stockholm-metro-guide/04-filter-query.png)
+
+## 2. Stations
+
+### Create a line field and fill it
+
+Now create two additional fields in the transport layer for metro line and subline. This part is Stockholm-specific — usually there's just one metro line field, but Stockholm's branches are split by color, and within each color they're split further by number. So I create `cline` (color line) and `nline` (number line).
+
+![Attribute table with the cline and nline fields filled in for each station](/images/blog/stockholm-metro-guide/05-line-fields.png)
+
+### Create an order per line
+
+Within `cline` and `nline`, number each station in order. It doesn't matter which end you start from — north or south — what matters is that later, when drawing the schematic lines in Figma (or any other vector tool), you follow the same order. I usually start from the north or west side.
+
+![Attribute table with an order field added, numbering stations along each line](/images/blog/stockholm-metro-guide/06-order-field.png)
+
+## 3. Lines
+
+### Points to path
+
+Now we can use the fields from the previous step to build a single line through the stations. In QGIS, the **Points to Path** tool does this. After running it, some segments won't be connected — for example, on the blue line, the northern branches 10 and 11 stay separate. Just connect those manually.
+
+![The Points to Path tool in QGIS, ordered by the nline field and grouped by order](/images/blog/stockholm-metro-guide/07-points-to-path.png)
+
+### Digitize approximately
+
+Now modify the generated lines using the railway geometry from OSM as reference. This digitization can be approximate.
+
+![The digitized subway lines after adjusting them against the OSM railway geometry](/images/blog/stockholm-metro-guide/08-digitized-lines.png)
+
+## 4. Layout
+
+### Projection
+
+For this one I stayed with the original projection, WGS84, but UTM works too — it just changes how the network looks.
+
+![The network in WGS84 projection](/images/blog/stockholm-metro-guide/09-projection-wgs84.png)
+
+![The same network in UTM projection, for comparison](/images/blog/stockholm-metro-guide/10-projection-utm.png)
+
+### Export
+
+For export I used a custom page size — 1080 by 1350, sized for social media posts — then exported as SVG.
+
+![QGIS print layout set to a custom 1080×1440 page for exporting the geographic map as SVG](/images/blog/stockholm-metro-guide/11-export-dialog.png)
+
+## 5. Schematic metro
+
+### Drawing the schematic
+
+After QGIS, I import everything into Figma. I create two 1080×1350 pages, place the schematic map I found earlier, and start tracing the lines in the same order I numbered the stations in.
+
+Once the lines are traced, I smooth the corners by applying a corner radius in Figma.
+
+![Tracing a line in Figma with corner radius applied to smooth the joints](/images/blog/stockholm-metro-guide/12-figma-tracing.png)
+
+### Stations
+
+After the lines, I place the stations. I usually take the exported canvas from QGIS, lay it on top of the schematic, and move each station onto its schematic position.
+
+### Export
+
+Finally, I add the line-number labels to both the geographic and schematic versions and export both as SVG.
+
+## 6. Download the project from GitHub
+
+### Prerequisites
+
+Install these first, all one-time:
+
+- **[Git](https://git-scm.com/downloads)** — clones the project. Check with `git --version`
+- **[Node.js](https://nodejs.org/) 18+** — runs the capture script. Check with `node --version`
+- **[pnpm](https://pnpm.io/installation)** — installs dependencies. Check with `pnpm --version`
+- **[ffmpeg](https://ffmpeg.org/download.html)** — turns frames into mp4/gif. Check with `ffmpeg -version`
+
+Windows: `winget install Gyan.FFmpeg`. macOS: `brew install ffmpeg`. Reopen your terminal afterward so `ffmpeg` is on `PATH`.
+
+### Clone and install
+
+```bash
+git clone https://github.com/RassCrom/morph-metro/tree/feature/draw-animation
+cd morph-metro
+pnpm install
+```
+
+`pnpm install` pulls Puppeteer, which downloads its own Chromium (~150 MB). If Chrome is already installed on your machine, the script uses that instead.
+
+### What's in the folder
+
+```
+morph-metro/
+├── metro-morph.html   the animation and all its settings — the only file you edit
+├── capture.js          renders the animation to PNG frames, then to mp4/gif
+├── stock-geo.svg       example pair: geographic
+├── stock-schem.svg     example pair: schematic
+└── package.json
+```
+
+Drop your own two SVGs from step 5 into this same folder, next to the Stockholm pair.
+
+## 7. Running the script
+
+### Preview
+
+Don't open `metro-morph.html` by double-clicking it. Browsers block `fetch()` on `file://`, so the page can't read your SVGs. Serve the folder over HTTP instead:
+
+```bash
+pnpm dlx serve .
+```
+
+Open the address it prints and load `metro-morph.html` from there.
+
+### Tune it in the browser, not in the file
+
+Add `?edit=1` to the URL:
+
+```
+http://localhost:3000/metro-morph.html?edit=1
+```
+
+A panel appears on the right: canvas size, timing, title text, colors, line width, station size, bloom, grain, vignette, and a scrub slider to step through the morph frame by frame. The panel only exists with `?edit=1`, so it never leaks into a captured frame.
+
+Adjust until it looks right, hit **Copy config**, and paste the copied block over the `CONFIG` object at the top of `metro-morph.html`.
+
+You can also override values straight from the URL, without touching the file:
+
+```
+?canvas=9:16&theme=light&labels=0&morph=1800
+```
+
+### The settings that matter most
+
+Everything lives in the `CONFIG` block at the top of `metro-morph.html`. What you'll change per city:
+
+```jsx
+sources: {
+  geographic: "berlin-geo.svg",
+  schematic:  "berlin-schem.svg",
+},
+
+canvas: "source",   // "source" | "4:5" | "9:16" | "1:1" | "16:9" | {width, height}
+
+timing: {
+  morph: 2400,      // geographic → schematic, ms
+  hold:  800,       // pause at each end
+  intro: 1200,      // one-time draw-on lead-in; 0 = off
+  loop: "pingpong", // "pingpong" = morph out and back
+                     // "forward"  = morph out, then crossfade back
+  dissolve: 600,    // "forward" only
+},
+
+title: {
+  main:    "Berlin metro network",
+  left:    "GEOGRAPHIC",
+  divider: "VS",
+  right:   "SCHEMATIC",
+  credit:  "Made by Alikhan Beisenbayev · © OpenStreetMap contributors",
+},
+
+theme: "dark",      // "dark" | "light"
+labels: true,
+```
+
+Two things worth knowing. `intro` breaks a perfect loop on purpose — the lead-in plays once before the cycle starts — so set `intro: 0` for a file that loops seamlessly on Instagram or TikTok. And the engine auto-detects which strokes are metro lines, which are rivers, and which lines run backward in the schematic, printing what it found to the browser console. Open DevTools on your first run and check it before touching the `detect` block.
+
+### Render the frames
+
+```bash
+pnpm render
+```
+
+This runs `node capture.js --mp4 output.mp4`: a tiny local server, headless Chrome at the exact canvas size, one screenshot per frame into `frames/`, then ffmpeg. With the default Berlin settings you get 456 PNGs and an `output.mp4`.
+
+For anything beyond the default, call `capture.js` directly:
+
+```bash
+node capture.js --canvas 9:16 --fps 60 --loops 2 --mp4 reels.mp4
+```
+
+The flags that matter:
+
+- `--page` (default `metro-morph.html`) — which file to capture
+- `--fps` (default `60`) — frames per second
+- `--loops` (default `1`) — how many full cycles to record
+- `--out` (default `frames`) — frame output folder
+- `--query` — extra URL params, e.g. `--query "canvas=9:16&theme=light"`
+- `--mp4` — run ffmpeg and write an mp4
+- `--gif` — run ffmpeg and write a gif (two-pass palette)
+- `--gif-fps` (default `--fps`) — downsample the gif
+- `--gif-width` (default full size) — downscale the gif, aspect preserved
+
+Leave `--mp4` off and the script prints the ffmpeg command instead of running it, so you can tweak the encode yourself. For a gif, let the script handle it — it runs a two-pass palette (`palettegen` + `paletteuse`), because a plain one-pass encode bands the gradient background and the bloom halo.
+
+```bash
+node capture.js --gif output.gif --gif-fps 15 --gif-width 720
+```
+
+## Attribution and rights
+
+Station and line geometry traced from OpenStreetMap needs an "© OpenStreetMap contributors" credit in the output (see `title.credit` above). If your schematic source is an official transit authority diagram, check its license before publishing — tracing it in Figma makes a derivative work, and "personal social post" doesn't clear that on its own.

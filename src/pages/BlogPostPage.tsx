@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { articles } from '../content/blog';
+import ChapterNav from '../components/ChapterNav/ChapterNav';
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -11,6 +13,7 @@ function fmtDate(iso: string): string {
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
   const article = articles.find((a) => a.slug === slug);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   if (!article) {
     return (
@@ -67,7 +70,11 @@ export default function BlogPostPage() {
         />
       )}
 
-      <div className="mdx-prose mt-[var(--space-8)]">
+      <div className="mt-[var(--space-8)]">
+        <ChapterNav containerRef={bodyRef} />
+      </div>
+
+      <div ref={bodyRef} className="mdx-prose mt-[var(--space-8)]">
         <Component />
       </div>
     </article>
