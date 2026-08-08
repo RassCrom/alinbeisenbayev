@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 import { useScrollStory } from '../hooks/useScrollStory';
 import aboutData from '../data/about-story.json';
 import type { AboutStoryData } from '../types';
-
-const fmtCoord = (lat: number, lng: number): string =>
-  `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
+import { formatCoordinates } from '../utils/coordinates';
 
 // react-globe.gl + three are heavy — load only on this page
 const GlobeStory = lazy(() => import('../components/GlobeStory/GlobeStory'));
@@ -69,7 +67,7 @@ export default function AboutPage() {
                 {point.date} — {point.location.name}
               </p>
               <p className="coord-label mt-[var(--space-1)]">
-                {fmtCoord(point.location.lat, point.location.lng)}
+                {formatCoordinates(point.location.lat, point.location.lng)}
               </p>
               <h2 className="mt-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-2xl)] font-bold">
                 {point.title}

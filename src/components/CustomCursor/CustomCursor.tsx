@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-
-const fmtCoord = (lat: number, lng: number): string =>
-  `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
+import { formatCoordinates } from '../../utils/coordinates';
 
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], [role="link"], input, textarea, select, label, .maplibregl-canvas, .map-origin-marker, .map-context-marker';
@@ -26,7 +24,7 @@ export default function CustomCursor() {
       if (coordEl) {
         const lat = 90 - (e.clientY / window.innerHeight) * 180;
         const lng = (e.clientX / window.innerWidth) * 360 - 180;
-        coordEl.textContent = fmtCoord(lat, lng);
+        coordEl.textContent = formatCoordinates(lat, lng);
       }
     };
     const onDown = () => cursorRef.current?.classList.add('is-pressed');

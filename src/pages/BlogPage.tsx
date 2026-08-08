@@ -10,8 +10,8 @@ type FeedKey = keyof BlogData['feeds'];
 type TabId = 'all' | FeedKey | 'articles';
 
 const TABS: { id: TabId; label: string }[] = [
-  { id: 'all', label: 'All' },
   { id: 'articles', label: 'Articles' },
+  { id: 'all', label: 'All' },
   { id: 'youtube', label: 'YouTube' },
   { id: 'telegram', label: 'Telegram' },
 ];
@@ -140,7 +140,7 @@ function ArticleCard({ article }: { article: (typeof articles)[number] }) {
 }
 
 export default function BlogPage() {
-  const [tab, setTab] = useState<TabId>('all');
+  const [tab, setTab] = useState<TabId>('articles');
   const [search, setSearch] = useState('');
 
   const posts = useMemo(() => {
@@ -159,7 +159,7 @@ export default function BlogPage() {
   }, [tab, search]);
 
   const filteredArticles = useMemo(() => {
-    if (tab !== 'articles') return [];
+    if (tab !== 'articles' && tab !== 'all') return [];
     const q = search.trim().toLowerCase();
     return q
       ? articles.filter((a) =>
@@ -202,6 +202,24 @@ export default function BlogPage() {
             {filteredArticles.map((article) => (
               <ArticleCard key={article.slug} article={article} />
             ))}
+          </div>
+        ) : (
+          <p className="py-[var(--space-16)] text-center text-[var(--color-text-muted)]">
+            {search.trim() ? 'No posts match your search.' : 'No posts yet.'}
+          </p>
+        )
+      ) : tab === 'all' ? (
+        posts.length > 0 || filteredArticles.length > 0 ? (
+          <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
+            {[
+              ...filteredArticles.map((article) => ({
+                date: article.frontmatter.date,
+                node: <ArticleCard key={article.slug} article={article} />,
+              })),
+              ...posts.map((post) => ({ date: post.date, node: <PostCard key={post.id} post={post} /> })),
+            ]
+              .sort((a, b) => b.date.localeCompare(a.date))
+              .map((item) => item.node)}
           </div>
         ) : (
           <p className="py-[var(--space-16)] text-center text-[var(--color-text-muted)]">

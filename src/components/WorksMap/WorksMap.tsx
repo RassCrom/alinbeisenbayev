@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Map as MapLibreMap, LngLatBounds } from 'maplibre-gl';
 import type { Project } from '../../types';
+import { formatCoordinates as formatCoordinatesShared } from '../../utils/coordinates';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 const MAP_STYLE = '/map-styles/portfolio-dark.json';
@@ -60,9 +61,7 @@ function contextTarget(context: Project['geography']['contexts'][number]): [numb
 }
 
 function formatCoordinates(lat: number, lng: number): string {
-  const latitude = `${Math.abs(lat).toFixed(3)}°${lat >= 0 ? 'N' : 'S'}`;
-  const longitude = `${Math.abs(lng).toFixed(3)}°${lng >= 0 ? 'E' : 'W'}`;
-  return `${latitude} · ${longitude}`;
+  return formatCoordinatesShared(lat, lng, { precision: 3, separator: ' · ' });
 }
 
 function arcCoords(

@@ -5,9 +5,7 @@ import { projects } from '../data/projects';
 import aboutData from '../data/about-story.json';
 import socialsData from '../data/socials.json';
 import type { AboutStoryData, SocialsData } from '../types';
-
-const fmtCoord = (lat: number, lng: number): string =>
-  `${Math.abs(lat).toFixed(1)}°${lat >= 0 ? 'N' : 'S'} ${Math.abs(lng).toFixed(1)}°${lng >= 0 ? 'E' : 'W'}`;
+import { formatCoordinates } from '../utils/coordinates';
 
 const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
 const { socials } = socialsData as SocialsData;
@@ -60,7 +58,7 @@ export default function LandingPage() {
           </p>
           {originCoord && (
             <p className="coord-label">
-              {fmtCoord(originCoord.lat, originCoord.lng)}
+              {formatCoordinates(originCoord.lat, originCoord.lng)}
             </p>
           )}
           {profile.languages.length > 0 && (
