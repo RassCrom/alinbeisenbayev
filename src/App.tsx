@@ -1,8 +1,11 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Nav from './components/Nav/Nav';
 import Footer from './components/Footer/Footer';
 import CustomCursor from './components/CustomCursor/CustomCursor';
+// Not lazy: this is the fallback route, so it must not depend on a chunk fetch
+// that could itself fail. It is small.
+import NotFoundPage from './pages/NotFoundPage';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const WorksPage = lazy(() => import('./pages/WorksPage'));
@@ -46,7 +49,7 @@ export default function App() {
             <Route path="/connect" element={<ConnectPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </main>

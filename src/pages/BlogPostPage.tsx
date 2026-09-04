@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { articles } from '../content/blog';
 import ChapterNav from '../components/ChapterNav/ChapterNav';
 import { usePageMeta } from '../hooks/usePageMeta';
+import NotFoundPage from './NotFoundPage';
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -17,20 +18,13 @@ export default function BlogPostPage() {
   const bodyRef = useRef<HTMLDivElement>(null);
 
   // Before the not-found branch — hooks can't sit behind a conditional return.
-  usePageMeta(article?.frontmatter.title ?? 'Post not found', article?.frontmatter.excerpt);
+  // NotFoundPage sets its own title/robots when it renders, so skip ours then.
+  usePageMeta(article?.frontmatter.title, article?.frontmatter.excerpt, {
+    enabled: Boolean(article),
+  });
 
-  if (!article) {
-    return (
-      <div className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center gap-[var(--space-4)] px-[var(--space-6)]">
-        <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-2xl)] font-bold">
-          Post not found
-        </h1>
-        <Link to="/blog" className="btn btn-secondary">
-          ← Back to Blog
-        </Link>
-      </div>
-    );
-  }
+  // An unknown slug is a miss like any other — same sheet, same noindex.
+  if (!article) return <NotFoundPage />;
 
   const { Component, frontmatter } = article;
 

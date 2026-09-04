@@ -7,6 +7,7 @@ import StackRow from '../components/StackRow/StackRow';
 import WorkCard from '../components/WorkCard/WorkCard';
 import { projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
+import NotFoundPage from './NotFoundPage';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -67,20 +68,11 @@ export default function WorkDetailPage() {
   const project = projects.find((p) => p.slug === slug);
 
   // Before the not-found branch — hooks can't sit behind a conditional return.
-  usePageMeta(project?.title ?? 'Work not found', project?.tagline);
+  // NotFoundPage sets its own title/robots when it renders, so skip ours then.
+  usePageMeta(project?.title, project?.tagline, { enabled: Boolean(project) });
 
-  if (!project) {
-    return (
-      <div className="mx-auto flex min-h-[60vh] max-w-6xl flex-col items-center justify-center gap-[var(--space-4)] px-[var(--space-6)]">
-        <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-2xl)] font-bold">
-          Work not found
-        </h1>
-        <Link to="/works" className="btn btn-secondary">
-          ← Back to Works
-        </Link>
-      </div>
-    );
-  }
+  // An unknown slug is a miss like any other — same sheet, same noindex.
+  if (!project) return <NotFoundPage />;
 
   const year = project.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
   const award = project.awards[0];
