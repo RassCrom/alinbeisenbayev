@@ -204,6 +204,11 @@
             "label": "Tashkent, Uzbekistan"
           }
         ]
+      },
+      "sourceNote": {
+        "sources": [
+          "Books, academic articles and historical GIS datasets"
+        ]
       }
     },
     {
@@ -292,6 +297,11 @@
             "lng": 76.8512,
             "label": "Almaty, Kazakhstan"
           }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "NASA FIRMS (MODIS, VIIRS)"
         ]
       }
     },
@@ -445,6 +455,11 @@
             "label": "Central Africa"
           }
         ]
+      },
+      "sourceNote": {
+        "sources": [
+          "NASA FIRMS"
+        ]
       }
     },
     {
@@ -593,6 +608,11 @@
             "lng": 71.45,
             "label": "Astana Right Bank"
           }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "OpenStreetMap, via Geofabrik"
         ]
       }
     },

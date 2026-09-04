@@ -8,6 +8,7 @@ import WorkCard from '../components/WorkCard/WorkCard';
 import { projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
 import NotFoundPage from './NotFoundPage';
+import SourceNote from '../components/SourceNote/SourceNote';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -113,7 +114,9 @@ export default function WorkDetailPage() {
           alt={project.title}
           width={1200}
           height={630}
-          fetchPriority="high"
+          // React 18 does not map camelCase fetchPriority onto the DOM attribute
+          // (React 19 does), so it was dropped and the hint never applied.
+          {...{ fetchpriority: 'high' }}
           decoding="async"
           className="h-full w-full object-cover"
         />
@@ -261,6 +264,7 @@ export default function WorkDetailPage() {
         (galleryLed ? (
           <div className="mx-auto max-w-6xl px-[var(--space-6)] pb-[var(--space-16)] pt-[var(--space-10)]">
             <ImageGallery images={project.gallery} layout="showcase" />
+            <SourceNote project={project} />
           </div>
         ) : (
           <div className="mx-auto max-w-6xl px-[var(--space-6)]">
@@ -280,6 +284,7 @@ export default function WorkDetailPage() {
               <StackRow stack={project.stack} />
             </Section>
           )}
+          <SourceNote project={project} />
         </div>
       )}
 

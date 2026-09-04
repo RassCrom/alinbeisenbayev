@@ -83,6 +83,11 @@
             "label": "Armenia / Ancient Near East"
           }
         ]
+      },
+      "sourceNote": {
+        "sources": [
+          "Academic sources and historical atlases"
+        ]
       }
     },
     {
@@ -153,6 +158,11 @@
             "lng": 73.1,
             "label": "Karaganda, Kazakhstan"
           }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "NASA FIRMS (MODIS, VIIRS)"
         ]
       }
     },

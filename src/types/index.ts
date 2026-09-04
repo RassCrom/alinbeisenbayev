@@ -75,6 +75,23 @@ export interface VideoItem {
   height: number;
 }
 
+/**
+ * The source note a printed map carries in its margin — what it was drawn
+ * from, in what projection, on what datum. Optional throughout: the detail
+ * page derives compiler, software and extent from fields that already exist,
+ * and only shows these when they are filled in.
+ */
+export interface SourceNote {
+  /** e.g. "Web Mercator (EPSG:3857)", "Equal Earth", "Lambert Conformal Conic" */
+  projection?: string;
+  /** e.g. "WGS 84" */
+  datum?: string;
+  /** Where the data came from, e.g. ["NASA FIRMS", "OpenStreetMap"] */
+  sources?: string[];
+  /** Anything else worth crediting. */
+  note?: string;
+}
+
 export interface Project {
   id: string;
   slug: string;
@@ -109,6 +126,8 @@ export interface Project {
   gallery: GalleryImage[];
   videos?: VideoItem[];
   geography: Geography;
+  /** Margin source note; see SourceNote. */
+  sourceNote?: SourceNote;
 }
 
 export interface ProjectsData {
