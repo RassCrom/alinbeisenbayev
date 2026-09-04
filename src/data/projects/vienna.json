@@ -333,10 +333,7 @@
       "idea": "How does the level of storytelling in an interactive map affect how long and how deeply users engage with climate data? The thesis tests different narrative depths in a scroll-driven map of heat stress across European cities, measuring engagement through interaction logs and eye-tracking.",
       "design": "",
       "inspiration": "",
-      "process": [
-        {},
-        {}
-      ],
+      "process": [],
       "outcome": "",
       "stack": [
         "Storytelling",

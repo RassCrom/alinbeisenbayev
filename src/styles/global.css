@@ -1134,3 +1134,34 @@
   border: none;
   border-top: 1px solid var(--color-border-subtle);
 }
+
+/* ---- View transitions (grid card -> detail hero) ------------------------- *
+ *
+ * Driven from WorkCard, which pairs `view-transition-name: cover-<slug>` on
+ * the thumbnail with the same name on the detail hero. The browser morphs
+ * between them; everything else cross-fades.
+ *
+ * Only Chromium implements this today. Elsewhere the navigation is a plain
+ * one, which is why nothing here is load-bearing for layout.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The morphing cover gets a touch longer, so the shape change reads. */
+::view-transition-group(*) {
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* WorkCard already declines to start a transition under reduced motion;
+     this covers any the browser initiates on its own. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

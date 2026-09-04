@@ -1,5 +1,6 @@
-import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useRef } from 'react';
+import { flushSync } from 'react-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export interface WorkCardProps {
   id: string;
@@ -59,12 +60,79 @@ export default function WorkCard({
     if (el) el.style.transform = '';
   };
 
+  /*
+   * Warm the detail route while the pointer is still on the card.
+   *
+   * The route chunk is needed the instant the click lands, and hover reliably
+   * precedes it by a few hundred milliseconds. Fired once per card. The same
+   * specifier as App.tsx's lazy() import, so this resolves the very module the
+   * router is about to await rather than a second copy.
+   */
+  const warming = useRef(false);
+  const warm = useRef(false);
+  const prefetch = useCallback(() => {
+    if (warming.current) return;
+    warming.current = true;
+    import('../../pages/WorkDetailPage')
+      .then(() => {
+        warm.current = true;
+      })
+      .catch(() => {
+        // A failed warm-up is not worth surfacing; the click will retry.
+        warming.current = false;
+      });
+  }, []);
+
+  /*
+   * Morph the cover into the detail hero, when that can be done honestly.
+   *
+   * React Router's own `viewTransition` prop needs a data router
+   * (RouterProvider); this app renders BrowserRouter, where it is silently
+   * ignored — so the transition is driven here instead.
+   *
+   * Only when `warm` is true. startViewTransition snapshots whatever the DOM
+   * shows after the update, and a route chunk that has not loaded yet renders
+   * the Suspense fallback — so an un-warmed click would cross-fade the card
+   * into the word "Loading…". Falling through to the plain <Link> in that case
+   * is both simpler and better than a transition to nothing.
+   */
+  const navigate = useNavigate();
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      if (!warm.current) return;
+      if (typeof document.startViewTransition !== 'function') return;
+      // Let the browser handle new-tab, download and middle-click gestures.
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (event.button !== 0) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      event.preventDefault();
+      const transition = document.startViewTransition(() => {
+        // The callback must leave the DOM in its final state before it
+        // resolves, so the router update cannot be deferred.
+        flushSync(() => navigate(`/works/${slug}`));
+      });
+      /*
+       * A skipped transition rejects `ready`, and nothing here needs to know.
+       * The browser skips whenever it cannot animate — a backgrounded tab is
+       * the common one — and the navigation itself has already happened by
+       * then, so the only visible effect of not catching this is an uncaught
+       * "Transition was aborted because of invalid state" in the console.
+       */
+      transition.ready.catch(() => {});
+    },
+    [navigate, slug],
+  );
+
   return (
     <Link
       ref={cardRef}
       to={`/works/${slug}`}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
+      onPointerEnter={prefetch}
+      onFocus={prefetch}
+      onClick={handleClick}
       className="group relative block h-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[image:var(--gradient-card)] shadow-[var(--shadow-card)] transition-[transform,border-color,box-shadow] duration-200 ease-out will-change-transform hover:border-[var(--color-border-default)] hover:shadow-[var(--shadow-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] active:scale-[0.99]"
     >
       <div className={`relative overflow-hidden ${large ? 'aspect-[2/1]' : 'aspect-video'}`}>
@@ -75,6 +143,11 @@ export default function WorkCard({
           height={630}
           loading="lazy"
           decoding="async"
+          /* Paired with the same name on the detail hero, so the browser
+             morphs this thumbnail into it across the navigation. Scoped per
+             slug: two elements sharing a name in one snapshot abort the
+             transition, and only one card for a given slug is ever on screen. */
+          style={{ viewTransitionName: `cover-${slug}` }}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-x-[var(--space-3)] top-[var(--space-3)] flex items-start gap-[var(--space-2)]">

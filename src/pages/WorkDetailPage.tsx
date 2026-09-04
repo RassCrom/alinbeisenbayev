@@ -93,7 +93,12 @@ export default function WorkDetailPage() {
   const hasNarrative =
     Boolean(
       project.context || project.idea || project.design || project.inspiration || project.outcome,
-    ) || project.process.length > 0;
+    ) || project.process.some((step) => step.title?.trim() || step.description?.trim());
+  /** A step with neither a title nor a description has nothing to show. */
+  const processSteps = project.process.filter(
+    (step) => step.title?.trim() || step.description?.trim(),
+  );
+
   const mediaCount = (project.gallery?.length ?? 0) + (project.videos?.length ?? 0);
   const galleryLed = !hasNarrative && mediaCount > 0;
 
@@ -118,6 +123,9 @@ export default function WorkDetailPage() {
           // (React 19 does), so it was dropped and the hint never applied.
           {...{ fetchpriority: 'high' }}
           decoding="async"
+          // Pairs with the same name on the WorkCard cover, so arriving from
+          // the grid morphs the thumbnail into this hero.
+          style={{ viewTransitionName: `cover-${project.slug}` }}
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0" style={{ background: 'var(--gradient-overlay)' }} />
@@ -217,14 +225,17 @@ export default function WorkDetailPage() {
           </Section>
         )}
 
-        {/* Process — vertical timeline */}
-        {project.process?.length > 0 && (
+        {/* Process — vertical timeline.
+            Placeholder entries are skipped: the data has carried empty step
+            objects, which rendered as blank numbered rows and collided as
+            React keys (every one of them keyed on an absent `step`). */}
+        {processSteps.length > 0 && (
           <Section eyebrow="How it was built" heading="Process">
             <div className="process-timeline">
-              {project.process.map((step) => (
+              {processSteps.map((step, index) => (
                 <ProcessStep
-                  key={step.step}
-                  step={step.step}
+                  key={step.step ?? index}
+                  step={step.step ?? index + 1}
                   title={step.title}
                   description={step.description}
                   image={step.image}
