@@ -19,14 +19,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-maplibre': ['maplibre-gl'],
-          'vendor-globe': ['react-globe.gl', 'three'],
-        },
-      },
-    },
-  },
+  /*
+   * No manualChunks.
+   *
+   * There used to be 'vendor-maplibre' and 'vendor-globe' entries here. Naming
+   * a chunk that way pulls it into the initial graph, so Vite emitted a
+   * <link rel="modulepreload"> for both in index.html — meaning every visitor
+   * downloaded MapLibre and three.js on the homepage, whether or not they ever
+   * opened the map or the About page. Letting Rollup split on the dynamic
+   * import boundaries instead keeps MapLibre inside the lazy WorksMap chunk,
+   * which is the only thing that needs it.
+   */
 });

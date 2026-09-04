@@ -6,7 +6,7 @@ import type { AboutStoryData } from '../types';
 import { formatCoordinates } from '../utils/coordinates';
 import { usePageMeta } from '../hooks/usePageMeta';
 
-// react-globe.gl + three are heavy — load only on this page
+// Canvas globe + its coastline data — only needed on this page
 const GlobeStory = lazy(() => import('../components/GlobeStory/GlobeStory'));
 
 const { profile, story, endCta } = aboutData as unknown as AboutStoryData;

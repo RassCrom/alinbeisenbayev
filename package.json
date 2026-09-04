@@ -13,9 +13,7 @@
     "medium-zoom": "^1",
     "react": "^18",
     "react-dom": "^18",
-    "react-globe.gl": "^2",
-    "react-router-dom": "^6",
-    "three": "^0.160"
+    "react-router-dom": "^6"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.1",
@@ -23,7 +21,6 @@
     "@types/mdx": "^2.0.14",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@types/three": "^0.160",
     "@vitejs/plugin-react": "^4",
     "rehype-slug": "^6.0.0",
     "remark-frontmatter": "^5.0.0",
