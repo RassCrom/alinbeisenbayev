@@ -406,25 +406,33 @@
   outline-offset: 2px;
 }
 
+/*
+ * Proportional symbols. --hub-dot is set per marker in WorksMap from the
+ * number of projects made in that city, scaled by square root so the symbol's
+ * *area* tracks the count — the standard construction, and the reason 21
+ * projects in Vienna does not draw a circle twenty-one times the width of
+ * Dresden's one. Centred with calc so any diameter stays on its coordinate.
+ */
 .map-origin-marker::before {
   content: '';
   position: absolute;
-  left: 15px;
-  top: 15px;
-  width: 14px;
-  height: 14px;
+  left: calc(50% - var(--hub-dot, 14px) / 2);
+  top: calc(50% - var(--hub-dot, 14px) / 2);
+  width: var(--hub-dot, 14px);
+  height: var(--hub-dot, 14px);
   border-radius: var(--radius-full);
   background: var(--color-accent-light);
+  opacity: 0.28;
   animation: pulse-dot 2s ease-out infinite;
 }
 
 .map-origin-marker::after {
   content: '';
   position: absolute;
-  left: 18px;
-  top: 18px;
-  width: 8px;
-  height: 8px;
+  left: calc(50% - var(--hub-core, 8px) / 2);
+  top: calc(50% - var(--hub-core, 8px) / 2);
+  width: var(--hub-core, 8px);
+  height: var(--hub-core, 8px);
   border-radius: var(--radius-full);
   background: var(--color-accent-light);
   box-shadow: 0 0 8px var(--color-accent-light);
@@ -1164,4 +1172,56 @@
   ::view-transition-new(*) {
     animation: none !important;
   }
+}
+
+
+/* ---- Map <-> list hover linking ----------------------------------------- *
+ * WorksPage owns the hovered project id; the map raises it on marker hover
+ * and consumes it to light the matching symbol, so the sidebar and the map
+ * point at the same work.
+ */
+.map-origin-marker.is-linked::after,
+.map-context-marker.is-linked::before {
+  box-shadow:
+    0 0 0 3px rgba(var(--color-accent-light-rgb), 0.35),
+    0 0 14px var(--color-accent-light);
+}
+
+.map-origin-marker.is-linked .map-origin-name {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.map-context-marker.is-linked::before {
+  transform: scale(1.5);
+}
+
+.map-context-marker::before {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+/* The sidebar row for a project whose marker is hovered. */
+.map-list-row.is-linked {
+  border-color: var(--color-accent);
+  background: var(--color-accent-glow);
+}
+
+/* ---- Graduated symbol legend -------------------------------------------- */
+.map-legend-swatch {
+  position: relative;
+  display: inline-block;
+  flex: none;
+}
+
+.map-legend-swatch::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: var(--swatch-size);
+  height: var(--swatch-size);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-accent-light);
+  background: rgba(var(--color-accent-light-rgb), 0.18);
 }

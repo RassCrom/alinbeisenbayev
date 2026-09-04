@@ -8,6 +8,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 // MapLibre bundle loads only when the map view is opened
 const WorksMap = lazy(() => import('../components/WorksMap/WorksMap'));
+const MapLegend = lazy(() => import('../components/WorksMap/MapLegend'));
 
 type ViewMode = 'grid' | 'map';
 type TypeFilter = 'all' | 'web' | 'image' | 'animation';
@@ -89,6 +90,8 @@ export default function WorksPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const view: ViewMode = searchParams.get('view') === 'map' ? 'map' : 'grid';
   const [mapExpanded, setMapExpanded] = useState(false);
+  /** Project hovered in the sidebar or on the map; both light up together. */
+  const [linkedId, setLinkedId] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
 
   const typeFiltered = useMemo(() => {
@@ -102,6 +105,15 @@ export default function WorksPage() {
     useProjectFilter(typeFiltered, searchParams.get('q') ?? '');
 
   const visibleIds = useMemo(() => filtered.map((p) => p.id), [filtered]);
+  /** Highest per-city project count — the top of the graduated symbol scale. */
+  const busiestHub = useMemo(() => {
+    const counts = new Map<string, number>();
+    sortedProjects.forEach((project) => {
+      const label = project.geography.origin?.label;
+      if (label) counts.set(label, (counts.get(label) ?? 0) + 1);
+    });
+    return Math.max(1, ...counts.values());
+  }, []);
   const geographyStats = useMemo(() => {
     const creationCities = new Set(
       filtered.map((project) => project.geography.origin?.label).filter(Boolean),
@@ -256,14 +268,19 @@ export default function WorksPage() {
           >
             {/* Search & filter sidebar — fullscreen mode only */}
             {!mapExpanded && (
-              <div className="mb-[var(--space-4)] flex flex-col gap-[var(--space-3)] rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] px-[var(--space-4)] py-[var(--space-3)] sm:flex-row sm:items-center sm:justify-between">
+              <div className="mb-[var(--space-4)] flex flex-col gap-[var(--space-4)] rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] px-[var(--space-4)] py-[var(--space-3)] sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] font-semibold text-[var(--color-text-primary)]">
                     Where the work was made, and what each project maps
                   </p>
-                  <p className="mt-1 max-w-2xl text-[length:var(--text-xs)] leading-relaxed text-[var(--color-text-muted)]">
-                    Blue cities are creation hubs. Gold points and regions are the geographic subjects connected to those works.
-                  </p>
+                  {/* The blue/gold split used to be explained in prose. A key
+                      is where a map puts that, and the graduated hub symbols
+                      need one regardless. */}
+                  <div className="mt-[var(--space-3)]">
+                    <Suspense fallback={null}>
+                      <MapLegend busiestHub={busiestHub} />
+                    </Suspense>
+                  </div>
                 </div>
                 <p className="shrink-0 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.08em] text-[var(--color-text-secondary)] uppercase">
                   {geographyStats.creationCities} hubs · {geographyStats.mappedPlaces} places
@@ -282,6 +299,11 @@ export default function WorksPage() {
                 <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed text-[var(--color-text-muted)]">
                   Filter the portfolio, then explore where each work was created and the places it maps.
                 </p>
+                <div className="mt-[var(--space-4)]">
+                  <Suspense fallback={null}>
+                    <MapLegend busiestHub={busiestHub} />
+                  </Suspense>
+                </div>
                 <p className="mono-label mt-[var(--space-6)]">Search &amp; Filters</p>
                 <div className="mt-[var(--space-4)]">
                   <SearchFilter
@@ -300,7 +322,13 @@ export default function WorksPage() {
                     <li key={project.id}>
                       <Link
                         to={`/works/${project.slug}`}
-                        className="block min-h-11 rounded-[var(--radius-sm)] border border-transparent px-[var(--space-2)] py-[var(--space-2)] transition-colors hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                        onMouseEnter={() => setLinkedId(project.id)}
+                        onMouseLeave={() => setLinkedId(null)}
+                        onFocus={() => setLinkedId(project.id)}
+                        onBlur={() => setLinkedId(null)}
+                        className={`map-list-row block min-h-11 rounded-[var(--radius-sm)] border border-transparent px-[var(--space-2)] py-[var(--space-2)] transition-colors hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] ${
+                          linkedId === project.id ? 'is-linked' : ''
+                        }`}
                       >
                         <span className="font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] font-semibold">
                           {project.title}
@@ -344,6 +372,8 @@ export default function WorksPage() {
                   visibleIds={visibleIds}
                   expanded={mapExpanded}
                   onToggleExpand={() => setMapExpanded((v) => !v)}
+                  linkedId={linkedId}
+                  onLinkedChange={setLinkedId}
                 />
               </Suspense>
             </div>

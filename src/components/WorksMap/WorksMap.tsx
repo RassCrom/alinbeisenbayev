@@ -48,6 +48,22 @@ function nearestHub(lat: number, lng: number): Hub {
   }, HUBS[0]);
 }
 
+/** Smallest and largest drawn diameter for a hub symbol, in pixels. */
+const HUB_DOT_MIN = 12;
+const HUB_DOT_MAX = 32;
+
+/**
+ * Diameter for a hub holding `count` projects, given the busiest hub holds
+ * `max`. Scaled on sqrt so the circle's *area* is proportional to the count
+ * rather than its width — 21 projects should read as a bigger place than 1,
+ * not as a circle twenty-one times as wide.
+ */
+function hubDotSize(count: number, max: number): number {
+  if (max <= 1) return HUB_DOT_MIN;
+  const t = (Math.sqrt(count) - 1) / (Math.sqrt(max) - 1);
+  return HUB_DOT_MIN + t * (HUB_DOT_MAX - HUB_DOT_MIN);
+}
+
 function contextTarget(context: Project['geography']['contexts'][number]): [number, number] | null {
   if (context.connectionType === 'polygon') {
     return context.centroidLng !== undefined && context.centroidLat !== undefined
@@ -197,6 +213,10 @@ export interface WorksMapProps {
   visibleIds?: string[];
   expanded?: boolean;
   onToggleExpand?: () => void;
+  /** Project the sidebar is hovering; its symbols light up. */
+  linkedId?: string | null;
+  /** Raised when a marker is hovered, so the sidebar can light the same rows. */
+  onLinkedChange?: (projectId: string | null) => void;
 }
 
 export default function WorksMap({
@@ -204,6 +224,8 @@ export default function WorksMap({
   visibleIds,
   expanded = false,
   onToggleExpand,
+  linkedId = null,
+  onLinkedChange,
 }: WorksMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -212,6 +234,8 @@ export default function WorksMap({
   const polygonLayersRef = useRef<{ projectId: string; hubKey: string; layerIds: string[] }[]>([]);
   const visibleIdsRef = useRef<string[] | undefined>(visibleIds);
   visibleIdsRef.current = visibleIds;
+  const onLinkedChangeRef = useRef(onLinkedChange);
+  onLinkedChangeRef.current = onLinkedChange;
   const activeHubRef = useRef<string | null>(null);
   const hubProjectIdsRef = useRef(new Map<string, string[]>());
   const fitVisibleRef = useRef<() => void>(() => {});
@@ -309,6 +333,19 @@ export default function WorksMap({
     });
     applyArcs();
   };
+
+  /*
+   * Light the symbols for the project the sidebar is hovering.
+   *
+   * Class toggling rather than inline style: MapLibre rewrites a marker
+   * element's inline transform (and clobbers inline opacity) on every map
+   * update, which is the same reason applyHubFocus uses classes.
+   */
+  useEffect(() => {
+    markersRef.current.forEach(({ projectIds, el }) => {
+      el.classList.toggle('is-linked', Boolean(linkedId) && projectIds.includes(linkedId!));
+    });
+  }, [linkedId]);
 
   // Visibility filter from search: controls display:none + reapplies arcs
   const applyVisibility = () => {
@@ -462,6 +499,13 @@ export default function WorksMap({
           fitProjectIds(hubProjectIdsRef.current.get(hubKey) ?? []);
 
         // ── One origin marker per hub city ─────────────────────────────
+        // Symbols are graduated against the busiest hub, so the legend in
+        // WorksPage and these circles share one scale.
+        const busiestHub = Math.max(
+          1,
+          ...[...originGroups.values()].map((group) => group.projects.length),
+        );
+
         originGroups.forEach((group, hubKey) => {
           if (group.projects.length === 0) return;
           const lngLat: [number, number] = [group.lng, group.lat];
@@ -488,12 +532,22 @@ export default function WorksMap({
             originEl.append(badge);
           }
 
+          const dot = hubDotSize(group.projects.length, busiestHub);
+          originEl.style.setProperty('--hub-dot', `${dot.toFixed(1)}px`);
+          originEl.style.setProperty('--hub-core', `${(dot * 0.5).toFixed(1)}px`);
+
           const marker = new maplibregl.Marker({ element: originEl }).setLngLat(lngLat);
 
           originEl.addEventListener('click', (event) => {
             event.stopPropagation();
             toggleHubFocus(hubKey);
           });
+          // A hub holds many projects; announce one only when it holds exactly
+          // one, otherwise there is nothing unambiguous to link to.
+          originEl.addEventListener('pointerenter', () => {
+            if (group.projects.length === 1) onLinkedChangeRef.current?.(group.projects[0].id);
+          });
+          originEl.addEventListener('pointerleave', () => onLinkedChangeRef.current?.(null));
           const popup = new maplibregl.Popup({ offset: 18, maxWidth: '260px' }).setDOMContent(
             buildProjectListPopup(
               group.projects,
@@ -629,6 +683,11 @@ export default function WorksMap({
               (slug) => navigateRef.current(`/works/${slug}`),
             ),
           );
+
+          contextEl.addEventListener('pointerenter', () => {
+            if (projectsAtPoint.length === 1) onLinkedChangeRef.current?.(projectsAtPoint[0].id);
+          });
+          contextEl.addEventListener('pointerleave', () => onLinkedChangeRef.current?.(null));
 
           new maplibregl.Marker({ element: contextEl })
             .setLngLat([first.lng, first.lat])
