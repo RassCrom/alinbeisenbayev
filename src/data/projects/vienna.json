@@ -33,51 +33,67 @@
       "gallery": [
         {
           "url": "/images/projects/orhon-stories/turkic_nomadic-countries.webp",
+          "width": 1082,
+          "height": 1352,
+          "downloadUrl": "/images/projects/orhon-stories/turkic_nomadic-countries.png",
           "caption": "Interesting about Turkic, Central Asian, and Nomadic countries.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/turkic_nomadic-countries.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/orhon-stories/asian-regions.webp",
+          "width": 1081,
+          "height": 1351,
+          "downloadUrl": "/images/projects/orhon-stories/asian-regions.png",
           "caption": "Division of Asia into regions.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/asian-regions.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/orhon-stories/asia-csmajor-s3-v1.webp",
+          "width": 1081,
+          "height": 1351,
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s3-v1.png",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 3.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s3-v1.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/orhon-stories/asia-csmajor-s3-v2.webp",
+          "width": 1081,
+          "height": 1351,
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s3-v2.png",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 3, colored logo.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s3-v2.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/orhon-stories/asia-csmajor-s12-v1.webp",
+          "width": 1081,
+          "height": 1351,
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s12-v1.png",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 1 and 2.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s12-v1.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/orhon-stories/asia-csmajor-s12-v2.webp",
+          "width": 1081,
+          "height": 1351,
+          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s12-v2.png",
           "caption": "Map shows asian teams that participate in CS Major Cologne 26 in Stage 1 and 2, colored logo.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/asia-csmajor-s12-v2.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/orhon-stories/asia-in-wc26.webp",
+          "width": 1081,
+          "height": 1351,
+          "downloadUrl": "/images/projects/orhon-stories/asia-in-wc26.png",
           "caption": "Asian teams that qualified for World Cup 2026",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/asia-in-wc26.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/orhon-stories/asian-teams-base-locations.webp",
+          "width": 1081,
+          "height": 1351,
+          "downloadUrl": "/images/projects/orhon-stories/asian-teams-base-locations.png",
           "caption": "Location of stay of Asian teams for World Cup 2026.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/orhon-stories/asian-teams-base-locations.png"
+          "type": "detail"
         }
       ],
       "geography": {
@@ -103,6 +119,7 @@
       "tagline": "Print map showcasing the historical Silk Road trade network with a focus on Central Asian routes",
       "status": "complete",
       "featured": true,
+      "featuredOrder": 1,
       "type": "static-map",
       "category": "print",
       "keywords": [
@@ -146,15 +163,19 @@
       "gallery": [
         {
           "url": "/images/projects/silk-road/wip.webp",
+          "width": 1400,
+          "height": 989,
+          "downloadUrl": "/images/projects/silk-road/wip.png",
           "caption": "Work-in-progress view of the map composition.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/silk-road/wip.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/silk-road/preview.webp",
+          "width": 1317,
+          "height": 925,
+          "downloadUrl": "/images/projects/silk-road/preview.png",
           "caption": "Preview crop - Central Asian route detail.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/silk-road/preview.png"
+          "type": "detail"
         }
       ],
       "geography": {
@@ -239,11 +260,15 @@
       "gallery": [
         {
           "url": "/images/placeholder.jpg",
+          "width": 1200,
+          "height": 630,
           "caption": "Dashboard view - wildfire density across Kazakhstan.",
           "type": "screenshot"
         },
         {
           "url": "/images/placeholder.jpg",
+          "width": 1200,
+          "height": 630,
           "caption": "Interactive report - temporal wildfire trend panel.",
           "type": "screenshot"
         }
@@ -275,10 +300,11 @@
       "slug": "heat-stress-vienna",
       "title": "Heat Stress in Vienna",
       "tagline": "MSc thesis: evaluating user engagement in scroll-driven map narratives of urban heat stress across European cities",
-      "status": "done",
+      "status": "complete",
       "featured": true,
+      "featuredOrder": 4,
       "type": "website",
-      "category": "storytelling",
+      "category": "storytelling map",
       "keywords": [
         "urban heat",
         "Vienna",
@@ -378,12 +404,16 @@
       "gallery": [
         {
           "url": "/images/projects/earth-on-fire/dark.webp",
+          "width": 350,
+          "height": 267,
           "downloadUrl": "/images/projects/earth-on-fire/dark.png",
           "caption": "Earth on Fire - dark version. Global fire ignition density, 5-year accumulation.",
           "type": "print"
         },
         {
           "url": "/images/projects/earth-on-fire/light.webp",
+          "width": 350,
+          "height": 247,
           "downloadUrl": "/images/projects/earth-on-fire/light.png",
           "caption": "Earth on Fire - light version.",
           "type": "print"
@@ -452,6 +482,8 @@
       "gallery": [
         {
           "url": "/images/projects/tropical-night/tropical_nights-2025-v5.webp",
+          "width": 1080,
+          "height": 1350,
           "downloadUrl": "/images/projects/tropical-night/tropical_nights-2025-v5.png",
           "caption": "Tropical Nights of Europe",
           "type": "screenshot"
@@ -480,8 +512,9 @@
       "tagline": "Interactive web map about Astana buildings - construction year, height, etc.",
       "status": "complete",
       "featured": true,
+      "featuredOrder": 3,
       "type": "website",
-      "category": "interactive-map",
+      "category": "interactive map",
       "keywords": [
         "Astana",
         "buildings",
@@ -526,12 +559,16 @@
       "gallery": [
         {
           "url": "/images/projects/astana-buildings/cyear-preview.webp",
+          "width": 1100,
+          "height": 517,
           "downloadUrl": "/images/projects/astana-buildings/cyear-preview.png",
           "caption": "Year of construction.",
           "type": "screenshot"
         },
         {
           "url": "/images/projects/astana-buildings/elevation-preview.webp",
+          "width": 1100,
+          "height": 517,
           "downloadUrl": "/images/projects/astana-buildings/elevation-preview.png",
           "caption": "Elevation visualized through buildings.",
           "type": "screenshot"
@@ -567,7 +604,7 @@
       "status": "in-progress",
       "featured": false,
       "type": "website",
-      "category": "interactive-map",
+      "category": "interactive map",
       "keywords": [
         "Kazakhstan",
         "people",
@@ -729,7 +766,7 @@
       "status": "in-progress",
       "featured": false,
       "type": "website",
-      "category": "interactive-map",
+      "category": "interactive map",
       "keywords": [
         "Vienna",
         "history",
@@ -780,7 +817,7 @@
       "status": "complete",
       "featured": false,
       "type": "website",
-      "category": "interactive-map",
+      "category": "interactive map",
       "keywords": [
         "Austria",
         "income",
@@ -834,6 +871,7 @@
       "tagline": "Historical map shows approximate figures of kazakh loss per region.",
       "status": "complete",
       "featured": true,
+      "featuredOrder": 5,
       "type": "static-map",
       "category": "social media",
       "keywords": [
@@ -876,9 +914,11 @@
       "gallery": [
         {
           "url": "/images/projects/asharshylyq/cover.webp",
+          "width": 1083,
+          "height": 1353,
+          "downloadUrl": "/images/projects/asharshylyq/cover.png",
           "caption": "Asharshylyq, 1931-1933 - full map.",
-          "type": "print",
-          "downloadUrl": "/images/projects/asharshylyq/cover.png"
+          "type": "print"
         }
       ],
       "geography": {
@@ -901,9 +941,10 @@
       "id": "europe-ignition",
       "slug": "europe-ignition",
       "title": "Europe's Ignition Pattern, 2012-2026",
-      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
+      "tagline": "Wildfire ignition points across Europe, accumulated from 2012 to 2026",
       "status": "in-progress",
       "featured": true,
+      "featuredOrder": 8,
       "type": "static-map",
       "category": "social media",
       "keywords": [
@@ -929,6 +970,8 @@
       "gallery": [
         {
           "url": "/images/projects/europe-ignition/cover.webp",
+          "width": 350,
+          "height": 438,
           "downloadUrl": "/images/projects/europe-ignition/cover.png",
           "caption": "Europe's Ignition Pattern, 2012-2026 - full map.",
           "type": "print"
@@ -954,7 +997,7 @@
       "id": "heat-mortality",
       "slug": "heat-mortality",
       "title": "Heat-related Mortality in Europe",
-      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
+      "tagline": "Heat-related deaths mapped across European regions",
       "status": "complete",
       "featured": false,
       "type": "static-map",
@@ -982,12 +1025,16 @@
       "gallery": [
         {
           "url": "/images/projects/heat-mortality/cover.webp",
+          "width": 1400,
+          "height": 1027,
+          "downloadUrl": "/images/projects/heat-mortality/cover.png",
           "caption": "Heat-related Mortality in Europe - full map.",
-          "type": "print",
-          "downloadUrl": "/images/projects/heat-mortality/cover.png"
+          "type": "print"
         },
         {
           "url": "/images/projects/heat-mortality/linkedin-3x.webp",
+          "width": 350,
+          "height": 257,
           "caption": "Heat-related Mortality - LinkedIn post version.",
           "type": "print"
         }
@@ -1042,18 +1089,24 @@
       "gallery": [
         {
           "url": "/images/projects/chess-map/opening-desktop.webp",
+          "width": 350,
+          "height": 197,
           "downloadUrl": "/images/projects/chess-map/opening-desktop.png",
           "caption": "Countries and Chess Openings - desktop version.",
           "type": "print"
         },
         {
           "url": "/images/projects/chess-map/opening-mobile.webp",
+          "width": 350,
+          "height": 437,
           "downloadUrl": "/images/projects/chess-map/opening-mobile.png",
           "caption": "Countries and Chess Openings - mobile / portrait version.",
           "type": "print"
         },
         {
           "url": "/images/projects/chess-map/fide-players.webp",
+          "width": 350,
+          "height": 197,
           "downloadUrl": "/images/projects/chess-map/fide-players.png",
           "caption": "FIDE-rated Chess Players by Country.",
           "type": "print"
@@ -1247,6 +1300,7 @@
       "tagline": "Metro networks morphing between true geography and schematic map",
       "status": "in-progress",
       "featured": true,
+      "featuredOrder": 6,
       "type": "animation",
       "category": "social media",
       "keywords": [
@@ -1331,7 +1385,7 @@
       "slug": "football-mapped",
       "title": "Football Mapped",
       "tagline": "World Cup 2026 matches visualised as heatmap",
-      "status": "done",
+      "status": "complete",
       "featured": false,
       "type": "animation",
       "category": "social media",
@@ -1434,7 +1488,7 @@
       "status": "in-progress",
       "featured": false,
       "type": "website",
-      "category": "fantasy world",
+      "category": "game",
       "keywords": [
         "world building",
         "card game",
@@ -1470,10 +1524,10 @@
       "slug": "pie-clock",
       "title": "Pie Clock",
       "tagline": "Poster generator of satellite images. All seasons of the city in one image",
-      "status": "done",
+      "status": "complete",
       "featured": false,
       "type": "website",
-      "category": "posters",
+      "category": "print",
       "keywords": [
         "poster",
         "design"
@@ -1497,39 +1551,51 @@
       "gallery": [
         {
           "url": "/images/projects/pie-clock/year-clock-astana-classic.webp",
+          "width": 1600,
+          "height": 1730,
+          "downloadUrl": "/images/projects/pie-clock/year-clock-astana-classic.png",
           "caption": "Year Clock of Astana (Classic layout)",
-          "type": "detail",
-          "downloadUrl": "/images/projects/pie-clock/year-clock-astana-classic.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/pie-clock/year-clock-karaganda-region-classic.webp",
+          "width": 1600,
+          "height": 1730,
+          "downloadUrl": "/images/projects/pie-clock/year-clock-karaganda-region-classic.png",
           "caption": "Year Clock of Karaganda Region (Classic layout)",
-          "type": "detail",
-          "downloadUrl": "/images/projects/pie-clock/year-clock-karaganda-region-classic.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/pie-clock/year-clock-karaganda-region-classic-sweep.webm",
+          "width": 1600,
+          "height": 1730,
+          "downloadUrl": "/images/projects/pie-clock/year-clock-karaganda-region-classic-sweep.webm",
           "caption": "Year Clock of Karaganda Region (Classic sweep animation)",
-          "type": "detail",
-          "downloadUrl": "/images/projects/pie-clock/year-clock-karaganda-region-classic-sweep.webm"
+          "type": "detail"
         },
         {
           "url": "/images/projects/pie-clock/year-clock-oslo-portrait.webp",
+          "width": 1080,
+          "height": 1350,
+          "downloadUrl": "/images/projects/pie-clock/year-clock-oslo-portrait.png",
           "caption": "Year Clock of Oslo (Portrait layout)",
-          "type": "detail",
-          "downloadUrl": "/images/projects/pie-clock/year-clock-oslo-portrait.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/pie-clock/year-clock-shymkent-classic.webp",
+          "width": 1600,
+          "height": 1730,
+          "downloadUrl": "/images/projects/pie-clock/year-clock-shymkent-classic.png",
           "caption": "Year Clock of Shymkent (Classic layout)",
-          "type": "detail",
-          "downloadUrl": "/images/projects/pie-clock/year-clock-shymkent-classic.png"
+          "type": "detail"
         },
         {
           "url": "/images/projects/pie-clock/year-clock-vienna-portrait.webp",
+          "width": 1080,
+          "height": 1350,
+          "downloadUrl": "/images/projects/pie-clock/year-clock-vienna-portrait.png",
           "caption": "Year Clock of Vienna (Portrait layout)",
-          "type": "detail",
-          "downloadUrl": "/images/projects/pie-clock/year-clock-vienna-portrait.png"
+          "type": "detail"
         }
       ],
       "videos": [],

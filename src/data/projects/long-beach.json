@@ -33,6 +33,8 @@
       "gallery": [
         {
           "url": "/images/placeholder.jpg",
+          "width": 1200,
+          "height": 630,
           "caption": "",
           "type": "print"
         }

@@ -3,20 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import skillsData from '../data/skills.json';
 import { projects } from '../data/projects';
 import type { SkillsData, SkillLevel, Project } from '../types';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const { categories, skills } = skillsData as SkillsData;
 
+/*
+ * Five levels, high to low. `beginner` was missing from all of these and from
+ * the SkillLevel union, so the `?? '◌'` fallbacks below quietly rendered seven
+ * skills — Affinity, T-rex, Martin, German, Japanese, Table Tennis and
+ * Photography — as "Learning". Beginner German is not the same claim.
+ *
+ * The symbols read as one ramp now (solid → half → empty → dotted), which is
+ * why intermediate moved from ○ to ◐ to make room for beginner at ○.
+ */
 const LEVEL_COLOR: Record<SkillLevel, string> = {
   expert: 'var(--color-accent)',
   advanced: 'var(--color-accent-light)',
   intermediate: 'var(--color-text-secondary)',
+  beginner: 'var(--color-text-muted)',
   learning: 'var(--color-text-muted)',
 };
 
 const LEVEL_SYMBOL: Record<string, string> = {
   expert: '◆',
   advanced: '●',
-  intermediate: '○',
+  intermediate: '◐',
+  beginner: '○',
   learning: '◌',
 };
 
@@ -24,13 +36,15 @@ const LEVEL_SYMBOL_COLOR: Record<string, string> = {
   expert: 'var(--color-accent-gold)',
   advanced: 'var(--color-accent-light)',
   intermediate: 'var(--color-text-secondary)',
+  beginner: 'var(--color-text-muted)',
   learning: 'var(--color-text-muted)',
 };
 
 const LEGEND_KEY = [
   { sym: '◆', col: 'var(--color-accent-gold)',      label: 'Expert' },
   { sym: '●', col: 'var(--color-accent-light)',     label: 'Advanced' },
-  { sym: '○', col: 'var(--color-text-secondary)',   label: 'Intermediate' },
+  { sym: '◐', col: 'var(--color-text-secondary)',   label: 'Intermediate' },
+  { sym: '○', col: 'var(--color-text-muted)',       label: 'Beginner' },
   { sym: '◌', col: 'var(--color-text-muted)',       label: 'Learning' },
 ];
 
@@ -61,6 +75,7 @@ interface HoverPreview {
 }
 
 export default function SkillsPage() {
+  usePageMeta('Skills', 'Cartography, GIS, remote sensing, web mapping and data visualisation — each skill linked to the work that used it.');
   const navigate = useNavigate();
   const [preview, setPreview] = useState<HoverPreview | null>(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
@@ -215,8 +230,10 @@ export default function SkillsPage() {
               <p className="truncate font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] font-bold">
                 {preview.project.title}
               </p>
+              {/* secondary, not muted: this card sits on --color-bg-overlay,
+                  the one ground where muted drops below 4.5:1. */}
               {preview.moreCount > 0 && (
-                <p className="mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
+                <p className="mt-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-secondary)]">
                   +{preview.moreCount} more related {preview.moreCount === 1 ? 'work' : 'works'}
                 </p>
               )}

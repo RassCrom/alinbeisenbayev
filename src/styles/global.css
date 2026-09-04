@@ -12,7 +12,7 @@
     background-color: var(--color-bg-base);
     background-image:
       linear-gradient(rgba(var(--color-chrome-rgb), 0.97), rgba(var(--color-chrome-rgb), 0.97)),
-      url('/astana-contours.png');
+      url('/astana-contours.webp');
     background-position: center, center top;
     background-repeat: repeat, repeat-y;
     background-size: auto, max(100vw, 1200px) auto;

@@ -5,9 +5,9 @@
       "platform": "LinkedIn",
       "label": "Alikhan Beisenbayev",
       "url": "https://linkedin.com/in/karasu",
-      "description": "Maps and stories, weekly, usually every Tuesday",
-      "followers": "1643",
-      "follower_date": "(07.31.26)",
+      "description": "Maps and stories, weekly, usually every Tuesday and Thursday",
+      "followers": "1923",
+      "follower_date": "(09.03.26)",
       "iconUrl": "/images/socials/linkedin.svg",
       "featured": true
     },
@@ -26,8 +26,8 @@
       "label": "tulparmaps",
       "url": "https://instagram.com/tulparmaps",
       "description": "My maps, stories, map design techniques, and other things related to design and cartography",
-      "followers": "3246",
-      "follower_date": "(07.31.26)",
+      "followers": "6677",
+      "follower_date": "(09.23.26)",
       "iconUrl": "/images/socials/instagram.svg",
       "featured": true
     },
@@ -37,8 +37,8 @@
       "label": "tulparmaps",
       "url": "https://www.tiktok.com/@tulparmaps",
       "description": "Map animations and visualization",
-      "followers": "1825",
-      "follower_date": "(07.31.26)",
+      "followers": "4525",
+      "follower_date": "(09.03.26)",
       "iconUrl": "/images/socials/tiktok.svg",
       "featured": true
     },
@@ -47,7 +47,7 @@
       "platform": "Instagram",
       "label": "tulparstories",
       "url": "https://instagram.com/tulparstories",
-      "description": "Storytelling videos about climate, history, geography through map design and visualizations (No publishing so far, July 31)",
+      "description": "Storytelling videos about climate, history, geography through map design and visualizations",
       "iconUrl": "/images/socials/instagram.svg",
       "featured": false
     },
@@ -56,7 +56,7 @@
       "platform": "YouTube",
       "label": "tulparstories",
       "url": "https://youtube.com/@tulparstories",
-      "description": "Similar to my tulparstories instagram. Longer videos. (Coming Soon, July 31)",
+      "description": "Similar to my tulparstories instagram. Longer videos.",
       "followers": "",
       "iconUrl": "/images/socials/youtube.svg",
       "featured": false
@@ -67,8 +67,8 @@
       "label": "tulparmaps",
       "url": "https://t.me/tulparmaps",
       "description": "My thoughts, interesting things in cartography, more maps about Kazakhstan. In russian.",
-      "followers": "10",
-      "follower_date": "(07.31.26)",
+      "followers": "12",
+      "follower_date": "(09.03.26)",
       "iconUrl": "/images/socials/telegram.svg",
       "featured": false
     },

@@ -1,5 +1,6 @@
 import socialsData from '../data/socials.json';
 import type { SocialsData, Social } from '../types';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const { socials } = socialsData as SocialsData;
 
@@ -10,6 +11,7 @@ function actionLabel(social: Social): string {
 }
 
 export default function ConnectPage() {
+  usePageMeta('Connect', 'Open to job offers and collaboration. LinkedIn, GitHub, Instagram, TikTok, Telegram, email and CV.');
   return (
     <div className="mx-auto max-w-4xl px-[var(--space-6)] py-[var(--space-12)]">
       <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-3xl)] font-extrabold">

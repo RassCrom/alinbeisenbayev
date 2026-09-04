@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import blogData from '../data/blog.json';
 import { articles } from '../content/blog';
 import type { BlogData, BlogPost } from '../types';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const { feeds } = blogData as BlogData;
 
@@ -140,6 +141,7 @@ function ArticleCard({ article }: { article: (typeof articles)[number] }) {
 }
 
 export default function BlogPage() {
+  usePageMeta('Blog', 'Notes, tutorials and map breakdowns on cartography, QGIS and geospatial storytelling.');
   const [tab, setTab] = useState<TabId>('articles');
   const [search, setSearch] = useState('');
 

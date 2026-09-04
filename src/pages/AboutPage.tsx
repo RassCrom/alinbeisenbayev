@@ -4,15 +4,25 @@ import { useScrollStory } from '../hooks/useScrollStory';
 import aboutData from '../data/about-story.json';
 import type { AboutStoryData } from '../types';
 import { formatCoordinates } from '../utils/coordinates';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 // react-globe.gl + three are heavy — load only on this page
 const GlobeStory = lazy(() => import('../components/GlobeStory/GlobeStory'));
 
 const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
 
-const INTRO_MS = 2600;
+/*
+ * How long the globe gets the stage to itself before the story fades in.
+ *
+ * This was 2600ms, and with the panels' own 300ms delay + 700ms fade the page
+ * showed nothing readable for 3.3 seconds. The panels now cross-fade over a
+ * globe that is still settling (its own transform runs 1000ms), so the text is
+ * legible at ~1.3s without losing the entrance.
+ */
+const INTRO_MS = 800;
 
 export default function AboutPage() {
+  usePageMeta('About', 'From Astana to Munich, Vienna and Dresden — the route through geodesy, GIS and cartography, told on a globe.');
   const { activeIndex, visible, setPanelRef, scrollToPanel } = useScrollStory(story.length);
   // Entrance: the globe opens centered and slowly spinning, then settles into
   // its column while the story panels fade in.
@@ -50,8 +60,8 @@ export default function AboutPage() {
 
       {/* Story panels: held back until the globe settles */}
       <div
-        className={`relative z-[var(--z-raised)] transition-opacity duration-700 lg:order-1 ${
-          intro ? 'pointer-events-none opacity-0' : 'opacity-100 delay-300'
+        className={`relative z-[var(--z-raised)] transition-opacity duration-500 lg:order-1 ${
+          intro ? 'pointer-events-none opacity-0' : 'opacity-100'
         }`}>
         {story.map((point, index) => (
           <section

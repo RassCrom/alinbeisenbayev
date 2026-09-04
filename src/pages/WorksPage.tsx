@@ -4,6 +4,7 @@ import WorkCard from '../components/WorkCard/WorkCard';
 import SearchFilter from '../components/SearchFilter/SearchFilter';
 import { useProjectFilter } from '../hooks/useProjectFilter';
 import { projects } from '../data/projects';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 // MapLibre bundle loads only when the map view is opened
 const WorksMap = lazy(() => import('../components/WorksMap/WorksMap'));
@@ -36,8 +37,33 @@ function compactCoordinates(lat: number, lng: number): string {
   return `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? 'N' : 'S'} · ${Math.abs(lng).toFixed(2)}°${lng >= 0 ? 'E' : 'W'}`;
 }
 
+/**
+ * Grid order, in three tiers:
+ *
+ *   1. finished before in-progress — pure newest-first opened the grid on three
+ *      unfinished sketches, which is the worst available first impression;
+ *   2. the curated `featuredOrder` run, so the strongest case studies lead here
+ *      the same way they lead the landing page;
+ *   3. recency, then title.
+ *
+ * Nothing is hidden — unfinished work still appears, just below the finished
+ * work.
+ */
+function unfinishedRank(project: (typeof projects)[number]): number {
+  return project.status === 'in-progress' ? 1 : 0;
+}
+
+/** MAX_SAFE_INTEGER rather than Infinity: two uncurated projects must subtract
+ *  to 0 so the comparison falls through to the date tiers. Infinity would give
+ *  NaN, which only works here because NaN happens to be falsy. */
+function curatedRank(project: (typeof projects)[number]): number {
+  return project.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+}
+
 const sortedProjects = [...projects].sort(
   (a, b) =>
+    unfinishedRank(a) - unfinishedRank(b) ||
+    curatedRank(a) - curatedRank(b) ||
     dateSortValue(b.startDate) - dateSortValue(a.startDate) ||
     dateSortValue(b.endDate) - dateSortValue(a.endDate) ||
     a.title.localeCompare(b.title),
@@ -52,12 +78,13 @@ const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
 
 const TYPE_FILTER_COUNTS: Record<TypeFilter, number> = {
   all: sortedProjects.length,
-  web: sortedProjects.filter((project) => project.type !== 'static-map' && String(project.type) !== 'animation').length,
+  web: sortedProjects.filter((project) => project.type !== 'static-map' && project.type !== 'animation').length,
   image: sortedProjects.filter((project) => project.type === 'static-map').length,
-  animation: sortedProjects.filter((project) => String(project.type) === 'animation').length,
+  animation: sortedProjects.filter((project) => project.type === 'animation').length,
 };
 
 export default function WorksPage() {
+  usePageMeta('Works', 'Selected cartography, geospatial and interactive map projects — filterable by keyword, and mapped by where each was made and what it maps.');
   // Keep the map view shareable without discarding an existing search query.
   const [searchParams, setSearchParams] = useSearchParams();
   const view: ViewMode = searchParams.get('view') === 'map' ? 'map' : 'grid';
@@ -65,9 +92,9 @@ export default function WorksPage() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
 
   const typeFiltered = useMemo(() => {
-    if (typeFilter === 'web') return sortedProjects.filter((p) => p.type !== 'static-map' && String(p.type) !== 'animation');
+    if (typeFilter === 'web') return sortedProjects.filter((p) => p.type !== 'static-map' && p.type !== 'animation');
     if (typeFilter === 'image') return sortedProjects.filter((p) => p.type === 'static-map');
-    if (typeFilter === 'animation') return sortedProjects.filter((p) => String(p.type) === 'animation');
+    if (typeFilter === 'animation') return sortedProjects.filter((p) => p.type === 'animation');
     return sortedProjects;
   }, [typeFilter]);
 

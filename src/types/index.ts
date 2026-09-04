@@ -1,7 +1,22 @@
 /* ---- src/data/projects/*.json (merged by src/data/projects.ts) ---- */
 
-export type ProjectType = 'website' | 'static-map' | 'platform' | 'analysis' | 'game';
-export type ProjectCategory = 'interactive-map' | 'print' | 'platform' | 'analysis' | 'game';
+/*
+ * These three unions describe what is actually in the JSON. They previously
+ * did not: ProjectType listed 'platform' | 'analysis' | 'game', none of which
+ * any project uses, while omitting 'animation', which three do — so WorksPage
+ * had to reach for String(project.type) to compare against it. ProjectCategory
+ * listed five values against eleven in the data. The JSON is read through a
+ * cast, so nothing caught the drift.
+ */
+export type ProjectType = 'website' | 'static-map' | 'animation';
+export type ProjectCategory =
+  | 'social media'
+  | 'print'
+  | 'storytelling map'
+  | 'interactive map'
+  | 'game'
+  | 'analysis'
+  | 'platform';
 export type ProjectStatus = 'complete' | 'in-progress';
 export type ConnectionType = 'point' | 'polygon';
 
@@ -35,6 +50,14 @@ export interface ProcessStepData {
 
 export interface GalleryImage {
   url: string;
+  /**
+   * Intrinsic pixel dimensions, recorded from the file itself. Used to reserve
+   * space and — in the showcase layout — to render at the image's own aspect
+   * ratio instead of cropping it to 16:9. Most of these maps are portrait or
+   * square, so the crop was throwing away the composition.
+   */
+  width?: number;
+  height?: number;
   /** High-res download URL (e.g. PNG when url is webp). Falls back to url if omitted. */
   downloadUrl?: string;
   caption: string;
@@ -59,6 +82,13 @@ export interface Project {
   tagline: string;
   status: ProjectStatus;
   featured: boolean;
+  /**
+   * Running order for the landing page's featured strip — 1 first. Set on
+   * every featured project; without it a project falls to the end of the
+   * strip, since array order here is just alphabetical city-file order and
+   * carries no editorial meaning.
+   */
+  featuredOrder?: number;
   type: ProjectType;
   category: ProjectCategory;
   keywords: string[];
@@ -136,7 +166,7 @@ export interface AboutStoryData {
 
 /* ---- skills.json ---- */
 
-export type SkillLevel = 'expert' | 'advanced' | 'intermediate' | 'learning';
+export type SkillLevel = 'expert' | 'advanced' | 'intermediate' | 'beginner' | 'learning';
 export type IconType = 'image' | 'text';
 
 export interface Skill {

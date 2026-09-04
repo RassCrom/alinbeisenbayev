@@ -7,10 +7,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="[PLACEHOLDER] Portfolio of Alikhan Beisenbayev — cartographer and GIS engineer."
+      content="Award-winning cartographer and GIS engineer. Print maps, scroll-driven map narratives, and interactive geospatial work on climate, history and Central Asia."
     />
     <meta name="color-scheme" content="dark light" />
+    <meta name="author" content="Alikhan Beisenbayev" />
+    <link rel="canonical" href="https://alinbeisenbayev.com/" />
     <title>Alikhan Beisenbayev — Cartographer &amp; GIS Engineer</title>
+
+    <!--
+      Social cards. These are static: the site is client-rendered, so a crawler
+      or link unfurler only ever sees this file. Per-route cards need the
+      prerendering step — until then every shared URL unfurls as the homepage.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alikhan Beisenbayev" />
+    <meta property="og:url" content="https://alinbeisenbayev.com/" />
+    <meta property="og:title" content="Alikhan Beisenbayev — Cartographer &amp; GIS Engineer" />
+    <meta
+      property="og:description"
+      content="Award-winning cartographer and GIS engineer. Print maps, scroll-driven map narratives, and interactive geospatial work on climate, history and Central Asia."
+    />
+    <meta property="og:image" content="https://alinbeisenbayev.com/og-cover.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Silk Road Through Centuries — a print map of historical trade routes across Central Asia."
+    />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Alikhan Beisenbayev — Cartographer &amp; GIS Engineer" />
+    <meta
+      name="twitter:description"
+      content="Award-winning cartographer and GIS engineer. Print maps, scroll-driven map narratives, and interactive geospatial work on climate, history and Central Asia."
+    />
+    <meta name="twitter:image" content="https://alinbeisenbayev.com/og-cover.jpg" />
+
+    <!--
+      Structured data. This sits in the served HTML on purpose: the app is
+      client-rendered, so a crawler that does not execute JS sees an empty
+      #root and nothing else. This block it can always read.
+      Validate at https://search.google.com/test/rich-results after deploying.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Alikhan Beisenbayev",
+        "url": "https://alinbeisenbayev.com/",
+        "image": "https://alinbeisenbayev.com/og-cover.jpg",
+        "jobTitle": "Cartographer & GIS Engineer",
+        "description": "Cartographer and GIS engineer working on print maps, scroll-driven map narratives, and interactive geospatial storytelling about climate, history and Central Asia.",
+        "knowsAbout": [
+          "Cartography",
+          "Geographic Information Systems",
+          "Remote Sensing",
+          "Web Mapping",
+          "Data Visualization",
+          "Geospatial Storytelling"
+        ],
+        "alumniOf": [
+          { "@type": "CollegeOrUniversity", "name": "L.N. Gumilyov Eurasian National University" },
+          { "@type": "CollegeOrUniversity", "name": "Technical University of Munich" },
+          { "@type": "CollegeOrUniversity", "name": "TU Wien" },
+          { "@type": "CollegeOrUniversity", "name": "TU Dresden" },
+          { "@type": "CollegeOrUniversity", "name": "California State University, Long Beach" }
+        ],
+        "sameAs": [
+          "https://linkedin.com/in/karasu",
+          "https://github.com/rasscrom",
+          "https://instagram.com/tulparmaps",
+          "https://www.tiktok.com/@tulparmaps",
+          "https://instagram.com/tulparstories",
+          "https://youtube.com/@tulparstories",
+          "https://t.me/tulparmaps"
+        ]
+      }
+    </script>
     <script>
       // Runs before first paint so the page never flashes the wrong theme.
       // Kept in sync with the storage key/logic in src/hooks/useTheme.ts.

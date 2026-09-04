@@ -7,6 +7,7 @@
       "tagline": "Scroll-driven interactive map narrative of the ancient Armenian Empire under Tigranes II",
       "status": "complete",
       "featured": true,
+      "featuredOrder": 2,
       "type": "website",
       "category": "storytelling map",
       "keywords": [
@@ -52,15 +53,19 @@
       "gallery": [
         {
           "url": "/images/projects/tigranes-the-greatest/mid-story.webp",
+          "width": 1100,
+          "height": 517,
+          "downloadUrl": "/images/projects/tigranes-the-greatest/mid-story.png",
           "caption": "Mid story snapshot showing quota and Armenian expansion.",
-          "type": "screenshot",
-          "downloadUrl": "/images/projects/tigranes-the-greatest/mid-story.png"
+          "type": "screenshot"
         },
         {
           "url": "/images/projects/tigranes-the-greatest/end-of-story.webp",
+          "width": 1100,
+          "height": 516,
+          "downloadUrl": "/images/projects/tigranes-the-greatest/end-of-story.png",
           "caption": "Ending chapter of the story.",
-          "type": "detail",
-          "downloadUrl": "/images/projects/tigranes-the-greatest/end-of-story.png"
+          "type": "detail"
         }
       ],
       "geography": {
@@ -242,9 +247,11 @@
       "gallery": [
         {
           "url": "/images/projects/who-comes-third-akmola/cover.webp",
+          "width": 1400,
+          "height": 1082,
+          "downloadUrl": "/images/projects/who-comes-third-akmola/cover.png",
           "caption": "Who Comes Third in Akmola - full print map.",
-          "type": "print",
-          "downloadUrl": "/images/projects/who-comes-third-akmola/cover.png"
+          "type": "print"
         }
       ],
       "geography": {
@@ -271,7 +278,7 @@
       "status": "complete",
       "featured": false,
       "type": "static-map",
-      "category": "digital-map",
+      "category": "social media",
       "keywords": [
         "cartography"
       ],
@@ -298,6 +305,8 @@
       "gallery": [
         {
           "url": "/images/placeholder.jpg",
+          "width": 1200,
+          "height": 630,
           "caption": "",
           "type": "print"
         }

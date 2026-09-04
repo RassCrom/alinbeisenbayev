@@ -6,6 +6,7 @@ import aboutData from '../data/about-story.json';
 import socialsData from '../data/socials.json';
 import type { AboutStoryData, SocialsData } from '../types';
 import { formatCoordinates } from '../utils/coordinates';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
 const { socials } = socialsData as SocialsData;
@@ -13,7 +14,7 @@ const { socials } = socialsData as SocialsData;
 function HeroContourBackground() {
   return (
     <img
-      src="/vienna-contours.png"
+      src="/vienna-contours.webp"
       alt=""
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.14]"
@@ -26,7 +27,21 @@ function HeroContourBackground() {
 }
 
 export default function LandingPage() {
-  const featured = projects.filter((p) => p.featured).slice(0, 6);
+  // No arguments — the landing page *is* the site title, and this resets the
+  // head after a route that set its own.
+  usePageMeta();
+
+  // Explicit running order — `projects` is merged in alphabetical city-file
+  // order, so without this the largest bento card goes to whichever featured
+  // project happens to sit in the first file.
+  const featured = projects
+    .filter((p) => p.featured)
+    .sort(
+      (a, b) =>
+        (a.featuredOrder ?? Number.MAX_SAFE_INTEGER) -
+        (b.featuredOrder ?? Number.MAX_SAFE_INTEGER),
+    )
+    .slice(0, 6);
   const heroSocials = socials.filter((s) => s.featured && s.platform !== 'CV');
   const worksSectionRef = useRef<HTMLElement>(null);
   const originCoord = story[6]?.location;

@@ -4,9 +4,10 @@
       "id": "gulag",
       "slug": "gulag",
       "title": "Horror in Gulag series",
-      "tagline": "Map series that reveal the dark story of soviet system that buried millions of live.",
-      "status": "done",
+      "tagline": "Print map series on the Soviet Gulag system and the lives it consumed",
+      "status": "complete",
       "featured": true,
+      "featuredOrder": 7,
       "type": "static-map",
       "category": "print",
       "keywords": [
@@ -35,6 +36,8 @@
       "gallery": [
         {
           "url": "/images/projects/gulag/cover.webp",
+          "width": 2108,
+          "height": 1490,
           "downloadUrl": "/images/projects/gulag/cover.png",
           "caption": "Horror in Gulag - map from the series.",
           "type": "print"

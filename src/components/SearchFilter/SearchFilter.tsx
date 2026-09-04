@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const VISIBLE_COUNT = 5;
+const VISIBLE_COUNT = 8;
 
 export interface SearchFilterProps {
   keywords: string[];

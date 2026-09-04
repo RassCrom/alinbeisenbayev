@@ -6,6 +6,7 @@ import VideoGallery from '../components/VideoGallery/VideoGallery';
 import StackRow from '../components/StackRow/StackRow';
 import WorkCard from '../components/WorkCard/WorkCard';
 import { projects } from '../data/projects';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -65,6 +66,9 @@ export default function WorkDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const project = projects.find((p) => p.slug === slug);
 
+  // Before the not-found branch — hooks can't sit behind a conditional return.
+  usePageMeta(project?.title ?? 'Work not found', project?.tagline);
+
   if (!project) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-6xl flex-col items-center justify-center gap-[var(--space-4)] px-[var(--space-6)]">
@@ -81,6 +85,25 @@ export default function WorkDetailPage() {
   const year = project.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
   const award = project.awards[0];
 
+  /*
+   * Two shapes of detail page.
+   *
+   * A written case study earns the tall cover hero and the Context → Outcome
+   * run. A project with only pictures does not: the cover image is also
+   * gallery[0] on every one of them, so the hero showed the same image the
+   * gallery was about to show again, and the work itself ended up below a
+   * screen of chrome. Those pages lead with the pictures instead.
+   *
+   * The switch is "is there anything written here", not a per-project flag, so
+   * a project promotes itself the moment its case study is filled in.
+   */
+  const hasNarrative =
+    Boolean(
+      project.context || project.idea || project.design || project.inspiration || project.outcome,
+    ) || project.process.length > 0;
+  const mediaCount = (project.gallery?.length ?? 0) + (project.videos?.length ?? 0);
+  const galleryLed = !hasNarrative && mediaCount > 0;
+
   // Two other projects with real images, featured first
   const suggestions = projects
     .filter((p) => p.slug !== project.slug && !p.coverImage.includes('placeholder'))
@@ -89,7 +112,9 @@ export default function WorkDetailPage() {
 
   return (
     <article>
-      {/* Hero */}
+      {/* Cover hero — case studies only. On a gallery-led page the cover is
+          also gallery[0], so this would show the same image twice. */}
+      {!galleryLed && (
       <header className="relative h-[45vh] overflow-hidden md:h-[60vh]">
         <img
           src={project.coverImage}
@@ -112,8 +137,30 @@ export default function WorkDetailPage() {
           </h1>
         </div>
       </header>
+      )}
 
-      <div className="mx-auto max-w-4xl px-[var(--space-6)]">
+      <div
+        className={`mx-auto px-[var(--space-6)] ${galleryLed ? 'max-w-6xl' : 'max-w-4xl'}`}
+      >
+        {/* Gallery-led pages carry the title here — there's no hero to hold it. */}
+        {galleryLed && (
+          <header className="pt-[var(--space-12)]">
+            {award && (
+              <span className="mb-[var(--space-3)] inline-block rounded-[var(--radius-sm)] border border-[var(--color-border-subtle)] bg-[rgba(var(--color-accent-gold-rgb),0.1)] px-[var(--space-3)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-gold)]">
+                ★ {award}
+              </span>
+            )}
+            <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-3xl)] font-extrabold md:text-[length:var(--text-4xl)]">
+              {project.title}
+            </h1>
+            {project.tagline && (
+              <p className="mt-[var(--space-3)] max-w-2xl font-[family-name:var(--font-body)] text-[length:var(--text-lg)] text-[var(--color-text-secondary)]">
+                {project.tagline}
+              </p>
+            )}
+          </header>
+        )}
+
         {/* Meta row — pill badges */}
         <div className="mt-[var(--space-8)] flex flex-wrap items-center gap-[var(--space-2)]">
           {year && <span className="meta-pill">{year}</span>}
@@ -213,23 +260,36 @@ export default function WorkDetailPage() {
 
       {/* Gallery — full-bleed: breaks out of the article's reading column
           (max-w-4xl) into the wider max-w-6xl used elsewhere on the site,
-          so images get meaningfully more room than the prose above. */}
-      {project.gallery?.length > 0 && (
-        <div className="mx-auto max-w-6xl px-[var(--space-6)]">
-          <Section eyebrow="Visuals" heading="Gallery">
-            <ImageGallery images={project.gallery} zoomable={project.type === 'static-map'} />
-          </Section>
+          so images get meaningfully more room than the prose above.
+
+          Gallery-led pages drop the "Visuals / Gallery" heading: the images
+          aren't a supporting section there, they're the whole page, and a
+          heading over them would be labelling the obvious. */}
+      {project.gallery?.length > 0 &&
+        (galleryLed ? (
+          <div className="mx-auto max-w-6xl px-[var(--space-6)] pb-[var(--space-16)] pt-[var(--space-10)]">
+            <ImageGallery images={project.gallery} layout="showcase" />
+          </div>
+        ) : (
+          <div className="mx-auto max-w-6xl px-[var(--space-6)]">
+            <Section eyebrow="Visuals" heading="Gallery">
+              <ImageGallery images={project.gallery} zoomable={project.type === 'static-map'} />
+            </Section>
+          </div>
+        ))}
+
+      {/* Stack repeats at the foot of a long case study, where the chips at the
+          top have scrolled well out of view. A gallery-led page is short enough
+          that they're still on screen, so repeating them is just noise. */}
+      {!galleryLed && (
+        <div className="mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-24)]">
+          {project.stack?.length > 0 && (
+            <Section eyebrow="Technology" heading="Stack">
+              <StackRow stack={project.stack} />
+            </Section>
+          )}
         </div>
       )}
-
-      <div className="mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-24)]">
-        {/* Stack detail */}
-        {project.stack?.length > 0 && (
-          <Section eyebrow="Technology" heading="Stack">
-            <StackRow stack={project.stack} />
-          </Section>
-        )}
-      </div>
 
       {/* More Works */}
       {suggestions.length > 0 && (

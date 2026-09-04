@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { articles } from '../content/blog';
 import ChapterNav from '../components/ChapterNav/ChapterNav';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -14,6 +15,9 @@ export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
   const article = articles.find((a) => a.slug === slug);
   const bodyRef = useRef<HTMLDivElement>(null);
+
+  // Before the not-found branch — hooks can't sit behind a conditional return.
+  usePageMeta(article?.frontmatter.title ?? 'Post not found', article?.frontmatter.excerpt);
 
   if (!article) {
     return (

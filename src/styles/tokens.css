@@ -11,8 +11,13 @@
 
   /* Text */
   --color-text-primary:   #dce3ef;
-  --color-text-secondary: #8594b0;
-  --color-text-muted:     #566280;
+  /* The ramp is contrast-bound, not taste-bound: on #0d1320 nothing darker
+     than ~#7d8aa6 clears WCAG AA (4.5:1) for normal text, and muted carries
+     real body copy — captions, coordinates, taglines, meta. muted was #566280
+     (3.05:1, a clear fail); secondary moved up with it so the three steps stay
+     visually distinct instead of collapsing into each other. */
+  --color-text-secondary: #9aa8c2;
+  --color-text-muted:     #7d8aa6;
 
   /* Accent */
   --color-accent:         #4472a8;
@@ -114,14 +119,16 @@
   --color-text-muted:     #766340;
 
   --color-accent:         #a35d16;
-  --color-accent-light:   #96600d;
+  /* #96600d only reached 4.26:1 on --color-bg-surface, and this is link and
+     label text, not decoration. */
+  --color-accent-light:   #8a5709;
   --color-accent-gold:    #83571a;
   --color-accent-glow:    rgba(163, 93, 22, 0.14);
 
   --color-chrome-rgb:       250, 243, 226;
   --color-surface-rgb:      241, 230, 205;
   --color-accent-rgb:       163, 93, 22;
-  --color-accent-light-rgb: 150, 96, 13;
+  --color-accent-light-rgb: 138, 87, 9;
   --color-accent-gold-rgb:  131, 87, 26;
 
   --gradient-hero:    linear-gradient(160deg, #faf3e2 0%, #f1e6cd 60%, #ffffff 100%);
