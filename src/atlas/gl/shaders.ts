@@ -10,7 +10,11 @@
  *           and the additive glow. In mask mode it writes the alpha as grey,
  *           which is how the land mask is baked;
  *   blur    a separable Gaussian over a texture, run twice on the land mask
- *           to get a soft "distance to coast" field.
+ *           to get a soft "distance to coast" field;
+ *   dim     a fullscreen darkening, drawn under a hovered settlement's
+ *           redraw so the rest of the map steps back;
+ *   fog     the fog of war: haze that lies on land and shelf, torn open in
+ *           soft discs around every surveyed settlement.
  *
  * Screen space is device pixels, y down; u_camera is (x, y, zoom) with zoom
  * in device pixels per world unit. The mask textures cover the unit world
@@ -201,4 +205,72 @@ void main() {
     sum += texture(u_tex, v_uv - offset).rgb * weights[i];
   }
   outColor = vec4(sum, 1.0);
+}`;
+
+export const DIM_FRAG = `#version 300 es
+precision highp float;
+uniform float u_alpha;
+out vec4 outColor;
+void main() {
+  outColor = vec4(0.0, 0.0, 0.0, u_alpha);
+}`;
+
+/** Uniform array size for the fog's reveal discs; the renderer caps at this. */
+export const MAX_REVEALS = 64;
+
+export const FOG_FRAG = `#version 300 es
+precision highp float;
+#define MAX_REVEALS 64
+uniform vec2 u_resolution;
+uniform vec3 u_camera;
+uniform float u_time;
+uniform float u_strength;
+uniform sampler2D u_shelf;
+uniform vec3 u_reveals[MAX_REVEALS];
+uniform int u_revealCount;
+in vec2 v_uv;
+out vec4 outColor;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+}
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+}
+float fbm(vec2 p) {
+  float v = 0.0;
+  float a = 0.5;
+  for (int i = 0; i < 3; i++) {
+    v += a * noise(p);
+    p = p * 2.03 + vec2(17.0, 9.0);
+    a *= 0.5;
+  }
+  return v;
+}
+
+void main() {
+  vec2 frag = vec2(gl_FragCoord.x, u_resolution.y - gl_FragCoord.y);
+  vec2 world = (frag - u_resolution * 0.5) / u_camera.z + u_camera.xy;
+  float shelf = texture(u_shelf, vec2(world.x, 1.0 - world.y)).r;
+
+  // Fog lies on the land and the last of its shelf; the open sea keeps a thin haze.
+  float density = mix(0.08, 0.6, smoothstep(0.1, 0.5, shelf));
+  float wisps = 0.55 + 0.6 * fbm(world * 14.0 + vec2(u_time * 0.012, -u_time * 0.008));
+  float alpha = density * wisps * u_strength;
+
+  float clear = 0.0;
+  for (int i = 0; i < MAX_REVEALS; i++) {
+    if (i >= u_revealCount) break;
+    vec3 reveal = u_reveals[i];
+    float d = distance(world, reveal.xy);
+    clear = max(clear, 1.0 - smoothstep(reveal.z * 0.45, reveal.z, d));
+  }
+  alpha *= 1.0 - clear;
+
+  vec3 fogColor = vec3(0.60, 0.67, 0.78);
+  outColor = vec4(fogColor * alpha, alpha);
 }`;

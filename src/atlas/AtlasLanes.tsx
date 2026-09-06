@@ -1,23 +1,26 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { worldToScreen, type ViewStore } from './camera.ts';
+import type { InteractionStore } from './interaction.ts';
 import type { Atlas, Lane } from './types.ts';
 
 /*
  * Sea lanes and roads as one SVG above the canvas. Each lane is a gentle
  * quadratic arc between two settlements; the bow always bends to the same
  * side for a given pair, so nothing flips as the camera moves. Paths are
- * rewritten straight from the view store, outside React's render.
+ * rewritten straight from the view store, outside React's render. While a
+ * settlement is active its lanes light up gold and the others step back.
  */
 
 interface Props {
   atlas: Atlas;
   store: ViewStore;
+  interaction: InteractionStore;
 }
 
 /** How far the arc bows out, as a fraction of the lane's length. */
 const BOW = 0.14;
 
-export default function AtlasLanes({ atlas, store }: Props) {
+export default function AtlasLanes({ atlas, store, interaction }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const bySlug = useMemo(() => new Map(atlas.settlements.map((s) => [s.slug, s])), [atlas]);
 
@@ -28,7 +31,8 @@ export default function AtlasLanes({ atlas, store }: Props) {
     svg.querySelectorAll<SVGPathElement>('path[data-lane]').forEach((path) => {
       paths.set(path.dataset.lane ?? '', path);
     });
-    return store.subscribe(({ camera, viewport }) => {
+
+    const unsubscribeView = store.subscribe(({ camera, viewport }) => {
       svg.setAttribute('viewBox', `0 0 ${viewport.width} ${viewport.height}`);
       for (const lane of atlas.lanes) {
         const path = paths.get(lane.id);
@@ -46,7 +50,25 @@ export default function AtlasLanes({ atlas, store }: Props) {
         path.setAttribute('d', `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`);
       }
     });
-  }, [atlas, bySlug, store]);
+
+    const light = (): void => {
+      const active = interaction.active();
+      for (const lane of atlas.lanes) {
+        const path = paths.get(lane.id);
+        if (!path) continue;
+        const lit = active !== null && (lane.from === active || lane.to === active);
+        path.classList.toggle('is-lit', lit);
+        path.classList.toggle('is-dim', active !== null && !lit);
+      }
+    };
+    light();
+    const unsubscribeInteraction = interaction.subscribe(light);
+
+    return () => {
+      unsubscribeView();
+      unsubscribeInteraction();
+    };
+  }, [atlas, bySlug, interaction, store]);
 
   return (
     <svg ref={svgRef} className="atlas-lanes" aria-hidden="true">

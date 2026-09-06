@@ -162,33 +162,38 @@ App
         canvas                      AtlasRenderer, WebGL2
         AtlasLanes                  SVG arcs, sea lanes gold dashed, roads tan
         AtlasLabels                 DOM labels, crown and pennant images
+        AtlasFocus                  gold ring and the dark-glass card (stage 3)
         AtlasHud                    left: compass, weather placeholder, minimap,
-                                    island legend; right: tier legend, Sheet view
+                                    survey count, island legend; right: tier
+                                    legend, Sheet view
+        nav.atlas-sr-list           visually hidden settlement links (stage 3)
       LandingPage                   unchanged, plus a "Map view" button in the hero
   AppFooter                         Footer, hidden while the atlas is showing at /
 ```
 
 Supporting modules: `assets.ts` (sprite files, anchors, sizes, loader),
 `camera.ts` (Camera, worldToScreen / screenToWorld, fitBounds,
-visibleWorld, the view store), `viewMode.ts` (map or sheet, localStorage,
-defaults), `gl/shaders.ts`, `gl/renderer.ts`, `atlas.css`.
+visibleWorld, the view store, clamp, animator, saved camera),
+`controls.ts` (gestures), `interaction.ts` (hover, tap, focus state and hit
+testing), `fog.ts` (survey persistence), `order.ts` (sheet order),
+`viewMode.ts` (map or sheet, localStorage, defaults), `gl/shaders.ts`,
+`gl/renderer.ts`, `atlas.css`.
 
 ### WebGL
 
-No helper library. Raw WebGL2 in `gl/renderer.ts` (under 300 lines): three
-programs and textured quads were all that was needed, and a dependency
-would have bought abstraction over nothing. Draw order per frame: sea
-(fullscreen shader), island paintings back to front, additive amber glow
-under every lit settlement, settlement sprites back to front. Textures are
+No helper library. Raw WebGL2 in `gl/renderer.ts`: a handful of programs
+and textured quads were all that was needed, and a dependency would have
+bought abstraction over nothing. Draw order per frame: sea (fullscreen
+shader), island paintings back to front, additive amber glow under every
+lit settlement, settlement sprites back to front, then (stage 3) the hover
+dim with the hovered settlement redrawn on top, and the fog. Textures are
 uploaded premultiplied with mipmaps and 4× anisotropy.
 
 The foam is not painted: at start-up the island alphas are drawn into a
 1024² texture covering the unit world (`u_land`), blurred twice
-(`u_coast`), and the sea shader shades a lighter shelf and a noise-broken
-foam band where the coast field is between 0.16 and 0.5 on the water side.
-The sea itself is two octaves of value noise, a broad slow swell at low
-contrast and fine drifting ripples, under a vignette. WebGL2 is required;
-without it the view mode falls back to the sheet and the map never mounts.
+(`u_coast`) for the foam and twice more, wider (`u_shelf`), for the
+shallows and the fog. WebGL2 is required; without it the view mode falls
+back to the sheet and the map never mounts.
 
 `dispose()` frees GPU resources but deliberately does not lose the context:
 hot updates and StrictMode remount the view on the same canvas.
@@ -198,10 +203,10 @@ hot updates and StrictMode remount the view on the same canvas.
 `src/atlas/camera.ts`: `Camera { x, y, zoom }` is the world point at the
 viewport centre and CSS pixels per world unit. `worldToScreen(camera,
 viewport, x, y)` and `screenToWorld(camera, viewport, x, y)` are the pair
-stage 3 needs; `fitBounds(bounds, viewport, padding)` gives the initial
+every layer uses; `fitBounds(bounds, viewport, padding)` gives the initial
 camera. `createViewStore` holds camera and viewport outside React; lanes,
-labels and the minimap subscribe and write the DOM directly, so stage 3's
-pan and zoom never re-render the tree. The renderer reads the camera each
+labels, ring, card and minimap subscribe and write the DOM directly, so a
+pan or zoom never re-renders the tree. The renderer reads the camera each
 frame and multiplies by devicePixelRatio (capped at 2).
 
 Sprite geometry: an island is a square of half-width `paintingHalfWidth`;
@@ -215,35 +220,125 @@ its bottom edge as a fallback.
 Greedy placement in two passes on every view change: settlements first
 (capital, then tier, then score), above the sprite or else below, hidden
 when both would overlap something placed; hamlets and ruins only take part
-past 1.5× the fitted zoom. Island names go last and always show, climbing
-in 10px steps over open sea until clear. Titles longer than 30 characters
-are shortened with an ellipsis; the full title is in the element's `title`.
+past 1.5× the fitted zoom, except the active one, which always shows.
+Island names go last and always show, climbing in 10px steps over open sea
+until clear. Titles longer than 30 characters are shortened with an
+ellipsis; the full title is in the element's `title`.
 
 ### View switch
 
 `atlas:view` in localStorage, `'map'` or `'sheet'`. With nothing stored the
 default is the map, except: reduced motion, viewport narrower than 640px,
 or no WebGL2, which give the sheet. No WebGL2 also overrides a stored map.
-The default is re-evaluated on resize and motion-preference changes until
-a choice is stored. The "Sheet view" button lives in the right HUD panel;
-"Map view" is a pill at the top right of the landing hero.
-
-### Verified in the browser
-
-Map renders at 1280×656 and 1600×900 with every island, settlement, crown
-and pennant in place; Sheet view and Map view switch both ways and survive
-reload; a 375px viewport with nothing stored opens the sheet; the footer is
-absent in map view and present in sheet view; tsc and `npm run build` are
-clean.
+The store caches its snapshot and re-evaluates the default on resize and
+motion-preference changes until a choice is stored. The "Sheet view"
+button lives in the right HUD panel; "Map view" is a pill at the top right
+of the landing hero.
 
 ### Deferred from stage 2
 
 - Weather readout shows sample values (−2°C, NW 15 km/h, Astana) until
   stage 4.
-- The minimap is static; stage 3 makes it clickable and draws the
-  viewport rectangle live (the rectangle already tracks the store).
 - Below 900px the right HUD panel and the island legend are hidden to keep
   the map clear; a compact mobile HUD is not designed yet.
-- Label placement runs on every store change; it is cheap for 36 labels
-  but stage 3 should throttle it to animation frames while panning.
 - No handling of `webglcontextlost` yet.
+
+## Water (after stage 2)
+
+The sea shader in `gl/shaders.ts` is a lit wave surface: three directional
+wave trains, domain-warped so no crest reads as hatching, plus noise chop;
+normals by finite differences one and a half pixels apart, lit from the
+upper-right key light with sparse specular glints. Each train fades out
+once its wavelength drops under a few screen pixels, so the fitted view
+shimmers instead of aliasing and detail arrives with zoom. Depth colour
+comes from the wide shelf blur: teal over an uneven shelf broken by
+sandbank noise, a sandy bottom and caustic light nearest the shore. Foam
+keeps the narrow coast field: a bright edge line, a wave-broken band, and
+whitecaps in open water where the wind patches are.
+
+## Stage 3: pan, zoom, hover, routing, fog of war, accessibility (done)
+
+### Camera store
+
+`camera.ts`: the view store (`createViewStore`) holds `{ camera, viewport }`
+outside React; every layer subscribes and writes the DOM directly.
+`clampCamera` keeps zoom between 0.7× and 9× the fitted zoom and the
+viewport centre within 12% of the archipelago bounds. `zoomAround` keeps
+the world point under a screen point fixed. `createCameraAnimator(store,
+bounds)` runs one tween at a time (`to(target, ms)`, `cancel()`), eased
+in-out with zoom in log space; under prefers-reduced-motion every move is a
+jump. `saveCamera` / `readSavedCamera` keep the pre-open camera in
+sessionStorage (`atlas:camera`); the view restores it when the navigation
+type is POP and fits the archipelago otherwise.
+
+`controls.ts`: `attachCameraControls(container, store, animator,
+callbacks)` handles drag pan, two-finger pinch (zoom around the midpoint
+plus pan), wheel zoom around the cursor (a trackpad pinch arrives as
+ctrl+wheel), double-click zoom, arrows and WASD, + and −, Escape. Gestures
+that start on the HUD, card, labels or links are left to those elements.
+Taps (press and release within 5px) and hover positions come back through
+callbacks; the view hit-tests them.
+
+### Hover and routing flow
+
+`interaction.ts`: `createInteractionStore` holds `hovered` (mouse),
+`selected` (touch) and `focused` (keyboard); `active()` is the first of
+those. `hitTest` finds the front-most settlement whose sprite rectangle
+contains a screen point.
+
+On hover: the label lifts (`.is-active`), `AtlasFocus` shows the gold ring
+on the ground and the card beside the sprite (flipping to the other side or
+sliding vertically to stay on screen), `AtlasLanes` lights the settlement's
+lanes gold and dims the rest, the renderer darkens the map by 30% and
+redraws the settlement with a brighter glow, and the detail route chunk is
+warmed. Touch: first tap selects, second tap on the same settlement opens.
+Click or Enter: `openProject` saves the camera, zooms toward the settlement
+(2.2× the current or 3.2× the fitted zoom, 480ms), awaits the warmed chunk,
+then navigates inside `document.startViewTransition` so the card's cover
+(`view-transition-name: cover-<slug>`) morphs into the detail hero, exactly
+as WorkCard does. Without the API or under reduced motion it navigates
+plainly.
+
+Island names are clickable and fit their island; the minimap is clickable
+and recentres the camera.
+
+### Fog of war
+
+`fog.ts`: surveyed slugs in localStorage under `atlas:surveyed`;
+`markSurveyed` on hover, tap, keyboard focus and open, and from
+WorkDetailPage on any visit; `useSurveyed` for React. The renderer's fog
+pass (`FOG_FRAG`) lays haze on land and the last of the shelf, thin over
+open sea, and tears it open in soft discs of five footprints around each
+surveyed settlement; the view eases each disc in over about half a second.
+The HUD shows "surveyed N of 29 settlements".
+
+### Accessibility
+
+A visually hidden list (`.atlas-sr-list`) mirrors every settlement in sheet
+order (`order.ts`, the works page's three-tier sort) as links "title,
+tier, category". Focusing one sets `focused`, shows the ring and card, and
+pans the settlement into view if it is near an edge; Enter opens it,
+Escape clears and blurs. The container is focusable for keyboard panning.
+Reduced motion: tweens jump, hover strength and fog reveals snap, and the
+CSS transitions are off.
+
+### Verified in the browser
+
+Hover on Silk Road: card, ring, five lanes lit and thirty dimmed, label
+lifted, survey count 1 of 29 persisted. Click: camera saved, zoom toward
+the settlement, route to /works/silk-road with the hero carrying the morph
+name. Back: route /, camera restored to the saved values, interaction
+cleared. Wheel zoom, keyboard focus and Escape verified through dispatched
+events; keyboard pan, island fit and minimap moves verified only by the
+camera having moved after the fact, because the hidden preview pane does
+not run requestAnimationFrame. Touch taps and pinch are untested.
+
+### Deferred from stage 3
+
+- Label placement still runs synchronously on every store change; fine at
+  36 labels, revisit if it grows.
+- Touch and pinch paths are written but not exercised on a device.
+- A settlement label that overlaps another settlement's sprite can steal
+  its hover; a small dead zone would fix it.
+- `?atlas-hover=<slug>` and `window.__atlas` exist in dev builds only, for
+  headless verification renders.

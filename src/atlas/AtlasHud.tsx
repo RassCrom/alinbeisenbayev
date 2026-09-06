@@ -1,24 +1,28 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { SETTLEMENT_SPRITES, islandSprite } from './assets.ts';
-import { visibleWorld, type ViewStore } from './camera.ts';
+import { visibleWorld, type Point, type ViewStore } from './camera.ts';
 import { TIERS, TIER_LABEL } from './config.ts';
 import { paintingHalfWidth } from './layout.ts';
 import type { Atlas } from './types.ts';
 
 /*
  * The two dark-glass panels from concept 10. Bottom left: compass, weather
- * readout (placeholder values until stage 4 wires Open-Meteo), and a minimap
- * of the paintings that doubles as the category legend. Bottom right: the
+ * readout (placeholder values until stage 4 wires Open-Meteo), the survey
+ * count, and a minimap of the paintings that doubles as the category
+ * legend and recentres the camera when clicked. Bottom right: the
  * settlement tier legend and the switch back to the sheet view.
  */
 
 interface Props {
   atlas: Atlas;
   store: ViewStore;
+  surveyedCount: number;
   onSheetView: () => void;
+  /** A click on the minimap, in world coordinates. */
+  onMinimapClick: (point: Point) => void;
 }
 
-export default function AtlasHud({ atlas, store, onSheetView }: Props) {
+export default function AtlasHud({ atlas, store, surveyedCount, onSheetView, onMinimapClick }: Props) {
   const counts = useMemo(() => {
     const byTier = new Map<string, number>();
     for (const settlement of atlas.settlements) byTier.set(settlement.tier, (byTier.get(settlement.tier) ?? 0) + 1);
@@ -40,7 +44,10 @@ export default function AtlasHud({ atlas, store, onSheetView }: Props) {
         </div>
         <div className="atlas-hud__divider" />
         <div className="atlas-hud__block">
-          <Minimap atlas={atlas} store={store} />
+          <Minimap atlas={atlas} store={store} onClick={onMinimapClick} />
+          <span className="atlas-surveyed" aria-live="polite">
+            surveyed {surveyedCount} of {atlas.settlements.length} settlements
+          </span>
         </div>
         <div className="atlas-hud__block atlas-legend" aria-label="Islands">
           {atlas.islands.map((island) => (
@@ -74,7 +81,8 @@ export default function AtlasHud({ atlas, store, onSheetView }: Props) {
 }
 
 /** The paintings at their world positions, plus the rectangle the camera shows. */
-function Minimap({ atlas, store }: { atlas: Atlas; store: ViewStore }) {
+function Minimap({ atlas, store, onClick }: { atlas: Atlas; store: ViewStore; onClick: (point: Point) => void }) {
+  const svgRef = useRef<SVGSVGElement>(null);
   const rectRef = useRef<SVGRectElement>(null);
   const box = useMemo(() => {
     const pad = 0.035;
@@ -96,13 +104,28 @@ function Minimap({ atlas, store }: { atlas: Atlas; store: ViewStore }) {
     [store],
   );
 
+  /** Screen point to world, honouring the letterboxing of preserveAspectRatio "meet". */
+  const toWorld = (event: React.MouseEvent<SVGSVGElement>): Point => {
+    const svg = svgRef.current!;
+    const bounds = svg.getBoundingClientRect();
+    const scale = Math.min(bounds.width / box.w, bounds.height / box.h);
+    const offsetX = (bounds.width - box.w * scale) / 2;
+    const offsetY = (bounds.height - box.h * scale) / 2;
+    return {
+      x: box.x + (event.clientX - bounds.left - offsetX) / scale,
+      y: box.y + (event.clientY - bounds.top - offsetY) / scale,
+    };
+  };
+
   return (
     <svg
+      ref={svgRef}
       className="atlas-minimap"
       viewBox={`${box.x} ${box.y} ${box.w} ${box.h}`}
       preserveAspectRatio="xMidYMid meet"
       role="img"
-      aria-label="Minimap of the archipelago"
+      aria-label="Minimap of the archipelago; click to move the view"
+      onClick={(event) => onClick(toWorld(event))}
     >
       {atlas.islands.map((island) => {
         const half = paintingHalfWidth(island);

@@ -2,13 +2,15 @@ import { useEffect, useMemo, useRef } from 'react';
 import { CROWN_SRC, PENNANT_SRC, SETTLEMENT_SPRITES, SETTLEMENT_SPRITE_SCALE } from './assets.ts';
 import { fitBounds, worldToScreen, type Camera, type ViewStore, type Viewport } from './camera.ts';
 import { TIERS } from './config.ts';
+import type { InteractionStore } from './interaction.ts';
 import { paintingHalfWidth } from './layout.ts';
-import type { Atlas, Tier } from './types.ts';
+import type { Atlas, Island, Tier } from './types.ts';
 
 /*
  * Island and settlement names as DOM text above the canvas, so they stay
- * crisp, selectable by assistive tech later, and cheap to restyle. Every
- * label is rendered once; the view store moves them with transforms.
+ * crisp, clickable, and cheap to restyle. Every label is rendered once; the
+ * view store moves them with transforms, and the interaction store lifts
+ * the active one.
  *
  * Placement is greedy, in two passes. Settlements go first, in tier order
  * then score, the capital ahead of all: each tries above its sprite, then
@@ -21,6 +23,9 @@ import type { Atlas, Tier } from './types.ts';
 interface Props {
   atlas: Atlas;
   store: ViewStore;
+  interaction: InteractionStore;
+  onOpen: (slug: string) => void;
+  onIslandClick: (island: Island) => void;
 }
 
 interface SettlementItem {
@@ -62,7 +67,7 @@ function shortTitle(title: string): string {
   return title.length > MAX_TITLE ? `${title.slice(0, MAX_TITLE - 1).trimEnd()}…` : title;
 }
 
-export default function AtlasLabels({ atlas, store }: Props) {
+export default function AtlasLabels({ atlas, store, interaction, onOpen, onIslandClick }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   const islandItems = useMemo<IslandItem[]>(
@@ -113,6 +118,7 @@ export default function AtlasLabels({ atlas, store }: Props) {
     const place = (): void => {
       const { camera, viewport } = store.get();
       const showSmall = camera.zoom >= fitBounds(atlas.bounds, viewport).zoom * SMALL_LABEL_ZOOM;
+      const active = interaction.active();
       const kept: Rect[] = [];
       const show = (element: HTMLElement, rect: Rect): void => {
         element.style.transform = `translate(${rect.x.toFixed(1)}px, ${rect.y.toFixed(1)}px)`;
@@ -126,8 +132,10 @@ export default function AtlasLabels({ atlas, store }: Props) {
         const element = elements.get(item.key);
         const size = sizes.get(item.key);
         if (!element || !size) continue;
+        const isActive = active !== null && item.key === `settlement:${active}`;
         const small = item.tier === 'hamlet' || item.tier === 'ruin';
-        if (small && !showSmall) {
+        // The active settlement's label always shows, whatever the zoom.
+        if (small && !showSmall && !isActive) {
           hide(element);
           continue;
         }
@@ -135,7 +143,7 @@ export default function AtlasLabels({ atlas, store }: Props) {
           hangingFrom(camera, viewport, item.x, item.above, size),
           startingAt(camera, viewport, item.x, item.below, size),
         ];
-        const rect = candidates.find((candidate) => onScreen(candidate, viewport) && clear(candidate));
+        const rect = candidates.find((candidate) => onScreen(candidate, viewport) && (isActive || clear(candidate)));
         if (rect) show(element, rect);
         else hide(element);
       }
@@ -154,26 +162,45 @@ export default function AtlasLabels({ atlas, store }: Props) {
       }
     };
 
+    const lift = (): void => {
+      const active = interaction.active();
+      for (const [key, element] of elements) {
+        element.classList.toggle('is-active', active !== null && key === `settlement:${active}`);
+      }
+    };
+
     measure();
-    const unsubscribe = store.subscribe(place);
+    const unsubscribeView = store.subscribe(place);
+    const unsubscribeInteraction = interaction.subscribe(() => {
+      lift();
+      place();
+    });
+    lift();
     // Web fonts arriving after mount change label widths; measure again then.
-    let active = true;
+    let live = true;
     document.fonts?.ready.then(() => {
-      if (!active) return;
+      if (!live) return;
       measure();
       place();
     });
     return () => {
-      active = false;
-      unsubscribe();
+      live = false;
+      unsubscribeView();
+      unsubscribeInteraction();
     };
-  }, [atlas, islandItems, settlementItems, store]);
+  }, [atlas, interaction, islandItems, settlementItems, store]);
 
   return (
     <div ref={rootRef} className="atlas-labels" aria-hidden="true">
       {atlas.islands.map((island) => (
-        <div key={island.id} data-label={`island:${island.id}`} className="atlas-label atlas-label--island">
-          {island.name}
+        <div
+          key={island.id}
+          data-label={`island:${island.id}`}
+          className="atlas-label atlas-label--island"
+          title={`${island.name}: ${island.category}, ${island.projectCount} works. Click to fit.`}
+          onClick={() => onIslandClick(island)}
+        >
+          <div className="atlas-label__inner">{island.name}</div>
         </div>
       ))}
       {atlas.settlements.map((settlement) => (
@@ -182,12 +209,19 @@ export default function AtlasLabels({ atlas, store }: Props) {
           data-label={`settlement:${settlement.slug}`}
           className={`atlas-label atlas-label--${settlement.tier}`}
           title={settlement.title}
+          onPointerEnter={() => interaction.set({ hovered: settlement.slug })}
+          onPointerLeave={() => {
+            if (interaction.get().hovered === settlement.slug) interaction.set({ hovered: null });
+          }}
+          onClick={() => onOpen(settlement.slug)}
         >
-          {settlement.isCapital && <img className="atlas-label__crown" src={CROWN_SRC} alt="" />}
-          <span className="atlas-label__text">
-            {shortTitle(settlement.title)}
-            {settlement.hasPennant && <img className="atlas-label__pennant" src={PENNANT_SRC} alt="" />}
-          </span>
+          <div className="atlas-label__inner">
+            {settlement.isCapital && <img className="atlas-label__crown" src={CROWN_SRC} alt="" />}
+            <span className="atlas-label__text">
+              {shortTitle(settlement.title)}
+              {settlement.hasPennant && <img className="atlas-label__pennant" src={PENNANT_SRC} alt="" />}
+            </span>
+          </div>
         </div>
       ))}
     </div>

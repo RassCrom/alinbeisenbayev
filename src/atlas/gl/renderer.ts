@@ -2,24 +2,37 @@ import { GLOW_SCALE, GLOW_SPRITE, SETTLEMENT_SPRITES, SETTLEMENT_SPRITE_SCALE, i
 import type { Camera } from '../camera.ts';
 import { paintingHalfWidth } from '../layout.ts';
 import type { Atlas, Island, Settlement } from '../types.ts';
-import { BLUR_FRAG, FULLSCREEN_VERT, SEA_FRAG, SPRITE_FRAG, SPRITE_VERT } from './shaders.ts';
+import {
+  BLUR_FRAG,
+  DIM_FRAG,
+  FOG_FRAG,
+  FULLSCREEN_VERT,
+  MAX_REVEALS,
+  SEA_FRAG,
+  SPRITE_FRAG,
+  SPRITE_VERT,
+} from './shaders.ts';
 
 /*
  * The WebGL2 layer: one canvas, drawn in order every frame.
  *
- *   1. sea        fullscreen shader, reads the baked coast field
- *   2. islands    paintings, back to front by y
- *   3. glow       additive amber under every lit settlement
- *   4. settlements sprites by tier, back to front by y
+ *   1. sea          fullscreen shader, reads the baked coast and shelf fields
+ *   2. islands      paintings, back to front by y
+ *   3. glow         additive amber under every lit settlement
+ *   4. settlements  sprites by tier, back to front by y
+ *   5. dim          while a settlement is hovered: darken everything, then
+ *                   draw that settlement's glow and sprite again on top
+ *   6. fog          fog of war, torn open around surveyed settlements
  *
- * Raw WebGL2 rather than a helper library: the needs are three small
- * programs and textured quads, and the whole thing is under 300 lines. The
- * stage prompt allowed one small helper; none was needed.
+ * Raw WebGL2 rather than a helper library: the needs are a handful of small
+ * programs and textured quads. The stage prompt allowed one small helper;
+ * none was needed.
  *
  * Textures are uploaded premultiplied, so normal blending is
  * (ONE, ONE_MINUS_SRC_ALPHA) and the glow, an RGB image on black, adds with
  * (ONE, ONE). The land mask is baked at start-up into an offscreen texture
- * covering the unit world, blurred twice, and handed to the sea shader.
+ * covering the unit world, blurred twice for the coast field and twice more,
+ * wider, for the shelf, and handed to the sea and fog shaders.
  */
 
 const MASK_SIZE = 1024;
@@ -27,6 +40,25 @@ const MASK_SIZE = 1024;
 const BLUR_STEP = 1.6;
 /** The shelf blur is wider: the shallows reach a good way out from the shore. */
 const SHELF_STEP = 7.0;
+/** How much the rest of the map darkens under a hovered settlement. */
+const DIM_ALPHA = 0.3;
+const GLOW_ALPHA = 0.38;
+/** The hovered settlement's glow, as a multiple of the resting glow. */
+const HOVER_GLOW = 1.9;
+
+/** Everything that changes from frame to frame besides the camera. */
+export interface FrameState {
+  /** 1 for the dark grade; stage 4 drives it from sunrise and sunset. */
+  night: number;
+  /** The settlement being dimmed around, and how far the effect has faded in. */
+  hoverSlug: string | null;
+  hoverStrength: number;
+  /** x, y, radius triplets in world units; the first `revealCount` are drawn. */
+  reveals: Float32Array;
+  revealCount: number;
+  /** Overall fog opacity, 0 to 1. */
+  fog: number;
+}
 
 interface Program {
   program: WebGLProgram;
@@ -38,6 +70,8 @@ export class AtlasRenderer {
   private readonly sea: Program;
   private readonly sprite: Program;
   private readonly blur: Program;
+  private readonly dim: Program;
+  private readonly fog: Program;
   private readonly quad: WebGLVertexArrayObject;
   private readonly empty: WebGLVertexArrayObject;
   private readonly textures = new Map<string, WebGLTexture>();
@@ -46,6 +80,8 @@ export class AtlasRenderer {
   private readonly shelfTexture: WebGLTexture;
   private readonly islands: Island[];
   private readonly settlements: Settlement[];
+  private readonly bySlug: Map<string, Settlement>;
+  private readonly revealBuffer = new Float32Array(MAX_REVEALS * 3);
   private width = 1;
   private height = 1;
   private disposed = false;
@@ -66,6 +102,10 @@ export class AtlasRenderer {
       'u_resolution', 'u_camera', 'u_center', 'u_half', 'u_anchor', 'u_tex', 'u_alpha', 'u_tint', 'u_maskMode',
     ]);
     this.blur = createProgram(gl, FULLSCREEN_VERT, BLUR_FRAG, ['u_tex', 'u_step']);
+    this.dim = createProgram(gl, FULLSCREEN_VERT, DIM_FRAG, ['u_alpha']);
+    this.fog = createProgram(gl, FULLSCREEN_VERT, FOG_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_strength', 'u_shelf', 'u_reveals', 'u_revealCount',
+    ]);
 
     this.empty = must(gl.createVertexArray());
     this.quad = must(gl.createVertexArray());
@@ -82,6 +122,7 @@ export class AtlasRenderer {
 
     this.islands = [...atlas.islands].sort((a, b) => a.y - b.y);
     this.settlements = [...atlas.settlements].sort((a, b) => a.y - b.y);
+    this.bySlug = new Map(atlas.settlements.map((settlement) => [settlement.slug, settlement]));
 
     const baked = this.bakeCoast();
     this.landTexture = baked.land;
@@ -97,17 +138,14 @@ export class AtlasRenderer {
     if (this.canvas.height !== this.height) this.canvas.height = this.height;
   }
 
-  /**
-   * One frame. `night` scales the window glow, 1 for the dark grade;
-   * stage 4 drives it from sunrise and sunset.
-   */
-  render(camera: Camera, dpr: number, timeSeconds: number, night = 1): void {
+  render(camera: Camera, dpr: number, timeSeconds: number, frame: FrameState): void {
     if (this.disposed) return;
     const gl = this.gl;
     const cameraDevice: [number, number, number] = [camera.x, camera.y, camera.zoom * dpr];
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, this.width, this.height);
 
+    // 1. sea
     gl.disable(gl.BLEND);
     gl.useProgram(this.sea.program);
     gl.uniform2f(this.sea.uniforms.get('u_resolution')!, this.width, this.height);
@@ -119,6 +157,7 @@ export class AtlasRenderer {
     gl.bindVertexArray(this.empty);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
+    // 2 to 4. islands, glows, settlements
     gl.enable(gl.BLEND);
     gl.useProgram(this.sprite.program);
     gl.bindVertexArray(this.quad);
@@ -132,19 +171,42 @@ export class AtlasRenderer {
       const sprite = islandSprite(island.id);
       this.drawSprite(sprite.src, island.x, island.y, half, half, sprite.anchor.x, sprite.anchor.y, 1);
     }
-
     gl.blendFunc(gl.ONE, gl.ONE);
-    for (const settlement of this.settlements) {
-      if (settlement.tier === 'ruin') continue;
-      const half = settlement.footprint * GLOW_SCALE;
-      this.drawSprite(GLOW_SPRITE.src, settlement.x, settlement.y, half, half, 0.5, 0.5, 0.38 * night);
+    for (const settlement of this.settlements) this.drawGlow(settlement, GLOW_ALPHA * frame.night);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    for (const settlement of this.settlements) this.drawSettlement(settlement);
+
+    // 5. dim, then the hovered settlement again on top, a little brighter
+    const hovered = frame.hoverSlug ? this.bySlug.get(frame.hoverSlug) : undefined;
+    if (hovered && frame.hoverStrength > 0.002) {
+      gl.useProgram(this.dim.program);
+      gl.bindVertexArray(this.empty);
+      gl.uniform1f(this.dim.uniforms.get('u_alpha')!, DIM_ALPHA * frame.hoverStrength);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      gl.useProgram(this.sprite.program);
+      gl.bindVertexArray(this.quad);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      this.drawGlow(hovered, GLOW_ALPHA * frame.night * (1 + (HOVER_GLOW - 1) * frame.hoverStrength));
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      this.drawSettlement(hovered);
     }
 
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    for (const settlement of this.settlements) {
-      const sprite = SETTLEMENT_SPRITES[settlement.tier];
-      const half = settlement.footprint * SETTLEMENT_SPRITE_SCALE;
-      this.drawSprite(sprite.src, settlement.x, settlement.y, half, half, sprite.anchor.x, sprite.anchor.y, 1);
+    // 6. fog of war
+    if (frame.fog > 0.002) {
+      gl.useProgram(this.fog.program);
+      gl.bindVertexArray(this.empty);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.uniform2f(this.fog.uniforms.get('u_resolution')!, this.width, this.height);
+      gl.uniform3f(this.fog.uniforms.get('u_camera')!, ...cameraDevice);
+      gl.uniform1f(this.fog.uniforms.get('u_time')!, timeSeconds);
+      gl.uniform1f(this.fog.uniforms.get('u_strength')!, frame.fog);
+      this.bindTexture(this.shelfTexture, 0, this.fog.uniforms.get('u_shelf')!);
+      const count = Math.min(frame.revealCount, MAX_REVEALS);
+      this.revealBuffer.set(frame.reveals.subarray(0, count * 3));
+      gl.uniform3fv(this.fog.uniforms.get('u_reveals')!, this.revealBuffer);
+      gl.uniform1i(this.fog.uniforms.get('u_revealCount')!, count);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     gl.bindVertexArray(null);
   }
@@ -157,9 +219,7 @@ export class AtlasRenderer {
     gl.deleteTexture(this.landTexture);
     gl.deleteTexture(this.coastTexture);
     gl.deleteTexture(this.shelfTexture);
-    gl.deleteProgram(this.sea.program);
-    gl.deleteProgram(this.sprite.program);
-    gl.deleteProgram(this.blur.program);
+    for (const program of [this.sea, this.sprite, this.blur, this.dim, this.fog]) gl.deleteProgram(program.program);
     gl.deleteVertexArray(this.quad);
     gl.deleteVertexArray(this.empty);
     // Deliberately no loseContext(): React remounts this view on hot updates
@@ -169,6 +229,18 @@ export class AtlasRenderer {
   }
 
   /* ---- internals ------------------------------------------------------ */
+
+  private drawGlow(settlement: Settlement, alpha: number): void {
+    if (settlement.tier === 'ruin') return;
+    const half = settlement.footprint * GLOW_SCALE;
+    this.drawSprite(GLOW_SPRITE.src, settlement.x, settlement.y, half, half, 0.5, 0.5, alpha);
+  }
+
+  private drawSettlement(settlement: Settlement): void {
+    const sprite = SETTLEMENT_SPRITES[settlement.tier];
+    const half = settlement.footprint * SETTLEMENT_SPRITE_SCALE;
+    this.drawSprite(sprite.src, settlement.x, settlement.y, half, half, sprite.anchor.x, sprite.anchor.y, 1);
+  }
 
   private drawSprite(
     src: string,
@@ -238,8 +310,8 @@ export class AtlasRenderer {
   /**
    * Draw every island's alpha into a unit-world texture (the land mask),
    * blur it twice into the narrow coast field that shapes the foam, then
-   * blur that much wider into the shelf field that colours the shallows.
-   * Islands never move, so this runs once.
+   * blur that much wider into the shelf field that colours the shallows and
+   * carries the fog. Islands never move, so this runs once.
    */
   private bakeCoast(): { land: WebGLTexture; coast: WebGLTexture; shelf: WebGLTexture } {
     const gl = this.gl;
@@ -252,7 +324,6 @@ export class AtlasRenderer {
     gl.viewport(0, 0, MASK_SIZE, MASK_SIZE);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.disable(gl.BLEND);
     gl.useProgram(this.sprite.program);
     gl.bindVertexArray(this.quad);
     gl.uniform2f(this.sprite.uniforms.get('u_resolution')!, MASK_SIZE, MASK_SIZE);
@@ -269,32 +340,22 @@ export class AtlasRenderer {
 
     gl.useProgram(this.blur.program);
     gl.bindVertexArray(this.empty);
+    const pass = (from: WebGLTexture, to: WebGLFramebuffer, stepX: number, stepY: number): void => {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, to);
+      this.bindTexture(from, 0, this.blur.uniforms.get('u_tex')!);
+      gl.uniform2f(this.blur.uniforms.get('u_step')!, stepX, stepY);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
     const step = BLUR_STEP / MASK_SIZE;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, temp.framebuffer);
-    this.bindTexture(land.texture, 0, this.blur.uniforms.get('u_tex')!);
-    gl.uniform2f(this.blur.uniforms.get('u_step')!, step, 0);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, coast.framebuffer);
-    this.bindTexture(temp.texture, 0, this.blur.uniforms.get('u_tex')!);
-    gl.uniform2f(this.blur.uniforms.get('u_step')!, 0, step);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-
+    pass(land.texture, temp.framebuffer, step, 0);
+    pass(temp.texture, coast.framebuffer, 0, step);
     const wide = SHELF_STEP / MASK_SIZE;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, temp.framebuffer);
-    this.bindTexture(coast.texture, 0, this.blur.uniforms.get('u_tex')!);
-    gl.uniform2f(this.blur.uniforms.get('u_step')!, wide, 0);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, shelf.framebuffer);
-    this.bindTexture(temp.texture, 0, this.blur.uniforms.get('u_tex')!);
-    gl.uniform2f(this.blur.uniforms.get('u_step')!, 0, wide);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    pass(coast.texture, temp.framebuffer, wide, 0);
+    pass(temp.texture, shelf.framebuffer, 0, wide);
 
     gl.bindVertexArray(null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.deleteFramebuffer(land.framebuffer);
-    gl.deleteFramebuffer(temp.framebuffer);
-    gl.deleteFramebuffer(coast.framebuffer);
-    gl.deleteFramebuffer(shelf.framebuffer);
+    for (const target of [land, temp, coast, shelf]) gl.deleteFramebuffer(target.framebuffer);
     gl.deleteTexture(temp.texture);
     return { land: land.texture, coast: coast.texture, shelf: shelf.texture };
   }
