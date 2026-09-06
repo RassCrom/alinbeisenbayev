@@ -7,6 +7,13 @@ import { useCallback, useSyncExternalStore } from 'react';
  * impression: reduced motion, a narrow viewport, or no WebGL2, in which
  * case the sheet wins. No WebGL2 also overrides a stored "map", because the
  * atlas cannot draw without it.
+ *
+ * This is an external store for useSyncExternalStore, so its snapshot must
+ * only change when a listener is notified: the current mode is cached and
+ * recomputed on our own events (a choice, a resize, a motion-preference
+ * change), never on read. Reading window.innerWidth inside getSnapshot
+ * would let two components disagree within one render, and a hidden or
+ * mid-layout window that briefly reports a width of 0 could pin the sheet.
  */
 
 export type ViewMode = 'map' | 'sheet';
@@ -47,16 +54,25 @@ export function defaultViewMode(): ViewMode {
 
 /** Holds the choice for this visit when localStorage refuses to. */
 let sessionChoice: ViewMode | null = null;
+let snapshot: ViewMode | null = null;
 const listeners = new Set<() => void>();
 
-/**
- * Not cached: until the visitor chooses, the default is recomputed on every
- * read so a viewport that was narrow for one early frame does not pin the
- * sheet for the whole visit.
- */
-function current(): ViewMode {
+function compute(): ViewMode {
   if (!atlasSupported()) return 'sheet';
   return sessionChoice ?? readStored() ?? defaultViewMode();
+}
+
+function getSnapshot(): ViewMode {
+  if (snapshot === null) snapshot = compute();
+  return snapshot;
+}
+
+/** Recompute, and notify only when the mode actually changed. */
+function refresh(): void {
+  const next = compute();
+  if (next === snapshot) return;
+  snapshot = next;
+  for (const listener of listeners) listener();
 }
 
 export function setViewMode(next: ViewMode): void {
@@ -66,32 +82,27 @@ export function setViewMode(next: ViewMode): void {
   } catch {
     // Private mode or a full store: sessionChoice still holds for this visit.
   }
-  for (const listener of listeners) listener();
+  refresh();
 }
 
-/**
- * Besides explicit choices, the default itself can change while nothing is
- * stored: a window crossing the narrow threshold, or a motion preference
- * toggled. Re-evaluate on those too, so an early narrow layout frame does
- * not decide the whole visit.
- */
+let environmentWatched = false;
+
+/** The default depends on the window; watch it once anyone subscribes. */
+function watchEnvironment(): void {
+  if (environmentWatched || typeof window === 'undefined') return;
+  environmentWatched = true;
+  window.addEventListener('resize', refresh);
+  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', refresh);
+}
+
 function subscribe(listener: () => void): () => void {
   listeners.add(listener);
-  const onEnvironment = (): void => {
-    if (sessionChoice === null && readStored() === null) listener();
-  };
-  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  window.addEventListener('resize', onEnvironment);
-  motion.addEventListener('change', onEnvironment);
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener('resize', onEnvironment);
-    motion.removeEventListener('change', onEnvironment);
-  };
+  watchEnvironment();
+  return () => listeners.delete(listener);
 }
 
 export function useViewMode(): { mode: ViewMode; setMode: (next: ViewMode) => void; supported: boolean } {
-  const value = useSyncExternalStore(subscribe, current, () => 'sheet' as ViewMode);
+  const value = useSyncExternalStore(subscribe, getSnapshot, () => 'sheet' as ViewMode);
   const setMode = useCallback((next: ViewMode) => setViewMode(next), []);
   return { mode: value, setMode, supported: atlasSupported() };
 }
