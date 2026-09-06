@@ -2,6 +2,7 @@ import { GLOW_SCALE, GLOW_SPRITE, SETTLEMENT_SPRITES, SETTLEMENT_SPRITE_SCALE, i
 import type { Camera } from '../camera.ts';
 import { paintingHalfWidth } from '../layout.ts';
 import type { Atlas, Island, Settlement } from '../types.ts';
+import type { WeatherLook } from '../weather/sim.ts';
 import {
   BLUR_FRAG,
   DIM_FRAG,
@@ -12,27 +13,32 @@ import {
   SPRITE_FRAG,
   SPRITE_VERT,
 } from './shaders.ts';
+import { GRADE_FRAG, SKY_FRAG, SNOW_FRAG } from './weatherShaders.ts';
 
 /*
  * The WebGL2 layer: one canvas, drawn in order every frame.
  *
- *   1. sea          fullscreen shader, reads the baked coast and shelf fields
- *   2. islands      paintings, back to front by y
- *   3. glow         additive amber under every lit settlement
- *   4. settlements  sprites by tier, back to front by y
- *   5. dim          while a settlement is hovered: darken everything, then
+ *   1. sea          fullscreen shader: waves, shelf, foam, sea ice, sun glints
+ *   2. islands      paintings, back to front by y, tinted for the season
+ *   3. snow         lying snow on the land, from the snow-cover memory
+ *   4. glow         additive amber under every lit settlement, strongest at night
+ *   5. settlements  sprites by tier, back to front by y
+ *   6. dim          while a settlement is hovered: darken everything, then
  *                   draw that settlement's glow and sprite again on top
- *   6. fog          fog of war, torn open around surveyed settlements
+ *   7. grade        multiply: day, twilight and night tint, cloud shadows
+ *   8. sky          clouds, fog haze, rain or snow, lightning
+ *   9. fog          fog of war, torn open around surveyed settlements
  *
  * Raw WebGL2 rather than a helper library: the needs are a handful of small
  * programs and textured quads. The stage prompt allowed one small helper;
  * none was needed.
  *
  * Textures are uploaded premultiplied, so normal blending is
- * (ONE, ONE_MINUS_SRC_ALPHA) and the glow, an RGB image on black, adds with
- * (ONE, ONE). The land mask is baked at start-up into an offscreen texture
- * covering the unit world, blurred twice for the coast field and twice more,
- * wider, for the shelf, and handed to the sea and fog shaders.
+ * (ONE, ONE_MINUS_SRC_ALPHA), the glow (an RGB image on black) adds with
+ * (ONE, ONE), and the grade multiplies with (DST_COLOR, ZERO). The land
+ * mask is baked at start-up into an offscreen texture covering the unit
+ * world, blurred twice for the coast field and twice more, wider, for the
+ * shelf, and handed to the sea, snow and fog shaders.
  */
 
 const MASK_SIZE = 1024;
@@ -45,19 +51,26 @@ const DIM_ALPHA = 0.3;
 const GLOW_ALPHA = 0.38;
 /** The hovered settlement's glow, as a multiple of the resting glow. */
 const HOVER_GLOW = 1.9;
+/** Cloud drift in world units per second per km/h; exaggerated so it reads. */
+const DRIFT_PER_KMH = 0.00035;
 
 /** Everything that changes from frame to frame besides the camera. */
 export interface FrameState {
-  /** 1 for the dark grade; stage 4 drives it from sunrise and sunset. */
-  night: number;
   /** The settlement being dimmed around, and how far the effect has faded in. */
   hoverSlug: string | null;
   hoverStrength: number;
   /** x, y, radius triplets in world units; the first `revealCount` are drawn. */
   reveals: Float32Array;
   revealCount: number;
-  /** Overall fog opacity, 0 to 1. */
+  /** Overall fog-of-war opacity, 0 to 1. */
   fog: number;
+  /** The blended weather look; see weather/sim.ts. */
+  weather: WeatherLook;
+  /** Seconds the weather animates on; frozen under reduced motion. */
+  weatherTime: number;
+  /** Where the cloud field has drifted to, in world units, accumulated by the caller. */
+  driftX: number;
+  driftY: number;
 }
 
 interface Program {
@@ -72,6 +85,9 @@ export class AtlasRenderer {
   private readonly blur: Program;
   private readonly dim: Program;
   private readonly fog: Program;
+  private readonly snow: Program;
+  private readonly grade: Program;
+  private readonly sky: Program;
   private readonly quad: WebGLVertexArrayObject;
   private readonly empty: WebGLVertexArrayObject;
   private readonly textures = new Map<string, WebGLTexture>();
@@ -96,7 +112,7 @@ export class AtlasRenderer {
     this.gl = gl;
 
     this.sea = createProgram(gl, FULLSCREEN_VERT, SEA_FRAG, [
-      'u_resolution', 'u_camera', 'u_time', 'u_coast', 'u_shelf', 'u_land',
+      'u_resolution', 'u_camera', 'u_time', 'u_coast', 'u_shelf', 'u_land', 'u_sun', 'u_sunlight', 'u_ice',
     ]);
     this.sprite = createProgram(gl, SPRITE_VERT, SPRITE_FRAG, [
       'u_resolution', 'u_camera', 'u_center', 'u_half', 'u_anchor', 'u_tex', 'u_alpha', 'u_tint', 'u_maskMode',
@@ -105,6 +121,14 @@ export class AtlasRenderer {
     this.dim = createProgram(gl, FULLSCREEN_VERT, DIM_FRAG, ['u_alpha']);
     this.fog = createProgram(gl, FULLSCREEN_VERT, FOG_FRAG, [
       'u_resolution', 'u_camera', 'u_time', 'u_strength', 'u_shelf', 'u_reveals', 'u_revealCount',
+    ]);
+    this.snow = createProgram(gl, FULLSCREEN_VERT, SNOW_FRAG, ['u_resolution', 'u_camera', 'u_land', 'u_cover']);
+    this.grade = createProgram(gl, FULLSCREEN_VERT, GRADE_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_day', 'u_dusk', 'u_cloud', 'u_storm', 'u_drift', 'u_sun',
+    ]);
+    this.sky = createProgram(gl, FULLSCREEN_VERT, SKY_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_day', 'u_cloud', 'u_storm', 'u_haze', 'u_rain', 'u_snow',
+      'u_flash', 'u_slant', 'u_drift',
     ]);
 
     this.empty = must(gl.createVertexArray());
@@ -141,42 +165,60 @@ export class AtlasRenderer {
   render(camera: Camera, dpr: number, timeSeconds: number, frame: FrameState): void {
     if (this.disposed) return;
     const gl = this.gl;
+    const w = frame.weather;
     const cameraDevice: [number, number, number] = [camera.x, camera.y, camera.zoom * dpr];
+    const night = 1 - w.day;
+    const glowStrength = 0.35 + 0.65 * night;
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, this.width, this.height);
 
     // 1. sea
     gl.disable(gl.BLEND);
     gl.useProgram(this.sea.program);
-    gl.uniform2f(this.sea.uniforms.get('u_resolution')!, this.width, this.height);
-    gl.uniform3f(this.sea.uniforms.get('u_camera')!, ...cameraDevice);
-    gl.uniform1f(this.sea.uniforms.get('u_time')!, timeSeconds);
+    this.fullscreenUniforms(this.sea, cameraDevice, timeSeconds);
     this.bindTexture(this.coastTexture, 0, this.sea.uniforms.get('u_coast')!);
     this.bindTexture(this.landTexture, 1, this.sea.uniforms.get('u_land')!);
     this.bindTexture(this.shelfTexture, 2, this.sea.uniforms.get('u_shelf')!);
+    gl.uniform3f(this.sea.uniforms.get('u_sun')!, w.sunX, w.sunY, w.sunZ);
+    gl.uniform1f(this.sea.uniforms.get('u_sunlight')!, w.day * (1 - 0.75 * w.cloud));
+    gl.uniform1f(this.sea.uniforms.get('u_ice')!, w.ice);
     gl.bindVertexArray(this.empty);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // 2 to 4. islands, glows, settlements
+    // 2. islands
     gl.enable(gl.BLEND);
     gl.useProgram(this.sprite.program);
     gl.bindVertexArray(this.quad);
     gl.uniform2f(this.sprite.uniforms.get('u_resolution')!, this.width, this.height);
     gl.uniform3f(this.sprite.uniforms.get('u_camera')!, ...cameraDevice);
     gl.uniform1i(this.sprite.uniforms.get('u_maskMode')!, 0);
-
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     for (const island of this.islands) {
       const half = paintingHalfWidth(island);
       const sprite = islandSprite(island.id);
-      this.drawSprite(sprite.src, island.x, island.y, half, half, sprite.anchor.x, sprite.anchor.y, 1);
+      this.drawSprite(sprite.src, island.x, island.y, half, half, sprite.anchor.x, sprite.anchor.y, 1, [w.tintR, w.tintG, w.tintB]);
     }
+
+    // 3. snow on the land
+    if (w.snowCover > 0.005) {
+      gl.useProgram(this.snow.program);
+      gl.bindVertexArray(this.empty);
+      gl.uniform2f(this.snow.uniforms.get('u_resolution')!, this.width, this.height);
+      gl.uniform3f(this.snow.uniforms.get('u_camera')!, ...cameraDevice);
+      gl.uniform1f(this.snow.uniforms.get('u_cover')!, w.snowCover);
+      this.bindTexture(this.landTexture, 0, this.snow.uniforms.get('u_land')!);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.useProgram(this.sprite.program);
+      gl.bindVertexArray(this.quad);
+    }
+
+    // 4 and 5. glows, settlements
     gl.blendFunc(gl.ONE, gl.ONE);
-    for (const settlement of this.settlements) this.drawGlow(settlement, GLOW_ALPHA * frame.night);
+    for (const settlement of this.settlements) this.drawGlow(settlement, GLOW_ALPHA * glowStrength);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     for (const settlement of this.settlements) this.drawSettlement(settlement);
 
-    // 5. dim, then the hovered settlement again on top, a little brighter
+    // 6. dim, then the hovered settlement again on top, a little brighter
     const hovered = frame.hoverSlug ? this.bySlug.get(frame.hoverSlug) : undefined;
     if (hovered && frame.hoverStrength > 0.002) {
       gl.useProgram(this.dim.program);
@@ -187,19 +229,44 @@ export class AtlasRenderer {
       gl.useProgram(this.sprite.program);
       gl.bindVertexArray(this.quad);
       gl.blendFunc(gl.ONE, gl.ONE);
-      this.drawGlow(hovered, GLOW_ALPHA * frame.night * (1 + (HOVER_GLOW - 1) * frame.hoverStrength));
+      this.drawGlow(hovered, GLOW_ALPHA * glowStrength * (1 + (HOVER_GLOW - 1) * frame.hoverStrength));
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       this.drawSettlement(hovered);
     }
 
-    // 6. fog of war
+    // 7. grade (multiply)
+    gl.useProgram(this.grade.program);
+    gl.bindVertexArray(this.empty);
+    gl.blendFunc(gl.DST_COLOR, gl.ZERO);
+    this.fullscreenUniforms(this.grade, cameraDevice, frame.weatherTime);
+    gl.uniform1f(this.grade.uniforms.get('u_day')!, w.day);
+    gl.uniform1f(this.grade.uniforms.get('u_dusk')!, w.dusk);
+    gl.uniform1f(this.grade.uniforms.get('u_cloud')!, w.cloud);
+    gl.uniform1f(this.grade.uniforms.get('u_storm')!, w.storm);
+    gl.uniform2f(this.grade.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
+    gl.uniform3f(this.grade.uniforms.get('u_sun')!, w.sunX, w.sunY, w.sunZ);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // 8. sky
+    gl.useProgram(this.sky.program);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    this.fullscreenUniforms(this.sky, cameraDevice, frame.weatherTime);
+    gl.uniform1f(this.sky.uniforms.get('u_day')!, w.day);
+    gl.uniform1f(this.sky.uniforms.get('u_cloud')!, w.cloud);
+    gl.uniform1f(this.sky.uniforms.get('u_storm')!, w.storm);
+    gl.uniform1f(this.sky.uniforms.get('u_haze')!, w.haze);
+    gl.uniform1f(this.sky.uniforms.get('u_rain')!, w.rain);
+    gl.uniform1f(this.sky.uniforms.get('u_snow')!, w.snow);
+    gl.uniform1f(this.sky.uniforms.get('u_flash')!, w.flash);
+    // Precipitation leans with the wind's east-west push; strong wind lays it nearly flat.
+    gl.uniform1f(this.sky.uniforms.get('u_slant')!, Math.max(-1.2, Math.min(1.2, (w.windX * w.windSpeed) / 35)));
+    gl.uniform2f(this.sky.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // 9. fog of war
     if (frame.fog > 0.002) {
       gl.useProgram(this.fog.program);
-      gl.bindVertexArray(this.empty);
-      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      gl.uniform2f(this.fog.uniforms.get('u_resolution')!, this.width, this.height);
-      gl.uniform3f(this.fog.uniforms.get('u_camera')!, ...cameraDevice);
-      gl.uniform1f(this.fog.uniforms.get('u_time')!, timeSeconds);
+      this.fullscreenUniforms(this.fog, cameraDevice, timeSeconds);
       gl.uniform1f(this.fog.uniforms.get('u_strength')!, frame.fog);
       this.bindTexture(this.shelfTexture, 0, this.fog.uniforms.get('u_shelf')!);
       const count = Math.min(frame.revealCount, MAX_REVEALS);
@@ -211,6 +278,12 @@ export class AtlasRenderer {
     gl.bindVertexArray(null);
   }
 
+  /** How far the cloud field moves in one frame, for the caller to accumulate. */
+  static drift(weather: WeatherLook, dt: number): { x: number; y: number } {
+    const speed = weather.windSpeed * DRIFT_PER_KMH * dt;
+    return { x: weather.windX * speed, y: weather.windY * speed };
+  }
+
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
@@ -219,7 +292,9 @@ export class AtlasRenderer {
     gl.deleteTexture(this.landTexture);
     gl.deleteTexture(this.coastTexture);
     gl.deleteTexture(this.shelfTexture);
-    for (const program of [this.sea, this.sprite, this.blur, this.dim, this.fog]) gl.deleteProgram(program.program);
+    for (const program of [this.sea, this.sprite, this.blur, this.dim, this.fog, this.snow, this.grade, this.sky]) {
+      gl.deleteProgram(program.program);
+    }
     gl.deleteVertexArray(this.quad);
     gl.deleteVertexArray(this.empty);
     // Deliberately no loseContext(): React remounts this view on hot updates
@@ -229,6 +304,14 @@ export class AtlasRenderer {
   }
 
   /* ---- internals ------------------------------------------------------ */
+
+  private fullscreenUniforms(program: Program, cameraDevice: [number, number, number], time: number): void {
+    const gl = this.gl;
+    gl.uniform2f(program.uniforms.get('u_resolution')!, this.width, this.height);
+    gl.uniform3f(program.uniforms.get('u_camera')!, ...cameraDevice);
+    const timeLocation = program.uniforms.get('u_time');
+    if (timeLocation) gl.uniform1f(timeLocation, time);
+  }
 
   private drawGlow(settlement: Settlement, alpha: number): void {
     if (settlement.tier === 'ruin') return;
@@ -251,6 +334,7 @@ export class AtlasRenderer {
     anchorX: number,
     anchorY: number,
     alpha: number,
+    tint: [number, number, number] = [1, 1, 1],
   ): void {
     const texture = this.textures.get(src);
     if (!texture) return;
@@ -260,7 +344,7 @@ export class AtlasRenderer {
     gl.uniform2f(u.get('u_half')!, halfWidth, halfHeight);
     gl.uniform2f(u.get('u_anchor')!, anchorX, anchorY);
     gl.uniform1f(u.get('u_alpha')!, alpha);
-    gl.uniform3f(u.get('u_tint')!, 1, 1, 1);
+    gl.uniform3f(u.get('u_tint')!, tint[0], tint[1], tint[2]);
     this.bindTexture(texture, 0, u.get('u_tex')!);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }

@@ -29,6 +29,8 @@ import { createInteractionStore, hitTest } from './interaction.ts';
 import { sheetOrder } from './order.ts';
 import type { Island } from './types.ts';
 import { setViewMode } from './viewMode.ts';
+import { WeatherSim, initialSnowCover, targetLook } from './weather/sim.ts';
+import { PRESET_LABEL, presetWeather, useWeather, type WeatherPreset, type WeatherState } from './weather/weather.ts';
 import './atlas.css';
 
 /*
@@ -73,6 +75,16 @@ export default function AtlasView() {
     () => atlas.settlements.filter((s) => surveyed.has(s.slug)).length,
     [atlas, surveyed],
   );
+  const { weather: liveWeather, error: weatherError } = useWeather();
+  const [preset, setPreset] = useState<WeatherPreset | null>(null);
+  // The state the map shows: a preview preset if one is chosen, else the live forecast.
+  const shownWeather: WeatherState = useMemo(
+    () => (preset ? presetWeather(preset) : liveWeather),
+    [liveWeather, preset],
+  );
+  const weatherRef = useRef(shownWeather);
+  weatherRef.current = shownWeather;
+  const simRef = useRef<WeatherSim | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -89,8 +101,11 @@ export default function AtlasView() {
     if (!import.meta.env.DEV) return;
     const debugWindow = window as unknown as { __atlas?: unknown };
     debugWindow.__atlas = { atlas, store, interaction };
-    const hover = new URLSearchParams(window.location.search).get('atlas-hover');
+    const params = new URLSearchParams(window.location.search);
+    const hover = params.get('atlas-hover');
     if (hover && status.kind === 'ready') interaction.set({ hovered: hover });
+    const weatherParam = params.get('atlas-weather');
+    if (weatherParam && weatherParam in PRESET_LABEL) setPreset(weatherParam as WeatherPreset);
     return () => {
       delete debugWindow.__atlas;
     };
@@ -225,7 +240,9 @@ export default function AtlasView() {
     let cancelled = false;
     let sized = false;
     let lastTime = 0;
-    const instant = prefersReducedMotion();
+    // Dev only: a preset asked for by URL snaps into place, so a headless render shows the settled look.
+    const snapWeather = import.meta.env.DEV && new URLSearchParams(window.location.search).has('atlas-weather');
+    const instant = prefersReducedMotion() || snapWeather;
     const dpr = (): number => Math.min(window.devicePixelRatio || 1, MAX_DPR);
 
     const applyViewport = (): void => {
@@ -250,7 +267,26 @@ export default function AtlasView() {
       progress[i] = surveyedRef.current.has(s.slug) ? 1 : 0;
     });
     const reveals = new Float32Array((atlas.settlements.length + 1) * 3);
-    const frameState: FrameState = { night: 1, hoverSlug: null, hoverStrength: 0, reveals, revealCount: 0, fog: 1 };
+    const sim = simRef.current ?? new WeatherSim(targetLook(weatherRef.current, Date.now()), initialSnowCover(weatherRef.current));
+    simRef.current = sim;
+    if (import.meta.env.DEV) {
+      const debugWindow = window as unknown as { __atlas?: { sim?: WeatherSim } };
+      if (debugWindow.__atlas) debugWindow.__atlas.sim = sim;
+    }
+    let weatherTime = 0;
+    const frameState: FrameState = {
+      hoverSlug: null,
+      hoverStrength: 0,
+      reveals,
+      revealCount: 0,
+      fog: 1,
+      weather: sim.look,
+      weatherTime: 0,
+      driftX: 0,
+      driftY: 0,
+    };
+    // Dev only: a running average of the frame time, readable from window.__atlas.frameMs.
+    let frameMs = 0;
 
     const tick = (now: number): void => {
       frame = 0;
@@ -281,7 +317,25 @@ export default function AtlasView() {
       });
       frameState.revealCount = count;
 
+      // Weather: ease toward the current target, keep the cloud field drifting with the wind.
+      const target = targetLook(weatherRef.current, Date.now());
+      if (snapWeather && sim.look.snow !== target.snow) sim.look.snowCover = initialSnowCover(weatherRef.current);
+      sim.update(dt, target, instant);
+      if (!instant) {
+        weatherTime += dt;
+        const drift = AtlasRenderer.drift(sim.look, dt);
+        frameState.driftX += drift.x;
+        frameState.driftY += drift.y;
+      }
+      frameState.weatherTime = weatherTime;
+
+      const started = performance.now();
       renderer.render(store.get().camera, dpr(), now / 1000, frameState);
+      frameMs += (performance.now() - started - frameMs) * 0.05;
+      if (import.meta.env.DEV) {
+        const debugWindow = window as unknown as { __atlas?: { frameMs?: number } };
+        if (debugWindow.__atlas) debugWindow.__atlas.frameMs = frameMs;
+      }
       frame = requestAnimationFrame(tick);
     };
     const start = (): void => {
@@ -354,6 +408,10 @@ export default function AtlasView() {
             atlas={atlas}
             store={store}
             surveyedCount={surveyedCount}
+            weather={shownWeather}
+            weatherError={weatherError}
+            preset={preset}
+            onPreset={setPreset}
             onSheetView={() => setViewMode('sheet')}
             onMinimapClick={flyTo}
           />

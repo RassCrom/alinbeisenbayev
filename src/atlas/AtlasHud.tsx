@@ -4,43 +4,98 @@ import { visibleWorld, type Point, type ViewStore } from './camera.ts';
 import { TIERS, TIER_LABEL } from './config.ts';
 import { paintingHalfWidth } from './layout.ts';
 import type { Atlas } from './types.ts';
+import { moonPhase } from './weather/sun.ts';
+import {
+  CONDITION_LABEL,
+  PRESET_LABEL,
+  compassPoint,
+  formatTemperature,
+  type Condition,
+  type WeatherPreset,
+  type WeatherState,
+} from './weather/weather.ts';
 
 /*
- * The two dark-glass panels from concept 10. Bottom left: compass, weather
- * readout (placeholder values until stage 4 wires Open-Meteo), the survey
- * count, and a minimap of the paintings that doubles as the category
- * legend and recentres the camera when clicked. Bottom right: the
- * settlement tier legend and the switch back to the sheet view.
+ * The two dark-glass panels from concept 10. Bottom left: compass, the
+ * live weather readout with a preview picker, the survey count, and a
+ * minimap of the paintings that doubles as the category legend and
+ * recentres the camera when clicked. Bottom right: the settlement tier
+ * legend and the switch back to the sheet view. At night a moon with the
+ * real phase hangs at the top right of the map.
  */
 
 interface Props {
   atlas: Atlas;
   store: ViewStore;
   surveyedCount: number;
+  weather: WeatherState;
+  weatherError: string | null;
+  preset: WeatherPreset | null;
+  onPreset: (preset: WeatherPreset | null) => void;
   onSheetView: () => void;
   /** A click on the minimap, in world coordinates. */
   onMinimapClick: (point: Point) => void;
 }
 
-export default function AtlasHud({ atlas, store, surveyedCount, onSheetView, onMinimapClick }: Props) {
+const PRESETS = Object.keys(PRESET_LABEL) as WeatherPreset[];
+
+export default function AtlasHud({
+  atlas,
+  store,
+  surveyedCount,
+  weather,
+  weatherError,
+  preset,
+  onPreset,
+  onSheetView,
+  onMinimapClick,
+}: Props) {
   const counts = useMemo(() => {
     const byTier = new Map<string, number>();
     for (const settlement of atlas.settlements) byTier.set(settlement.tier, (byTier.get(settlement.tier) ?? 0) + 1);
     return byTier;
   }, [atlas]);
 
+  const sourceNote =
+    preset !== null
+      ? 'Preview weather; the live forecast is unchanged.'
+      : weather.source === 'live'
+        ? `Open-Meteo, ${new Date(weather.observedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+        : weather.source === 'cached'
+          ? 'Cached forecast; refreshing every fifteen minutes.'
+          : `No forecast reachable${weatherError ? ` (${weatherError})` : ''}; clear sky from the clock.`;
+
   return (
     <>
+      {!weather.isDay && <Moon />}
+
       <div className="atlas-hud atlas-hud--left">
         <div className="atlas-hud__block">
           <Compass />
         </div>
         <div className="atlas-hud__divider" />
-        <div className="atlas-hud__block atlas-weather" title="Placeholder until stage 4 brings the live Astana forecast">
-          <SnowIcon />
-          <span className="atlas-weather__temperature">−2°C</span>
-          <span className="atlas-weather__wind">NW 15 km/h</span>
-          <span className="atlas-weather__place">Astana</span>
+        <div className="atlas-hud__block atlas-weather" title={sourceNote}>
+          <WeatherIcon condition={weather.condition} isDay={weather.isDay} />
+          <span className="atlas-weather__temperature">{formatTemperature(weather.temperature)}</span>
+          <span className="atlas-weather__wind">
+            {compassPoint(weather.windDirection)} {Math.round(weather.windSpeed)} km/h · {CONDITION_LABEL[weather.condition]}
+          </span>
+          <span className="atlas-weather__place">The map lives in Astana's weather.</span>
+          <label className="atlas-weather__preview">
+            <span className="atlas-hud__eyebrow">Preview</span>
+            <select
+              value={preset ?? 'live'}
+              onChange={(event) => onPreset(event.target.value === 'live' ? null : (event.target.value as WeatherPreset))}
+              aria-label="Preview the map under another weather"
+            >
+              <option value="live">Live Astana</option>
+              {PRESETS.map((key) => (
+                <option key={key} value={key}>
+                  {PRESET_LABEL[key]}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="atlas-hud__divider" />
         <div className="atlas-hud__block">
@@ -145,6 +200,24 @@ function Minimap({ atlas, store, onClick }: { atlas: Atlas; store: ViewStore; on
   );
 }
 
+/** The real lunar phase, drawn as the lit part of a disc. */
+function Moon() {
+  const { phase, illumination, waxing } = moonPhase(new Date());
+  const r = 14;
+  // The terminator is an ellipse whose x radius runs from -r (new) through 0 (quarter) to r (full).
+  const terminator = r * Math.cos(2 * Math.PI * phase);
+  const litSide = waxing ? 1 : -1;
+  const outer = `M0,${-r} A${r},${r} 0 0,${waxing ? 1 : 0} 0,${r}`;
+  const inner = `A${Math.abs(terminator)},${r} 0 0,${(terminator * litSide < 0) === waxing ? 0 : 1} 0,${-r}`;
+  const label = `${Math.round(illumination * 100)}% lit, ${waxing ? 'waxing' : 'waning'}`;
+  return (
+    <svg className="atlas-moon" viewBox="-18 -18 36 36" role="img" aria-label={`Moon, ${label}`}>
+      <circle r={r} fill="#1a2238" stroke="rgba(235,225,201,0.25)" strokeWidth="0.6" />
+      <path d={`${outer} ${inner} Z`} fill="#efe6d0" />
+    </svg>
+  );
+}
+
 function Compass() {
   const gold = 'var(--atlas-gold)';
   return (
@@ -175,11 +248,68 @@ function Compass() {
   );
 }
 
-function SnowIcon() {
-  return (
-    <svg className="atlas-weather__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-      <path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1" />
-      <path d="M12 6l-2-2m2 2 2-2M12 18l-2 2m2-2 2 2M6 12l-2-2m2 2-2 2M18 12l2-2m-2 2 2 2" />
-    </svg>
-  );
+function WeatherIcon({ condition, isDay }: { condition: Condition; isDay: boolean }) {
+  const common = {
+    className: 'atlas-weather__icon',
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.5,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+  };
+  const cloud = <path d="M7 18h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.3 1.6A3.3 3.3 0 0 0 7 18z" />;
+  switch (condition) {
+    case 'clear':
+      return isDay ? (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4" />
+        </svg>
+      ) : (
+        <svg {...common}>
+          <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" />
+        </svg>
+      );
+    case 'partly-cloudy':
+      return (
+        <svg {...common}>
+          <path d="M6 5.5v1.5M2.5 9H4M4 4.5l1 1M9.5 4.5l-1 1" />
+          <circle cx="6" cy="9" r="2.2" />
+          <path d="M9 19h9a3.5 3.5 0 0 0 .4-7 5.5 5.5 0 0 0-10.3 1.5A2.8 2.8 0 0 0 9 19z" />
+        </svg>
+      );
+    case 'overcast':
+      return <svg {...common}>{cloud}</svg>;
+    case 'fog':
+      return (
+        <svg {...common}>
+          <path d="M4 9h16M3 13h18M5 17h14" />
+        </svg>
+      );
+    case 'drizzle':
+    case 'rain':
+      return (
+        <svg {...common}>
+          <path d="M7 15h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.3 1.6A3.3 3.3 0 0 0 7 15z" />
+          <path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3" />
+        </svg>
+      );
+    case 'snow':
+      return (
+        <svg {...common}>
+          <path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1" />
+        </svg>
+      );
+    case 'thunderstorm':
+      return (
+        <svg {...common}>
+          <path d="M7 14h10a4 4 0 0 0 .5-8 6 6 0 0 0-11.3 1.6A3.3 3.3 0 0 0 7 14z" />
+          <path d="M13 14l-2.5 4.5H13L11 23" />
+        </svg>
+      );
+    default:
+      return <svg {...common}>{cloud}</svg>;
+  }
 }

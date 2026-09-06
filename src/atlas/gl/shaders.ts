@@ -39,6 +39,9 @@ uniform float u_time;
 uniform sampler2D u_coast;
 uniform sampler2D u_shelf;
 uniform sampler2D u_land;
+uniform vec3 u_sun;
+uniform float u_sunlight;
+uniform float u_ice;
 in vec2 v_uv;
 out vec4 outColor;
 
@@ -104,7 +107,8 @@ void main() {
 
   // Key light from the upper right, as in the paintings; the camera looks
   // straight down, so the half vector is nearly the light itself.
-  vec3 lightDir = normalize(vec3(0.55, -0.45, 0.70));
+  vec3 moonDir = normalize(vec3(0.55, -0.45, 0.70));
+  vec3 lightDir = normalize(mix(moonDir, u_sun, u_sunlight));
   vec3 halfDir = normalize(lightDir + vec3(0.0, 0.0, 1.0));
   float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);
   float glint = pow(max(dot(normal, halfDir), 0.0), 110.0);
@@ -147,7 +151,16 @@ void main() {
   color = mix(color, foamColor, foam);
 
   // Specular glints, brighter over the shallows where the water is lively.
-  color += vec3(0.85, 0.92, 1.0) * glint * (0.28 + 0.55 * shallow) * (1.0 - foam);
+  color += vec3(0.85, 0.92, 1.0) * glint * (0.28 + 0.55 * shallow) * (1.0 - foam) * (0.25 + 0.75 * u_sunlight);
+
+  // Sea ice grows out from the coasts when it freezes: pale, cracked, still.
+  if (u_ice > 0.005) {
+    float iceField = smoothstep(0.03, 0.6, shelf) * (0.55 + 0.45 * fbm(world * 40.0 + vec2(8.0, 1.0)));
+    float iceAmount = clamp(iceField * u_ice * 1.6, 0.0, 1.0) * (1.0 - land);
+    float cracks = 1.0 - smoothstep(0.0, 0.03, abs(fbm(world * 120.0 + vec2(2.0, 5.0)) - 0.5));
+    vec3 iceColor = vec3(0.78, 0.84, 0.90) - cracks * 0.25;
+    color = mix(color, iceColor * (0.7 + 0.3 * u_sunlight), iceAmount);
+  }
 
   // Cinematic vignette.
   vec2 q = v_uv - 0.5;

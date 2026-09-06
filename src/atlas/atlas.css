@@ -401,7 +401,42 @@
 }
 
 .atlas-weather {
-  min-width: 96px;
+  min-width: 150px;
+  max-width: 190px;
+}
+
+.atlas-weather__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.atlas-weather__preview select {
+  padding: 3px 6px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.4);
+  border-radius: 2px;
+  background: rgba(7, 13, 24, 0.85);
+  color: var(--atlas-bone);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.atlas-weather__preview select:focus-visible {
+  outline: 1px solid var(--atlas-gold);
+  outline-offset: 1px;
+}
+
+.atlas-moon {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 0 12px rgba(235, 225, 201, 0.35));
+  pointer-events: none;
 }
 
 .atlas-weather__icon {
@@ -421,6 +456,10 @@
 .atlas-weather__place {
   color: var(--atlas-bone-dim);
   font-size: 11px;
+}
+
+.atlas-weather__place {
+  font-style: italic;
 }
 
 .atlas-minimap {

@@ -342,3 +342,74 @@ not run requestAnimationFrame. Touch taps and pinch are untested.
   its hover; a small dead zone would fix it.
 - `?atlas-hover=<slug>` and `window.__atlas` exist in dev builds only, for
   headless verification renders.
+
+## Stage 4: live Astana weather, seasons, moon, day and night (done)
+
+### Weather module
+
+`src/atlas/weather/weather.ts`: `WeatherState` (source, observedAt, WMO
+code, condition, intensity, temperature, wind speed and direction, cloud
+cover, isDay, sunrise, sunset), `conditionFromCode` (the WMO mapping to
+eight conditions with a light/moderate/heavy intensity), `fetchAstanaWeather`
+(Open-Meteo forecast for 51.17 N 71.43 E with current weather, daily sunrise
+and sunset, timezone auto), `readCachedWeather`, `fallbackWeather` (clear
+sky, Astana's monthly normal temperature, day or night from the sun),
+`presetWeather` for the HUD picker, and `useWeather()`, which polls every
+fifteen minutes and again when the tab returns. Cache key `atlas:weather`,
+fresh under fifteen minutes, stale over an hour.
+
+`src/atlas/weather/sun.ts`: NOAA solar position and sunrise/sunset for
+Astana (checked against Open-Meteo to the minute), and the lunar phase from
+the mean synodic month.
+
+`src/atlas/weather/sim.ts`: `targetLook(state, now)` turns a state into the
+numbers the shaders take (rain, snow, cloud, haze, storm, ice, wind vector,
+day and dusk ramps from the real sun elevation, sun direction, season tint);
+`WeatherSim.update(dt, target, instant)` eases every value toward the
+target over ten seconds, keeps the snow-cover memory (grows while snowing,
+melts above 0°C), and fires lightning in storms. A preset decides day or
+night itself; live weather follows the sun.
+
+### Shader list
+
+Sea (`gl/shaders.ts`): `u_sun`, `u_sunlight` (day × clear sky) and `u_ice`
+added; glints follow the sun by day and a quarter-strength moonlight by
+night; sea ice grows out from the coasts below 0°C, pale and cracked.
+`gl/weatherShaders.ts`: `SNOW_FRAG` (lying snow from the land mask and the
+cover memory), `GRADE_FRAG` (multiply pass: night, twilight and day tint,
+cloud shadows offset away from the sun, longer when it is low),
+`SKY_FRAG` (cloud puffs drifting with the wind, fog haze, rain streaks and
+snowflakes in screen space slanted by the wind, lightning). Season tint is
+the sprite shader's existing `u_tint` on the island paintings: autumn in
+October and November, spring green in April and May. Draw order is in the
+renderer's header comment. All effects are procedural, so the only caps are
+the fixed octave and layer counts; under reduced motion the weather time is
+frozen and lightning is off.
+
+### HUD
+
+Condition icon, temperature, wind (compass point and km/h) and condition
+name, the line "The map lives in Astana's weather.", a source note in the
+tooltip (Open-Meteo time, cached, or fallback with the error), and a
+Preview picker with nine presets that never persists. At night a moon with
+the real phase hangs at the top right of the map.
+
+### Verified
+
+Live readout matched the API response (26°C, partly cloudy, SW 9 km/h at
+12:15 local). Headless renders of live, clear night, snow, blizzard, rain,
+thunderstorm, fog and summer sun via the dev-only `?atlas-weather=<preset>`
+hook, which also snaps the cross-fade so the render shows the settled
+look. Frame time could not be measured this session: the preview pane was
+hidden and did not run requestAnimationFrame; `window.__atlas.frameMs`
+(dev) reports a running average when the tab is visible.
+
+### Deferred from stage 4
+
+- Lightning is a flash only; concept 11's forked bolts are not drawn.
+- Sun glitter is generic specular; a dedicated glitter band on the
+  shallows along the sun direction would read stronger at low sun.
+- Cloud shadows are cast on sea and land alike; the paintings' own baked
+  shadows still point to the upper right regardless of the hour.
+- Weather changes cross-fade; the sea ice and snow cover have their own
+  slower memories and are not reset by the picker.
