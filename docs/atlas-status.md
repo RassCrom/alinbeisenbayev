@@ -533,3 +533,73 @@ Frame time again could not be measured for the same reason as stage 4.
 - Boats ease at ports but do not turn to face the quay; a docked boat
   keeps its last heading.
 - No frame-time numbers; `window.__atlas.frameMs` awaits a visible tab.
+
+## Stage 6: chronicle slider (done)
+
+### Selector
+
+`src/atlas/chronicle.ts`. Months are counted as year × 12 + month, the
+unit `score.ts` already used (its `monthIndex` is now exported).
+
+- `chronicleRange(projects, atlas)` → `{ first, last }`: the earliest
+  `startDate` to `atlas.asOf`.
+- `atlasAt(atlas, projects, month)` → `ChronicleFrame { month, states,
+  laneIds, settledIslands }`. A settlement exists from its start month;
+  it appears as a hamlet and climbs one tier at a time toward today's tier,
+  each tier taking an equal share of the project's duration, arriving in
+  the end month. In-progress work stays a ruin. The crown and the pennant
+  appear in the end month. A lane exists once both ends do. Open-ended
+  dates resolve to `atlas.asOf`, the month the scores were computed for,
+  so at that month the frame reproduces today's atlas exactly
+  (`frameMatchesToday`; `node scripts/print-atlas.ts --check-chronicle`
+  asserts it and prints the growth by year, exit 1 on a mismatch).
+- `chronicleAtlas(atlas, frame)` → an `Atlas` for the DOM layers: absent
+  settlements dropped, tiers and marks as they stood, lanes filtered,
+  positions and bounds untouched. With no frame the view uses the base
+  atlas object itself, so the current-day path is byte-for-byte the same.
+
+### Store
+
+`createChronicleStore()` holds `{ month: Month | null, pinned, scrubbing }`;
+`month === null` means today. `AtlasView` derives `frame` and `viewAtlas`
+from the month with `useMemo` and passes `viewAtlas` to lanes, labels,
+focus and HUD; hit-testing uses it too, so absent settlements cannot be
+hovered. The screen-reader list and the fog reveals stay on today's atlas.
+
+### Animation
+
+The renderer's `FrameState.chronicle` is a map of `SpriteState { tier,
+prevTier, blend, presence }` kept by the view's frame loop only while a
+date is shown or the map is settling back; null draws today through the
+unchanged path. A tier change cross-fades the two sprites over 0.45 s; a
+settlement fades in or out of existence through `presence`. A growing
+settlement is drawn at the footprint of the tier it has reached. On
+release, unless the lock holds it, the month eases back to today
+(exponential, about a second) and the states settle. Under reduced motion
+everything jumps and the return is immediate.
+
+### HUD
+
+A third panel, top left: eyebrow, the month (or "Today"), a padlock that
+pins, a range input from the first month to today with year ticks under
+the track, and "N settlements, M of 7 islands settled" for the shown
+month. The tier counts in the right panel and the survey count follow the
+shown atlas as well. Dragging or keying sets `scrubbing`, so the return
+waits for release. Dev hook: `?atlas-date=YYYY-MM` opens held at that
+month.
+
+### Verified
+
+`--check-chronicle`: January 2022 to September 2026, today matches the
+atlas, settlements monotonic. Headless renders held at June 2024 (2
+settlements, no lanes), June 2025 (14 settlements, the first sea lanes,
+Tigranes and Silk Road at fortress) and March 2026 (17 settlements, the
+capital crowned). The release ease-back and the cross-fades run in the
+frame loop and could not be captured headlessly.
+
+### Deferred from stage 6
+
+- Boats keep sailing today's lanes while a past month is shown.
+- Growth is stepped per tier, not scored per month; a project's score
+  history is not reconstructed.
+- The trade-goods chips count today's settlements while scrubbed.

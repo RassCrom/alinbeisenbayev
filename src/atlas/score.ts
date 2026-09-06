@@ -59,7 +59,7 @@ const DATE = /^(\d{4})(?:-(\d{2}))?$/;
  * from January when it starts a range and to December when it ends one.
  * Open-ended and missing end dates resolve to `asOf`. Null for anything else.
  */
-function monthIndex(date: string | null, edge: 'start' | 'end', asOf: string): number | null {
+export function monthIndex(date: string | null, edge: 'start' | 'end', asOf: string): number | null {
   const value = date === null || OPEN_ENDED.has(date) ? (edge === 'end' ? asOf : null) : date;
   if (value === null) return null;
   const match = DATE.exec(value);

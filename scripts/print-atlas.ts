@@ -18,6 +18,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildAtlas, paintingHalfWidth, TIER_LABEL, type Atlas } from '../src/atlas/index.ts';
+import { atlasAt, chronicleRange, formatMonth, frameMatchesToday, monthOfString } from '../src/atlas/chronicle.ts';
 import type { Project, ProjectsData } from '../src/types/index.ts';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -68,6 +69,34 @@ const crossing = atlas.lanes.filter((lane) => lane.crossing).length;
 console.log(`\nlanes: ${atlas.lanes.length} (${crossing} sea, ${atlas.lanes.length - crossing} road)`);
 for (const lane of atlas.lanes) {
   console.log(`  ${pad(lane.from, 26)} ${pad(lane.to, 26)} ${lane.crossing ? 'sea ' : 'road'}  ${lane.reason}: ${lane.shared.join(', ')}`);
+}
+
+/*
+ * --check-chronicle: the stage 6 selector must reproduce today's atlas at
+ * the atlas's own month, and grow monotonically before it. Prints a short
+ * table of the archipelago's growth, exits 1 on a mismatch.
+ */
+if (process.argv.includes('--check-chronicle')) {
+  const range = chronicleRange(projects, atlas);
+  const today = monthOfString(atlas.asOf) ?? range.last;
+  const now = atlasAt(atlas, projects, today);
+  const same = frameMatchesToday(atlas, now);
+  console.log(`chronicle: ${formatMonth(range.first)} to ${formatMonth(range.last)}; today ${same ? 'matches' : 'DIFFERS FROM'} the atlas`);
+  let previous = -1;
+  let monotonic = true;
+  for (let month = range.first; month <= range.last; month += 1) {
+    const frame = atlasAt(atlas, projects, month);
+    if (frame.states.size < previous) monotonic = false;
+    previous = frame.states.size;
+    if ((month - 1) % 12 === 0 || month === range.last) {
+      const tiers = new Map<string, number>();
+      for (const state of frame.states.values()) tiers.set(state.tier, (tiers.get(state.tier) ?? 0) + 1);
+      const summary = [...tiers.entries()].map(([tier, n]) => `${n} ${TIER_LABEL[tier as keyof typeof TIER_LABEL].toLowerCase()}`).join(', ');
+      console.log(`  ${pad(formatMonth(month), 16)} ${pad(frame.states.size, 3)} settlements on ${frame.settledIslands} islands, ${frame.laneIds.size} lanes: ${summary}`);
+    }
+  }
+  if (!monotonic) console.log('  settlements are not monotonic over time');
+  if (!same || !monotonic) process.exit(1);
 }
 
 const json = flag('--json');

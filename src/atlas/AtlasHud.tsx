@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { SETTLEMENT_SPRITES, islandSprite } from './assets.ts';
 import { visibleWorld, type Point, type ViewStore } from './camera.ts';
+import { formatMonth, yearOf, type ChronicleStore, type Month } from './chronicle.ts';
 import { TIERS, TIER_LABEL } from './config.ts';
 import type { InteractionStore } from './interaction.ts';
 import { paintingHalfWidth } from './layout.ts';
@@ -32,6 +33,8 @@ interface Props {
   atlas: Atlas;
   store: ViewStore;
   interaction: InteractionStore;
+  chronicle: ChronicleStore;
+  range: { first: Month; last: Month };
   goods: readonly TradeGood[];
   /** True during the first-visit flight; the panels fade in as it lands. */
   arriving: boolean;
@@ -53,6 +56,8 @@ export default function AtlasHud({
   atlas,
   store,
   interaction,
+  chronicle,
+  range,
   goods,
   arriving,
   surveyedCount,
@@ -83,6 +88,8 @@ export default function AtlasHud({
   return (
     <>
       {!weather.isDay && <Moon arriving={arriving} />}
+
+      <Chronicle atlas={atlas} store={chronicle} range={range} arriving={arriving} />
 
       <div className={`atlas-hud atlas-hud--left${arrivingClass}`}>
         <div className="atlas-hud__block">
@@ -148,6 +155,93 @@ export default function AtlasHud({
         </button>
       </div>
     </>
+  );
+}
+
+/**
+ * The chronicle slider (stage 6), top left: a month from the first project's
+ * start to today, year ticks under the track, the date and a settlement
+ * count as readout, and a lock. Dragging or keying the slider scrubs; on
+ * release the view eases back to today unless the lock holds it.
+ */
+function Chronicle({
+  atlas,
+  store,
+  range,
+  arriving,
+}: {
+  atlas: Atlas;
+  store: ChronicleStore;
+  range: { first: Month; last: Month };
+  arriving: boolean;
+}) {
+  const state = useSyncExternalStore(store.subscribe, store.get);
+  const month = state.month ?? range.last;
+  const settled = useMemo(() => new Set(atlas.settlements.map((s) => s.islandId)).size, [atlas]);
+  const years: number[] = [];
+  for (let year = yearOf(range.first) + 1; year <= yearOf(range.last); year++) years.push(year);
+  const span = Math.max(1, range.last - range.first);
+  const at = (m: Month): string => `${(((m - range.first) / span) * 100).toFixed(2)}%`;
+  const scrub = (on: boolean): void => store.set({ scrubbing: on });
+
+  return (
+    <div className={`atlas-hud atlas-hud--chronicle${arriving ? ' is-arriving' : ''}`}>
+      <div className="atlas-chronicle__head">
+        <span className="atlas-hud__eyebrow">Chronicle</span>
+        <span className="atlas-chronicle__date" aria-live="polite">
+          {state.month === null ? 'Today' : formatMonth(state.month)}
+        </span>
+        <button
+          type="button"
+          className={`atlas-chronicle__lock${state.pinned ? ' is-on' : ''}`}
+          aria-pressed={state.pinned}
+          aria-label={state.pinned ? 'Release the chronicle; the map eases back to today' : 'Hold the map at this month'}
+          title={state.pinned ? 'Held at this month' : 'Hold this month'}
+          onClick={() => store.set({ pinned: !state.pinned })}
+        >
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+            <rect x="3" y="7" width="10" height="7" rx="1.2" fill="currentColor" />
+            <path
+              d={state.pinned ? 'M5 7V5a3 3 0 0 1 6 0v2' : 'M5 7V5a3 3 0 0 1 6 0'}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+          </svg>
+        </button>
+      </div>
+      <div className="atlas-chronicle__track">
+        <input
+          type="range"
+          min={range.first}
+          max={range.last}
+          step={1}
+          value={month}
+          aria-label="Chronicle: the archipelago on a month"
+          aria-valuetext={state.month === null ? 'Today' : formatMonth(month)}
+          onChange={(event) => {
+            const value = Number(event.target.value);
+            store.set({ month: value >= range.last ? null : value });
+          }}
+          onPointerDown={() => scrub(true)}
+          onPointerUp={() => scrub(false)}
+          onPointerCancel={() => scrub(false)}
+          onKeyDown={() => scrub(true)}
+          onKeyUp={() => scrub(false)}
+          onBlur={() => scrub(false)}
+        />
+        <div className="atlas-chronicle__ticks" aria-hidden="true">
+          {years.map((year) => (
+            <span key={year} style={{ left: at(year * 12 + 1) }}>
+              {year}
+            </span>
+          ))}
+        </div>
+      </div>
+      <span className="atlas-chronicle__count">
+        {atlas.settlements.length} settlements, {settled} of {atlas.islands.length} islands settled
+      </span>
+    </div>
   );
 }
 

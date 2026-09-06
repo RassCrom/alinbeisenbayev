@@ -11,6 +11,8 @@ import {
   WINDMILL_TOWER_SPRITE,
   islandSprite,
 } from '../assets.ts';
+import { TIER_FOOTPRINT } from '../config.ts';
+import type { Tier } from '../types.ts';
 import type { Camera } from '../camera.ts';
 import { paintingHalfWidth } from '../layout.ts';
 import type { Atlas, Island, Settlement } from '../types.ts';
@@ -74,7 +76,19 @@ const PUFF_TEXTURE = 'generated:puff';
 const BEAM_TEXTURE = 'generated:beam';
 
 /** Everything that changes from frame to frame besides the camera. */
+/** A settlement's look on the chronicle's month, cross-fading between tiers. */
+export interface SpriteState {
+  tier: Tier;
+  /** The tier being faded out, until `blend` reaches 1. */
+  prevTier: Tier | null;
+  blend: number;
+  /** 0 absent, 1 present; eased so settlements fade in and out of existence. */
+  presence: number;
+}
+
 export interface FrameState {
+  /** Per-settlement states while a date is scrubbed or the map is settling back; null draws today. */
+  chronicle: ReadonlyMap<string, SpriteState> | null;
   /** Settlements drawn again on top of the dim, and how far the effect has faded in. */
   highlights: readonly string[];
   highlightStrength: number;
@@ -233,11 +247,15 @@ export class AtlasRenderer {
       this.useSprites(cameraDevice);
     }
 
-    // 4 and 5. glows, settlements
+    // 4 and 5. glows, settlements; through the chronicle's states while a date is scrubbed
+    const states = frame.chronicle;
+    const stateOf = (s: Settlement): SpriteState | null => (states ? (states.get(s.slug) ?? null) : null);
+    const present = (s: Settlement): boolean => !states || (states.get(s.slug)?.presence ?? 0) > 0.005;
+    const shown = states ? this.settlements.filter(present) : this.settlements;
     gl.blendFunc(gl.ONE, gl.ONE);
-    for (const settlement of this.settlements) this.drawGlow(settlement, GLOW_ALPHA * glowStrength);
+    for (const settlement of shown) this.drawGlow(settlement, GLOW_ALPHA * glowStrength, stateOf(settlement));
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    for (const settlement of this.settlements) this.drawSettlement(settlement);
+    for (const settlement of shown) this.drawSettlement(settlement, stateOf(settlement));
 
     // 6 and 7. landmarks and life
     if (frame.plan) this.drawLandmarks(frame.plan, frame.life);
@@ -253,14 +271,14 @@ export class AtlasRenderer {
       this.useSprites(cameraDevice);
       const lit = frame.highlights
         .map((slug) => this.bySlug.get(slug))
-        .filter((s): s is Settlement => s !== undefined)
+        .filter((s): s is Settlement => s !== undefined && present(s))
         .sort((a, b) => a.y - b.y);
       gl.blendFunc(gl.ONE, gl.ONE);
       for (const settlement of lit) {
-        this.drawGlow(settlement, GLOW_ALPHA * glowStrength * (1 + (HOVER_GLOW - 1) * frame.highlightStrength));
+        this.drawGlow(settlement, GLOW_ALPHA * glowStrength * (1 + (HOVER_GLOW - 1) * frame.highlightStrength), stateOf(settlement));
       }
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      for (const settlement of lit) this.drawSettlement(settlement);
+      for (const settlement of lit) this.drawSettlement(settlement, stateOf(settlement));
     }
 
     // 9. grade (multiply)
@@ -413,16 +431,32 @@ export class AtlasRenderer {
     }
   }
 
-  private drawGlow(settlement: Settlement, alpha: number): void {
-    if (settlement.tier === 'ruin') return;
-    const half = settlement.footprint * GLOW_SCALE;
-    this.drawSprite(GLOW_SPRITE.src, settlement.x, settlement.y, half, half, 0.5, 0.5, alpha);
+  /** Today's footprint for today's tier; a settlement still growing takes the footprint of the tier it has reached. */
+  private static footprintFor(settlement: Settlement, tier: Tier): number {
+    return tier === settlement.tier ? settlement.footprint : TIER_FOOTPRINT[tier];
   }
 
-  private drawSettlement(settlement: Settlement): void {
-    const sprite = SETTLEMENT_SPRITES[settlement.tier];
-    const half = settlement.footprint * SETTLEMENT_SPRITE_SCALE;
-    this.drawSprite(sprite.src, settlement.x, settlement.y, half, half, sprite.anchor.x, sprite.anchor.y, 1);
+  private drawGlow(settlement: Settlement, alpha: number, state: SpriteState | null = null): void {
+    const tier = state?.tier ?? settlement.tier;
+    if (tier === 'ruin') return;
+    const half = AtlasRenderer.footprintFor(settlement, tier) * GLOW_SCALE;
+    this.drawSprite(GLOW_SPRITE.src, settlement.x, settlement.y, half, half, 0.5, 0.5, alpha * (state?.presence ?? 1));
+  }
+
+  private drawSettlement(settlement: Settlement, state: SpriteState | null = null): void {
+    if (!state) {
+      this.drawTier(settlement, settlement.tier, 1);
+      return;
+    }
+    const fading = state.prevTier !== null && state.blend < 1;
+    if (fading) this.drawTier(settlement, state.prevTier as Tier, (1 - state.blend) * state.presence);
+    this.drawTier(settlement, state.tier, (fading ? state.blend : 1) * state.presence);
+  }
+
+  private drawTier(settlement: Settlement, tier: Tier, alpha: number): void {
+    const sprite = SETTLEMENT_SPRITES[tier];
+    const half = AtlasRenderer.footprintFor(settlement, tier) * SETTLEMENT_SPRITE_SCALE;
+    this.drawSprite(sprite.src, settlement.x, settlement.y, half, half, sprite.anchor.x, sprite.anchor.y, alpha);
   }
 
   private drawSprite(

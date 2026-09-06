@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useNavigationType } from 'react-router-dom';
 import { projects } from '../data/projects';
@@ -22,10 +22,17 @@ import {
   type Camera,
   type Point,
 } from './camera.ts';
+import {
+  atlasAt,
+  chronicleAtlas,
+  chronicleRange,
+  createChronicleStore,
+  monthOfString,
+} from './chronicle.ts';
 import { TIER_LABEL } from './config.ts';
 import { attachCameraControls } from './controls.ts';
 import { markSurveyed, useSurveyed } from './fog.ts';
-import { AtlasRenderer, type FrameState } from './gl/renderer.ts';
+import { AtlasRenderer, type FrameState, type SpriteState } from './gl/renderer.ts';
 import { buildAtlas } from './index.ts';
 import { createInteractionStore, hitTest } from './interaction.ts';
 import { sheetOrder } from './order.ts';
@@ -68,6 +75,8 @@ const FLY_MS = 3600;
 const FLY_START_ZOOM = 0.3;
 const FLY_HUD_AT = 0.62;
 const FLOWN_KEY = 'atlas:flown';
+/** A settlement's sprite cross-fades between tiers over this long. */
+const CROSSFADE_S = 0.45;
 
 interface Flight {
   from: Camera;
@@ -116,6 +125,16 @@ export default function AtlasView() {
         .filter((good) => good.slugs.length >= 2),
     [bySlug],
   );
+  // The chronicle (stage 6): a scrubbed month, the atlas as it stood then, and what the DOM layers show.
+  const chronicle = useMemo(() => createChronicleStore(), []);
+  const range = useMemo(() => chronicleRange(projects, atlas), [atlas]);
+  const month = useSyncExternalStore(chronicle.subscribe, () => chronicle.get().month);
+  const frame = useMemo(() => (month === null ? null : atlasAt(atlas, projects, month)), [atlas, month]);
+  const viewAtlas = useMemo(() => (frame ? chronicleAtlas(atlas, frame) : atlas), [atlas, frame]);
+  const frameRef = useRef(frame);
+  frameRef.current = frame;
+  const viewAtlasRef = useRef(viewAtlas);
+  viewAtlasRef.current = viewAtlas;
   const surveyed = useSurveyed();
   const surveyedRef = useRef(surveyed);
   surveyedRef.current = surveyed;
@@ -145,7 +164,8 @@ export default function AtlasView() {
    * camera, and a few URL parameters open the map in a state a headless
    * render can capture: `?atlas-hover=<slug>` with that settlement active,
    * `?atlas-tool=<key>` with that trade good pinned, `?atlas-weather=<preset>`
-   * under that weather, `?atlas-flyin[=hold]` mid-arrival, `?atlas-camera=x,y,zoom` at a camera. All of it
+   * under that weather, `?atlas-flyin[=hold]` mid-arrival, `?atlas-camera=x,y,zoom` at a camera,
+   * `?atlas-date=YYYY-MM` with the chronicle held at that month. All of it
    * disappears from the production build with the DEV branch.
    */
   useEffect(() => {
@@ -160,10 +180,13 @@ export default function AtlasView() {
     if (good && status.kind === 'ready') interaction.set({ pinnedTool: good });
     const weatherParam = params.get('atlas-weather');
     if (weatherParam && weatherParam in PRESET_LABEL) setPreset(weatherParam as WeatherPreset);
+    const dateParam = params.get('atlas-date');
+    const dateMonth = dateParam ? monthOfString(dateParam) : null;
+    if (dateMonth !== null) chronicle.set({ month: Math.max(range.first, Math.min(range.last, dateMonth)), pinned: true });
     return () => {
       delete debugWindow.__atlas;
     };
-  }, [atlas, goods, interaction, status.kind, store]);
+  }, [atlas, chronicle, goods, interaction, range, status.kind, store]);
 
   /*
    * Warm the detail route while the visitor is still pointing at a
@@ -217,20 +240,20 @@ export default function AtlasView() {
   const hoverAt = useCallback(
     (point: Point | null) => {
       const { camera, viewport } = store.get();
-      const slug = point ? hitTest(atlas, camera, viewport, point.x, point.y) : null;
+      const slug = point ? hitTest(viewAtlasRef.current, camera, viewport, point.x, point.y) : null;
       interaction.set({ hovered: slug });
       if (slug) {
         markSurveyed(slug);
         void warmDetail();
       }
     },
-    [atlas, interaction, store, warmDetail],
+    [interaction, store, warmDetail],
   );
 
   const tapAt = useCallback(
     (point: Point, pointerType: string) => {
       const { camera, viewport } = store.get();
-      const slug = hitTest(atlas, camera, viewport, point.x, point.y);
+      const slug = hitTest(viewAtlasRef.current, camera, viewport, point.x, point.y);
       if (pointerType === 'touch') {
         // First tap selects and shows the card; a second tap on the same settlement opens it.
         if (slug && interaction.get().selected === slug) {
@@ -247,7 +270,7 @@ export default function AtlasView() {
       if (slug) void openProject(slug);
       else interaction.set({ selected: null, pinnedTool: null });
     },
-    [atlas, interaction, openProject, store, warmDetail],
+    [interaction, openProject, store, warmDetail],
   );
 
   const focusSettlement = useCallback(
@@ -309,6 +332,7 @@ export default function AtlasView() {
         !params.has('atlas-hover') &&
         !params.has('atlas-tool') &&
         !params.has('atlas-camera') &&
+        !params.has('atlas-date') &&
         !hasFlown());
     let flight: Flight | null = null;
     const dpr = (): number => Math.min(window.devicePixelRatio || 1, MAX_DPR);
@@ -381,7 +405,12 @@ export default function AtlasView() {
       }
     }
     let weatherTime = 0;
+    // Chronicle sprite states, kept only while a date is shown or the map is settling back to today.
+    const sprites = new Map<string, SpriteState>();
+    const today = range.last;
+    let back = Number.NaN;
     const frameState: FrameState = {
+      chronicle: null,
       highlights: [],
       highlightStrength: 0,
       reveals,
@@ -420,6 +449,44 @@ export default function AtlasView() {
         frameState.veil = Math.max(0, 1 - e * 1.35);
         if (t >= FLY_HUD_AT) setArriving(false);
         if (t >= 1) endFlight();
+      }
+
+      // Chronicle: released and not held, the month eases back to today; then every sprite eases toward its state.
+      const scrub = chronicle.get();
+      if (scrub.month !== null && !scrub.scrubbing && !scrub.pinned) {
+        if (reducedMotion) {
+          chronicle.set({ month: null });
+        } else {
+          if (Number.isNaN(back)) back = scrub.month;
+          back += (today - back) * Math.min(1, dt * 2.4);
+          chronicle.set({ month: today - back < 0.5 ? null : Math.round(back) });
+        }
+      } else {
+        back = Number.NaN;
+      }
+      const chronicleFrame = frameRef.current;
+      if (chronicleFrame !== null || sprites.size > 0) {
+        let settled = chronicleFrame === null;
+        for (const settlement of atlas.settlements) {
+          const target = chronicleFrame ? chronicleFrame.states.get(settlement.slug) : { tier: settlement.tier };
+          let state = sprites.get(settlement.slug);
+          if (!state) {
+            state = { tier: settlement.tier, prevTier: null, blend: 1, presence: 1 };
+            sprites.set(settlement.slug, state);
+          }
+          if (target && target.tier !== state.tier) {
+            state.prevTier = instant ? null : state.tier;
+            state.tier = target.tier;
+            state.blend = instant ? 1 : 0;
+          }
+          if (state.blend < 1) state.blend = Math.min(1, state.blend + dt / CROSSFADE_S);
+          const goal = target ? 1 : 0;
+          state.presence = instant ? goal : state.presence + (goal - state.presence) * Math.min(1, dt * 5);
+          if (Math.abs(goal - state.presence) < 0.005) state.presence = goal;
+          if (state.presence !== 1 || state.blend < 1 || state.tier !== settlement.tier) settled = false;
+        }
+        if (settled) sprites.clear();
+        frameState.chronicle = sprites.size > 0 ? sprites : null;
       }
 
       // Highlights keep their last set while the dim fades out, so the redraw does not pop.
@@ -521,7 +588,7 @@ export default function AtlasView() {
       renderer?.dispose();
       renderer = null;
     };
-  }, [animator, atlas, clearInteraction, hoverAt, interaction, navigationType, store, tapAt]);
+  }, [animator, atlas, chronicle, clearInteraction, hoverAt, interaction, navigationType, range, store, tapAt]);
 
   return (
     <div
@@ -534,19 +601,21 @@ export default function AtlasView() {
       <canvas ref={canvasRef} aria-hidden="true" />
       {status.kind === 'ready' && (
         <>
-          <AtlasLanes atlas={atlas} store={store} interaction={interaction} />
+          <AtlasLanes atlas={viewAtlas} store={store} interaction={interaction} />
           <AtlasLabels
-            atlas={atlas}
+            atlas={viewAtlas}
             store={store}
             interaction={interaction}
             onOpen={(slug) => void openProject(slug)}
             onIslandClick={fitIsland}
           />
-          <AtlasFocus atlas={atlas} store={store} interaction={interaction} onOpen={(slug) => void openProject(slug)} />
+          <AtlasFocus atlas={viewAtlas} store={store} interaction={interaction} onOpen={(slug) => void openProject(slug)} />
           <AtlasHud
-            atlas={atlas}
+            atlas={viewAtlas}
             store={store}
             interaction={interaction}
+            chronicle={chronicle}
+            range={range}
             goods={goods}
             arriving={arriving}
             surveyedCount={surveyedCount}
