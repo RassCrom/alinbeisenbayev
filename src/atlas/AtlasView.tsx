@@ -4,6 +4,7 @@ import { useNavigate, useNavigationType } from 'react-router-dom';
 import { projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { LifeSim, planAmbient } from './ambient.ts';
+import { createAmbientAudio } from './audio.ts';
 import { loadImages, textureSources } from './assets.ts';
 import AtlasFocus from './AtlasFocus';
 import AtlasHud from './AtlasHud';
@@ -34,13 +35,23 @@ import { attachCameraControls } from './controls.ts';
 import { markSurveyed, useSurveyed } from './fog.ts';
 import { AtlasRenderer, type FrameState, type SpriteState } from './gl/renderer.ts';
 import { buildAtlas } from './index.ts';
+import { exportChart } from './export.ts';
 import { createInteractionStore, hitTest } from './interaction.ts';
+import { FrameWatchdog, detectQuality, type Quality } from './quality.ts';
 import { sheetOrder } from './order.ts';
 import { tradeGoods } from './tools.ts';
 import type { Island } from './types.ts';
 import { defaultViewMode, setViewMode } from './viewMode.ts';
 import { WeatherSim, initialSnowCover, targetLook } from './weather/sim.ts';
-import { PRESET_LABEL, presetWeather, useWeather, type WeatherPreset, type WeatherState } from './weather/weather.ts';
+import {
+  CONDITION_LABEL,
+  PRESET_LABEL,
+  presetWeather,
+  useWeather,
+  type WeatherPreset,
+  type WeatherState,
+} from './weather/weather.ts';
+import { formatMonth } from './chronicle.ts';
 import './atlas.css';
 
 /*
@@ -64,8 +75,8 @@ import './atlas.css';
 
 type Status = { kind: 'loading' } | { kind: 'ready' } | { kind: 'error'; message: string };
 
-/** Above 2 the sea shader costs more than it shows. */
-const MAX_DPR = 2;
+/** Above 2 the sea shader costs more than it shows; lite quality stops at 1. */
+const MAX_DPR: Record<Quality, number> = { full: 2, lite: 1 };
 /** Fog clears this many footprints around a surveyed settlement. */
 const REVEAL_FOOTPRINTS = 5;
 /** Settlements within this many pixels of the edge get panned into view on keyboard focus. */
@@ -158,6 +169,41 @@ export default function AtlasView() {
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
   const [arriving, setArriving] = useState(false);
   const opening = useRef(false);
+  // Stage 7: sound, quality and the export hook the frame loop fills in.
+  const audio = useMemo(() => createAmbientAudio(), []);
+  const [quality, setQuality] = useState<Quality>(() => detectQuality());
+  const qualityRef = useRef(quality);
+  qualityRef.current = quality;
+  const renderNowRef = useRef<(() => void) | null>(null);
+  // Dev only: `?atlas-stats` shows the running frame time on the map, so a headless screenshot records it.
+  const statsRef = useRef<HTMLDivElement>(null);
+  const showStats = import.meta.env.DEV && new URLSearchParams(window.location.search).has('atlas-stats');
+  const [exporting, setExporting] = useState(false);
+  useEffect(() => () => audio.dispose(), [audio]);
+
+  const exportView = useCallback(async () => {
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    const renderNow = renderNowRef.current;
+    if (!container || !canvas || !renderNow || exporting) return;
+    setExporting(true);
+    const day = new Date().toISOString().slice(0, 10);
+    const condition = CONDITION_LABEL[shownWeather.condition].toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const when = month === null ? 'today' : formatMonth(month);
+    try {
+      await exportChart({
+        glCanvas: canvas,
+        container,
+        render: renderNow,
+        caption: `Atlas of works · ${when} · Astana ${CONDITION_LABEL[shownWeather.condition].toLowerCase()}, ${Math.round(shownWeather.temperature)}°C`,
+        fileName: `atlas-${day}-${condition}.png`,
+      });
+    } catch (error) {
+      console.warn('atlas export failed', error);
+    } finally {
+      setExporting(false);
+    }
+  }, [exporting, month, shownWeather]);
 
   /*
    * Dev only: lets the console and the browser tooling read the layout and
@@ -335,7 +381,8 @@ export default function AtlasView() {
         !params.has('atlas-date') &&
         !hasFlown());
     let flight: Flight | null = null;
-    const dpr = (): number => Math.min(window.devicePixelRatio || 1, MAX_DPR);
+    const dpr = (): number => Math.min(window.devicePixelRatio || 1, MAX_DPR[qualityRef.current]);
+    const watchdog = new FrameWatchdog();
 
     const applyViewport = (): void => {
       const rect = container.getBoundingClientRect();
@@ -395,7 +442,7 @@ export default function AtlasView() {
     const sim = simRef.current ?? new WeatherSim(targetLook(weatherRef.current, Date.now()), initialSnowCover(weatherRef.current));
     simRef.current = sim;
     const plan = planAmbient(atlas);
-    const life = new LifeSim(atlas, plan);
+    const life = new LifeSim(atlas, plan, { lite: qualityRef.current === 'lite' });
     if (import.meta.env.DEV) {
       const debugWindow = window as unknown as { __atlas?: { sim?: WeatherSim; life?: LifeSim; plan?: unknown } };
       if (debugWindow.__atlas) {
@@ -424,13 +471,20 @@ export default function AtlasView() {
       life,
       plan,
     };
-    // Dev only: a running average of the frame time, readable from window.__atlas.frameMs.
+    // Running averages: the CPU time to submit a frame, and the interval between
+    // frames, which is what the watchdog judges by. In dev both are readable from
+    // window.__atlas and, behind ?atlas-stats, on the map.
     let frameMs = 0;
+    let intervalMs = 1000 / 60;
+    let frames = 0;
 
     const tick = (now: number): void => {
       frame = 0;
       if (!renderer || document.hidden) return;
-      const dt = lastTime === 0 ? 1 / 60 : Math.min(0.05, (now - lastTime) / 1000);
+      // The raw interval is the honest measure of a struggling device (GPU or CPU); the
+      // simulation step is clamped so a stall does not leap the world forward.
+      const interval = lastTime === 0 ? 1 / 60 : (now - lastTime) / 1000;
+      const dt = Math.min(0.05, interval);
       lastTime = now;
 
       // The arrival: zoom eased in log space so the descent reads evenly, the veil thinning ahead of it.
@@ -532,9 +586,29 @@ export default function AtlasView() {
       const started = performance.now();
       renderer.render(store.get().camera, dpr(), now / 1000, frameState);
       frameMs += (performance.now() - started - frameMs) * 0.05;
+      if (frames > 0) intervalMs += (interval * 1000 - intervalMs) * 0.05;
+      frames += 1;
+      if (frames % 20 === 0) audio.update(sim.look);
+      if (frames > 30 && qualityRef.current === 'full' && watchdog.sample(intervalMs, dt)) {
+        qualityRef.current = 'lite';
+        setQuality('lite');
+        applyViewport();
+      }
       if (import.meta.env.DEV) {
-        const debugWindow = window as unknown as { __atlas?: { frameMs?: number } };
-        if (debugWindow.__atlas) debugWindow.__atlas.frameMs = frameMs;
+        const debugWindow = window as unknown as { __atlas?: { frameMs?: number; intervalMs?: number; frames?: number } };
+        if (debugWindow.__atlas) {
+          debugWindow.__atlas.frameMs = frameMs;
+          debugWindow.__atlas.intervalMs = intervalMs;
+          debugWindow.__atlas.frames = frames;
+        }
+        if (frames % 30 === 0) {
+          container.dataset.frameMs = frameMs.toFixed(2);
+          container.dataset.frames = String(frames);
+          container.dataset.quality = qualityRef.current;
+        }
+        if (statsRef.current) {
+          statsRef.current.textContent = `${intervalMs.toFixed(1)} ms between frames · ${frameMs.toFixed(2)} ms to submit · ${frames} frames · ${qualityRef.current} · dpr ${dpr()}`;
+        }
       }
       frame = requestAnimationFrame(tick);
     };
@@ -554,6 +628,7 @@ export default function AtlasView() {
       .then((images) => {
         if (cancelled) return;
         renderer = new AtlasRenderer(canvas, atlas, images);
+        renderNowRef.current = () => renderer?.render(store.get().camera, dpr(), performance.now() / 1000, frameState);
         applyViewport();
         detachControls = attachCameraControls(container, store, animator, {
           onHoverMove: hoverAt,
@@ -585,10 +660,11 @@ export default function AtlasView() {
       container.removeEventListener('pointerdown', onGesture, true);
       container.removeEventListener('wheel', onGesture, true);
       container.removeEventListener('keydown', onGesture, true);
+      renderNowRef.current = null;
       renderer?.dispose();
       renderer = null;
     };
-  }, [animator, atlas, chronicle, clearInteraction, hoverAt, interaction, navigationType, range, store, tapAt]);
+  }, [animator, atlas, audio, chronicle, clearInteraction, hoverAt, interaction, navigationType, range, store, tapAt]);
 
   return (
     <div
@@ -599,6 +675,7 @@ export default function AtlasView() {
       aria-label="Atlas of works. Drag to pan, scroll to zoom, arrow keys to move; Tab reaches the settlements."
     >
       <canvas ref={canvasRef} aria-hidden="true" />
+      {showStats && <div ref={statsRef} className="atlas-stats" aria-hidden="true" />}
       {status.kind === 'ready' && (
         <>
           <AtlasLanes atlas={viewAtlas} store={store} interaction={interaction} />
@@ -616,6 +693,10 @@ export default function AtlasView() {
             interaction={interaction}
             chronicle={chronicle}
             range={range}
+            audio={audio}
+            quality={quality}
+            exporting={exporting}
+            onExport={() => void exportView()}
             goods={goods}
             arriving={arriving}
             surveyedCount={surveyedCount}

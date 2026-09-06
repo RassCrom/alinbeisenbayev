@@ -856,3 +856,53 @@
     padding: 8px 12px 10px;
   }
 }
+
+/* ---- Stage 7: sound, export, quality ---- */
+
+.atlas-hud__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.atlas-button--quiet {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  opacity: 0.85;
+}
+
+.atlas-button--quiet.is-on {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.22);
+  opacity: 1;
+}
+
+.atlas-button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.atlas-hud__quality {
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
+  text-align: center;
+}
+
+/* Dev only: the frame-time readout behind ?atlas-stats. */
+.atlas-stats {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 9;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffe9a8;
+  font: 600 14px/1.2 monospace;
+}

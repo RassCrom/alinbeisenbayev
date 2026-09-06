@@ -3,12 +3,14 @@ import { useViewMode } from '../atlas/viewMode';
 import LandingPage from './LandingPage';
 
 /*
- * `/` has two faces: the atlas (map view) and the landing page (sheet view).
+ * `/` has two faces: the atlas (map view) and the landing page (sheet view);
+ * without WebGL the map view is a pre-baked poster with links (stage 7).
  * Which one shows is the visitor's persisted choice, defaulting per
  * src/atlas/viewMode.ts. The atlas is a separate chunk, so the sheet never
  * pays for WebGL code it does not run.
  */
 const AtlasView = lazy(() => import('../atlas/AtlasView'));
+const AtlasPoster = lazy(() => import('../atlas/AtlasPoster'));
 
 function AtlasFallback() {
   // Inline styles: the atlas stylesheet arrives with the chunk this waits for.
@@ -35,10 +37,10 @@ function AtlasFallback() {
 
 export default function HomePage() {
   const { mode, supported } = useViewMode();
-  if (mode === 'map' && supported) {
+  if (mode === 'map') {
     return (
       <Suspense fallback={<AtlasFallback />}>
-        <AtlasView />
+        {supported ? <AtlasView /> : <AtlasPoster />}
       </Suspense>
     );
   }

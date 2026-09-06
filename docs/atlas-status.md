@@ -603,3 +603,99 @@ frame loop and could not be captured headlessly.
 - Growth is stepped per tier, not scored per month; a project's score
   history is not reconstructed.
 - The trade-goods chips count today's settlements while scrubbed.
+
+## Stage 7: audio, export, poster fallback, performance (done)
+
+### Ambient audio
+
+`src/atlas/audio.ts`. No files: the three voices are shaped noise from the
+Web Audio graph (brown noise through a low-pass with a slow swell for the
+waves; white noise through a wandering band-pass with gusts for the wind;
+a higher, narrower band with a fast flutter for the blizzard), mixed from
+the weather look with 2.5 s cross-fades: waves rise with wind and storm,
+wind with wind speed and rain, the howl with snow times wind. This departs
+from the brief's looping files on purpose: nothing to license or download,
+seamless loops, and a mix that follows the weather continuously. Off by
+default; the AudioContext is created on the first press of the HUD's
+"Sound off/on" button, so nothing plays without a gesture. The view calls
+`update(look)` every twenty frames. Nothing is persisted: every visit
+starts silent.
+
+### Export chart
+
+`src/atlas/export.ts`, the HUD's "Export chart" button. The WebGL canvas
+is redrawn and copied in the same task (the buffer is not preserved), then
+the DOM layers (lanes, labels, rings, HUD, moon) are cloned into an SVG
+foreignObject with their computed styles written inline and every image
+turned into a data URL, rasterised, and drawn over the canvas at device
+resolution; a cartouche along the top names the view, the month and the
+weather. Downloaded as `atlas-YYYY-MM-DD-<condition>.png`. No dependency.
+The web fonts are not embedded, so the chart's text falls back to Georgia;
+the slider track and the weather select are simplified to text; glass
+panels lose their blur. The export could not be exercised headlessly (it
+needs a click and a download); the code path was checked by review only.
+
+### Poster fallback
+
+`scripts/bake-atlas-poster.py` runs `print-atlas.ts --json` and composes
+`public/atlas/poster.webp` (2400 × 1600: gradient sea with grain, coast
+glow, the paintings, dashed lanes on the same bows as the app, tier sprites,
+island names) and writes `src/atlas/poster-frame.ts`, the world rectangle
+the image spans. `src/atlas/AtlasPoster.tsx` shows it with a link over
+every settlement placed from `buildAtlas` through that frame; the larger
+tiers carry a visible title, the rest keep theirs for the reader and the
+tooltip. `viewMode.ts` no longer forces the sheet when WebGL2 is missing:
+the default is still the sheet, but "Map view" is always offered and
+`HomePage` shows the poster instead of the atlas when unsupported.
+Verified with WebGL disabled in the browser (`--disable-3d-apis`).
+
+### Performance
+
+- The atlas has been its own chunk since stage 2 (`AtlasView-*.js`,
+  89 kB / 32 kB gzip after stage 7; `AtlasPoster-*.js` 1.8 kB); the
+  landing page's bundle does not include it.
+- `src/atlas/quality.ts`: `detectQuality()` starts in `lite` when
+  `hardwareConcurrency ≤ 4`, `deviceMemory ≤ 4`, or a coarse pointer on a
+  narrow window; `FrameWatchdog` drops to lite once the running interval
+  between frames stays over 28 ms for 3 s (the interval, not the CPU
+  submit time, since a slow GPU shows only in the interval). Lite caps the
+  device pixel ratio at 1 and thins the life (one gull per harbour, one
+  boat, no hamlet smoke). The HUD notes "light rendering".
+- The loop stops on `visibilitychange`, and unmounting (the sheet view
+  taking over, or a route change) cancels the frame, the animator and the
+  controls and disposes the renderer; the fly-in and the chronicle return
+  are driven from the same loop, so they stop with it.
+- Frame times were not measured. Headless Chrome produces one animation
+  frame per capture and none while waiting (a 20 s real-time run showed
+  "1 frames"), and the preview pane does not run frames while hidden. The
+  dev hook `?atlas-stats` shows the running interval and submit time on
+  the map in a visible tab; `window.__atlas.intervalMs` reads the same.
+  No phone or mid-range laptop was available to this session.
+- Lighthouse 12 (desktop preset, production preview, Edge under
+  SwiftShader): sheet view 95 performance / 100 accessibility / 100 best
+  practices / 100 SEO (FCP 1.0 s, LCP 1.2 s, TBT 0 ms); map view 61 / 100
+  / 100 / 100 (FCP 1.0 s, LCP 1.3 s, TBT 960 ms, speed index 2.5 s). The
+  map's blocking time is WebGL setup (shader compiles and the 1024² mask
+  bakes) under software rendering; nothing else dropped.
+
+### Wrap-up
+
+`docs/cartographic-roadmap.md` gained "The atlas view" with the ideas not
+built. `docs/experiment-map-pr.md` is the PR description for
+`experiment-map` against `main`; the PR is not opened.
+
+---
+
+## Project complete: known gaps
+
+- No frame-time numbers on real devices; the quality tier is chosen by
+  core count and a watchdog rather than measurement.
+- The chart export uses Georgia for the web fonts and drops the glass blur.
+- Trade goods are text chips, not tool icons.
+- Boats sail today's lanes while the chronicle shows a past month; the
+  chronicle grows settlements a tier at a time, not by a scored history.
+- The wake does not perturb the sea; lightning is a flash without bolts;
+  sun glitter is generic specular.
+- The locator on the detail page and the export were verified by DOM
+  inspection and review respectively, not by capture.
+- `LocatorInset` remains in the tree, unused.

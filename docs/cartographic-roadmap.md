@@ -153,3 +153,46 @@ Things a recruiter would trip over that no component can fix:
   the artefact ("Print map showcasing…") rather than the finding. A data
   journalism reader wants the finding: "Kazakhstan's fires cluster in three
   belts and start three weeks earlier than in 2001."
+
+---
+
+## The atlas view
+
+Built on the `experiment-map` branch, behind the view switch on `/`, and
+recorded stage by stage in `atlas-status.md`. The site's frame was already
+"an atlas"; this is the map that goes with it: a fictional archipelago
+where each category is an island, each work a settlement sized by a score
+of the data, and related works are joined by sea lanes. It lives under
+Astana's real weather and sun, keeps a fog of war the reader clears by
+visiting sheets, and replays its own growth on a chronicle slider. A
+recruiter reads the body of work at a glance (three fortresses, a
+capital, which islands are busy) before opening a single sheet, and the
+sheet index stays the plain way in for anyone who prefers it.
+
+What is in place: the seeded layout and printable data layer; the WebGL
+sea, paintings and sprites with DOM labels and HUD; pan, zoom, hover,
+routing with the cover morphing into the hero, keyboard and screen-reader
+paths; live weather with seasons, moon, day and night; lighthouses,
+windmills, gulls, smoke and boats; trade goods from the stack; the
+first-visit fly-in; the island locator on every sheet; the chronicle;
+ambient sound, a chart export, a poster fallback without WebGL, and a lite
+quality tier.
+
+Ideas that were considered and not built, roughly by size:
+
+- **Small.** Tool icons for the trade goods instead of text chips. A
+  glitter band on the shallows along the sun's direction. Forked lightning
+  bolts. Boats that turn to face the quay when docked.
+- **Medium.** A wake that perturbs the sea shader instead of drawn rings.
+  Boats that follow the chronicle's lanes rather than today's. A score
+  history per project so the chronicle grows settlements by the month
+  rather than a tier at a time. Embedding the web fonts in the chart
+  export so it matches the screen.
+- **Large.** A guided tour: a route through the archipelago that visits
+  the featured works in order, narrated by the tagline of each. A
+  hand-drawn label pass with the toponyms glossed on the map itself.
+  Sound that is placed (waves loudest near the coast under the pointer,
+  the mill audible when close), which needs a spatial mix the current
+  three-voice graph does not have. Real measurements on phones and
+  mid-range laptops, and a GPU-tier table to drive the quality choice
+  instead of core count and a watchdog.

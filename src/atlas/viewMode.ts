@@ -26,6 +26,11 @@ let cachedSupport: boolean | null = null;
 /** WebGL2 is what the renderer needs; checked once per page load. */
 export function atlasSupported(): boolean {
   if (cachedSupport !== null) return cachedSupport;
+  // Dev only: `?atlas-nogl` pretends WebGL2 is missing, to check the poster fallback.
+  if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('atlas-nogl')) {
+    cachedSupport = false;
+    return cachedSupport;
+  }
   try {
     const canvas = document.createElement('canvas');
     cachedSupport = canvas.getContext('webgl2') !== null;
@@ -58,7 +63,12 @@ let snapshot: ViewMode | null = null;
 const listeners = new Set<() => void>();
 
 function compute(): ViewMode {
-  if (!atlasSupported()) return 'sheet';
+  // Dev only: `?atlas-view=map|sheet` forces the face for a headless render.
+  if (import.meta.env.DEV) {
+    const forced = new URLSearchParams(window.location.search).get('atlas-view');
+    if (forced === 'map' || forced === 'sheet') return forced;
+  }
+  // Without WebGL the default is the sheet, but a chosen map view shows the poster (stage 7).
   return sessionChoice ?? readStored() ?? defaultViewMode();
 }
 

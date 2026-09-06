@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { SETTLEMENT_SPRITES, islandSprite } from './assets.ts';
 import { visibleWorld, type Point, type ViewStore } from './camera.ts';
+import type { AmbientAudio } from './audio.ts';
 import { formatMonth, yearOf, type ChronicleStore, type Month } from './chronicle.ts';
+import type { Quality } from './quality.ts';
 import { TIERS, TIER_LABEL } from './config.ts';
 import type { InteractionStore } from './interaction.ts';
 import { paintingHalfWidth } from './layout.ts';
@@ -35,6 +37,10 @@ interface Props {
   interaction: InteractionStore;
   chronicle: ChronicleStore;
   range: { first: Month; last: Month };
+  audio: AmbientAudio;
+  quality: Quality;
+  exporting: boolean;
+  onExport: () => void;
   goods: readonly TradeGood[];
   /** True during the first-visit flight; the panels fade in as it lands. */
   arriving: boolean;
@@ -58,6 +64,10 @@ export default function AtlasHud({
   interaction,
   chronicle,
   range,
+  audio,
+  quality,
+  exporting,
+  onExport,
   goods,
   arriving,
   surveyedCount,
@@ -150,11 +160,49 @@ export default function AtlasHud({
           ))}
         </div>
         {goods.length > 0 && <TradeGoods goods={goods.slice(0, MAX_GOODS)} interaction={interaction} />}
+        <div className="atlas-hud__actions">
+          <SoundToggle audio={audio} />
+          <button
+            type="button"
+            className="atlas-button atlas-button--quiet"
+            onClick={onExport}
+            disabled={exporting}
+            title="Download the current view as a PNG chart"
+          >
+            {exporting ? 'Drawing…' : 'Export chart'}
+          </button>
+        </div>
+        {quality === 'lite' && (
+          <span className="atlas-hud__quality" title="Fewer effects: this device asked for a lighter map.">
+            light rendering
+          </span>
+        )}
         <button type="button" className="atlas-button" onClick={onSheetView}>
           Sheet view
         </button>
       </div>
     </>
+  );
+}
+
+/** Ambient sound, off until asked (stage 7). */
+function SoundToggle({ audio }: { audio: AmbientAudio }) {
+  const on = useSyncExternalStore(audio.subscribe, audio.enabled);
+  return (
+    <button
+      type="button"
+      className={`atlas-button atlas-button--quiet${on ? ' is-on' : ''}`}
+      aria-pressed={on}
+      onClick={() => void audio.toggle()}
+      title={on ? 'Mute the sea and the wind' : 'Hear the sea and the wind'}
+    >
+      <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" fill="currentColor">
+        <path d="M2 6h3l4-3v10l-4-3H2z" />
+        {on && <path d="M11 5.5a3.2 3.2 0 0 1 0 5M12.5 3.5a5.6 5.6 0 0 1 0 9" fill="none" stroke="currentColor" strokeWidth="1.3" />}
+        {!on && <path d="M11 6l3 4M14 6l-3 4" fill="none" stroke="currentColor" strokeWidth="1.3" />}
+      </svg>
+      {on ? 'Sound on' : 'Sound off'}
+    </button>
   );
 }
 

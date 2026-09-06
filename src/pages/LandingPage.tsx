@@ -31,7 +31,7 @@ export default function LandingPage() {
   // No arguments — the landing page *is* the site title, and this resets the
   // head after a route that set its own.
   usePageMeta();
-  const { setMode: setViewMode, supported: atlasSupported } = useViewMode();
+  const { setMode: setViewMode } = useViewMode();
 
   // Explicit running order — `projects` is merged in alphabetical city-file
   // order, so without this the largest bento card goes to whichever featured
@@ -56,15 +56,13 @@ export default function LandingPage() {
         style={{ background: 'var(--gradient-hero)' }}
       >
         <HeroContourBackground />
-        {atlasSupported && (
-          <button
-            type="button"
-            onClick={() => setViewMode('map')}
-            className="mono-label absolute right-[var(--space-6)] top-[var(--space-6)] z-[var(--z-raised)] rounded-[var(--radius-sm)] border border-[var(--color-border-default)] bg-[rgba(var(--color-chrome-rgb),0.6)] px-[var(--space-4)] py-[var(--space-2)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent-light)]"
-          >
-            Map view
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setViewMode('map')}
+          className="mono-label absolute right-[var(--space-6)] top-[var(--space-6)] z-[var(--z-raised)] rounded-[var(--radius-sm)] border border-[var(--color-border-default)] bg-[rgba(var(--color-chrome-rgb),0.6)] px-[var(--space-4)] py-[var(--space-2)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent-light)]"
+        >
+          Map view
+        </button>
         <div className="relative z-[var(--z-raised)] flex flex-col items-center gap-[var(--space-4)] px-[var(--space-6)] text-center">
           <img
             src={profile.photo}

@@ -209,12 +209,13 @@ export class LifeSim {
   private readonly rng: Rng;
   private readonly bySlug: Map<string, Settlement>;
 
-  constructor(atlas: Atlas, plan: AmbientPlan) {
+  constructor(atlas: Atlas, plan: AmbientPlan, options: { lite?: boolean } = {}) {
+    const lite = options.lite ?? false;
     this.rng = mulberry32(ATLAS_SEED ^ hashString('life'));
     this.bySlug = new Map(atlas.settlements.map((s) => [s.slug, s]));
 
     for (const settlement of atlas.settlements) {
-      if (settlement.tier === 'ruin') continue;
+      if (settlement.tier === 'ruin' || (lite && settlement.tier === 'hamlet')) continue;
       this.smoke.push({
         slug: settlement.slug,
         x: settlement.x,
@@ -227,7 +228,7 @@ export class LifeSim {
     }
 
     for (const harbour of plan.harbours) {
-      for (let i = 0; i < GULLS_PER_HARBOUR; i++) {
+      for (let i = 0; i < (lite ? 1 : GULLS_PER_HARBOUR); i++) {
         this.gulls.push({
           cx: harbour.x,
           cy: harbour.y,
@@ -249,7 +250,7 @@ export class LifeSim {
       this.laneEnds.push({ from, to });
       this.spans.push(waterSpan(curve, atlas.islands));
     });
-    for (let i = 0; i < BOAT_COUNT && this.curves.length > 0; i++) {
+    for (let i = 0; i < (lite ? 1 : BOAT_COUNT) && this.curves.length > 0; i++) {
       const laneIndex = Math.floor(this.rng() * this.curves.length);
       const span = this.spans[laneIndex];
       const boat: Boat = {
