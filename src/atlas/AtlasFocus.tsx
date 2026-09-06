@@ -6,13 +6,13 @@ import { spriteRect, type InteractionStore } from './interaction.ts';
 import type { Atlas } from './types.ts';
 
 /*
- * What follows the active settlement: the gold ring on the ground and the
- * dark-glass card from concept 10, built from the same facts WorkCard
- * shows (cover, title, one line, tags). The card sits beside the sprite
- * and flips to the other side or slides vertically to stay on screen. Its
- * cover carries the view-transition name the detail hero pairs with, so
- * opening from here morphs the card's cover into the hero, as the works
- * grid does.
+ * What follows the highlighted settlements: a gold ring on the ground under
+ * each of them, and, when a single settlement is active, the dark-glass
+ * card from concept 10 built from the same facts WorkCard shows (cover,
+ * title, one line, tags). The card sits beside the sprite and flips to the
+ * other side or slides vertically to stay on screen. Its cover carries the
+ * view-transition name the detail hero pairs with, so opening from here
+ * morphs the card's cover into the hero, as the works grid does.
  */
 
 interface Props {
@@ -37,25 +37,28 @@ const TYPE_LABEL: Record<string, string> = {
 
 export default function AtlasFocus({ atlas, store, interaction, onOpen }: Props) {
   const activeSlug = useSyncExternalStore(interaction.subscribe, interaction.active);
+  const highlights = useSyncExternalStore(interaction.subscribe, interaction.highlights);
   const bySlug = useMemo(() => new Map(atlas.settlements.map((s) => [s.slug, s])), [atlas]);
   const settlement = activeSlug ? bySlug.get(activeSlug) : undefined;
   const project = activeSlug ? projects.find((p) => p.slug === activeSlug) : undefined;
-  const ringRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!settlement) return;
+    const root = rootRef.current;
+    if (!root) return;
     return store.subscribe(({ camera, viewport }) => {
-      const ring = ringRef.current;
-      const card = cardRef.current;
-      const ground = worldToScreen(camera, viewport, settlement.x, settlement.y);
-      const width = settlement.footprint * RING_SCALE * camera.zoom;
-      if (ring) {
+      root.querySelectorAll<HTMLElement>('[data-ring]').forEach((ring) => {
+        const target = bySlug.get(ring.dataset.ring ?? '');
+        if (!target) return;
+        const ground = worldToScreen(camera, viewport, target.x, target.y);
+        const width = target.footprint * RING_SCALE * camera.zoom;
         ring.style.width = `${width.toFixed(1)}px`;
         ring.style.height = `${(width * RING_SQUASH).toFixed(1)}px`;
         ring.style.transform = `translate(${(ground.x - width / 2).toFixed(1)}px, ${(ground.y - (width * RING_SQUASH) / 2).toFixed(1)}px)`;
-      }
-      if (card) {
+      });
+      const card = cardRef.current;
+      if (card && settlement) {
         const rect = spriteRect(settlement, camera, viewport);
         const height = card.offsetHeight;
         let left = rect.right + CARD_GAP;
@@ -66,50 +69,52 @@ export default function AtlasFocus({ atlas, store, interaction, onOpen }: Props)
         card.style.transform = `translate(${left.toFixed(1)}px, ${top.toFixed(1)}px)`;
       }
     });
-  }, [settlement, store]);
+  }, [bySlug, highlights, settlement, store]);
 
-  if (!settlement || !project) return null;
-
-  const year = project.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
-  const award = project.awards[0];
+  const year = project?.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
+  const award = project?.awards[0];
 
   return (
-    <>
-      <div ref={ringRef} className="atlas-ring is-on" aria-hidden="true" />
-      <div
-        ref={cardRef}
-        className="atlas-tooltip is-on"
-        style={{ width: CARD_WIDTH }}
-        onClick={() => onOpen(project.slug)}
-        role="presentation"
-      >
-        <img
-          src={project.coverImage}
-          alt=""
-          width={1200}
-          height={630}
-          decoding="async"
-          style={{ viewTransitionName: `cover-${project.slug}` }}
-          className="atlas-tooltip__cover"
-        />
-        <div className="atlas-tooltip__body">
-          <h3 className="atlas-tooltip__title">{project.title}</h3>
-          <p className="atlas-tooltip__tagline">{project.tagline}</p>
-          <div className="atlas-tooltip__pills">
-            <span className="atlas-pill">{project.category}</span>
-            {year !== null && <span className="atlas-pill">{year}</span>}
-            <span className="atlas-pill">{TYPE_LABEL[project.type] ?? project.type}</span>
-            <span className="atlas-pill">{TIER_LABEL[settlement.tier]}</span>
-            {award && (
-              <span className="atlas-pill atlas-pill--award" title={award}>
-                ★ award
-              </span>
-            )}
-            {project.status === 'in-progress' && <span className="atlas-pill">in progress</span>}
+    <div ref={rootRef} className="atlas-focus">
+      {highlights.map((slug) => (
+        <div key={slug} data-ring={slug} className="atlas-ring is-on" aria-hidden="true" />
+      ))}
+      {settlement && project && (
+        <div
+          ref={cardRef}
+          className="atlas-tooltip is-on"
+          style={{ width: CARD_WIDTH }}
+          onClick={() => onOpen(project.slug)}
+          role="presentation"
+        >
+          <img
+            src={project.coverImage}
+            alt=""
+            width={1200}
+            height={630}
+            decoding="async"
+            style={{ viewTransitionName: `cover-${project.slug}` }}
+            className="atlas-tooltip__cover"
+          />
+          <div className="atlas-tooltip__body">
+            <h3 className="atlas-tooltip__title">{project.title}</h3>
+            <p className="atlas-tooltip__tagline">{project.tagline}</p>
+            <div className="atlas-tooltip__pills">
+              <span className="atlas-pill">{project.category}</span>
+              {year !== null && <span className="atlas-pill">{year}</span>}
+              <span className="atlas-pill">{TYPE_LABEL[project.type] ?? project.type}</span>
+              <span className="atlas-pill">{TIER_LABEL[settlement.tier]}</span>
+              {award && (
+                <span className="atlas-pill atlas-pill--award" title={award}>
+                  ★ award
+                </span>
+              )}
+              {project.status === 'in-progress' && <span className="atlas-pill">in progress</span>}
+            </div>
+            <span className="atlas-tooltip__hint">Open the sheet →</span>
           </div>
-          <span className="atlas-tooltip__hint">Open the sheet →</span>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }

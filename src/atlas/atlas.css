@@ -598,3 +598,104 @@
     transition: none;
   }
 }
+
+/* ---- Stage 5: highlight rings, trade goods, the arrival ---- */
+
+/* Rings and the card share one layer; only the card takes the pointer. */
+.atlas-focus {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.atlas-focus .atlas-tooltip {
+  pointer-events: auto;
+}
+
+.atlas-goods {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 236px;
+}
+
+.atlas-goods__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.atlas-good {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 8px 3px 9px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
+  border-radius: 999px;
+  background: rgba(var(--atlas-gold-rgb), 0.06);
+  color: var(--atlas-bone);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.atlas-good__count {
+  font-size: 9.5px;
+  color: rgba(var(--atlas-gold-rgb), 0.85);
+}
+
+.atlas-good:hover,
+.atlas-good:focus-visible {
+  border-color: rgba(var(--atlas-gold-rgb), 0.85);
+  background: rgba(var(--atlas-gold-rgb), 0.16);
+  outline: none;
+}
+
+.atlas-good.is-pinned {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.28);
+  color: #fff6e0;
+}
+
+.atlas-good.is-pinned .atlas-good__count {
+  color: #fff6e0;
+}
+
+/* The first-visit flight: the panels and the moon fade in as the camera lands. */
+.atlas-hud,
+.atlas-moon {
+  transition: opacity 1100ms ease;
+}
+
+.atlas-hud.is-arriving,
+.atlas-moon.is-arriving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Lanes and labels wait for the landing too; the veil alone carries the descent. */
+.atlas-view.is-arriving .atlas-lanes,
+.atlas-view.is-arriving .atlas-labels {
+  opacity: 0;
+  transition: none;
+}
+
+.atlas-lanes,
+.atlas-labels {
+  transition: opacity 1100ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-hud,
+  .atlas-moon,
+  .atlas-good {
+    transition: none;
+  }
+}

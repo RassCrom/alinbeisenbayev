@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { SETTLEMENT_SPRITES, islandSprite } from './assets.ts';
 import { visibleWorld, type Point, type ViewStore } from './camera.ts';
 import { TIERS, TIER_LABEL } from './config.ts';
+import type { InteractionStore } from './interaction.ts';
 import { paintingHalfWidth } from './layout.ts';
+import type { TradeGood } from './tools.ts';
 import type { Atlas } from './types.ts';
 import { moonPhase } from './weather/sun.ts';
 import {
@@ -20,13 +22,19 @@ import {
  * live weather readout with a preview picker, the survey count, and a
  * minimap of the paintings that doubles as the category legend and
  * recentres the camera when clicked. Bottom right: the settlement tier
- * legend and the switch back to the sheet view. At night a moon with the
- * real phase hangs at the top right of the map.
+ * legend, the trade goods (stage 5: a chip per tag shared by several
+ * settlements; pointing at one lights every settlement that trades in it,
+ * clicking pins it) and the switch back to the sheet view. At night a moon
+ * with the real phase hangs at the top right of the map.
  */
 
 interface Props {
   atlas: Atlas;
   store: ViewStore;
+  interaction: InteractionStore;
+  goods: readonly TradeGood[];
+  /** True during the first-visit flight; the panels fade in as it lands. */
+  arriving: boolean;
   surveyedCount: number;
   weather: WeatherState;
   weatherError: string | null;
@@ -38,10 +46,15 @@ interface Props {
 }
 
 const PRESETS = Object.keys(PRESET_LABEL) as WeatherPreset[];
+/** Chips shown; the rest of the tags stay in the sheet view's filters. */
+const MAX_GOODS = 10;
 
 export default function AtlasHud({
   atlas,
   store,
+  interaction,
+  goods,
+  arriving,
   surveyedCount,
   weather,
   weatherError,
@@ -65,11 +78,13 @@ export default function AtlasHud({
           ? 'Cached forecast; refreshing every fifteen minutes.'
           : `No forecast reachable${weatherError ? ` (${weatherError})` : ''}; clear sky from the clock.`;
 
+  const arrivingClass = arriving ? ' is-arriving' : '';
+
   return (
     <>
-      {!weather.isDay && <Moon />}
+      {!weather.isDay && <Moon arriving={arriving} />}
 
-      <div className="atlas-hud atlas-hud--left">
+      <div className={`atlas-hud atlas-hud--left${arrivingClass}`}>
         <div className="atlas-hud__block">
           <Compass />
         </div>
@@ -116,7 +131,7 @@ export default function AtlasHud({
         </div>
       </div>
 
-      <div className="atlas-hud atlas-hud--right">
+      <div className={`atlas-hud atlas-hud--right${arrivingClass}`}>
         <span className="atlas-hud__eyebrow">Settlements</span>
         <div className="atlas-tiers" aria-label="Settlement tiers">
           {TIERS.map((tier) => (
@@ -127,11 +142,52 @@ export default function AtlasHud({
             </div>
           ))}
         </div>
+        {goods.length > 0 && <TradeGoods goods={goods.slice(0, MAX_GOODS)} interaction={interaction} />}
         <button type="button" className="atlas-button" onClick={onSheetView}>
           Sheet view
         </button>
       </div>
     </>
+  );
+}
+
+/**
+ * One chip per trade good. Pointing (or focusing) lights its settlements
+ * through the interaction store; a click pins the good so the lighting
+ * stays while the visitor pans, until it is clicked again, Escape, or a
+ * tap on open sea.
+ */
+function TradeGoods({ goods, interaction }: { goods: readonly TradeGood[]; interaction: InteractionStore }) {
+  const pinned = useSyncExternalStore(interaction.subscribe, () => interaction.get().pinnedTool);
+  const leave = (good: TradeGood): void => {
+    if (interaction.get().tool === good) interaction.set({ tool: null });
+  };
+  return (
+    <div className="atlas-goods" role="group" aria-label="Trade goods">
+      <span className="atlas-hud__eyebrow">Trade goods</span>
+      <div className="atlas-goods__chips">
+        {goods.map((good) => {
+          const isPinned = pinned?.key === good.key;
+          return (
+            <button
+              key={good.key}
+              type="button"
+              className={`atlas-good${isPinned ? ' is-pinned' : ''}`}
+              aria-pressed={isPinned}
+              title={`${good.slugs.length} settlements trade in ${good.label}`}
+              onPointerEnter={() => interaction.set({ tool: good })}
+              onPointerLeave={() => leave(good)}
+              onFocus={() => interaction.set({ tool: good })}
+              onBlur={() => leave(good)}
+              onClick={() => interaction.set({ pinnedTool: isPinned ? null : good })}
+            >
+              {good.label}
+              <span className="atlas-good__count">{good.slugs.length}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -201,7 +257,7 @@ function Minimap({ atlas, store, onClick }: { atlas: Atlas; store: ViewStore; on
 }
 
 /** The real lunar phase, drawn as the lit part of a disc. */
-function Moon() {
+function Moon({ arriving }: { arriving: boolean }) {
   const { phase, illumination, waxing } = moonPhase(new Date());
   const r = 14;
   // The terminator is an ellipse whose x radius runs from -r (new) through 0 (quarter) to r (full).
@@ -211,7 +267,12 @@ function Moon() {
   const inner = `A${Math.abs(terminator)},${r} 0 0,${(terminator * litSide < 0) === waxing ? 0 : 1} 0,${-r}`;
   const label = `${Math.round(illumination * 100)}% lit, ${waxing ? 'waxing' : 'waning'}`;
   return (
-    <svg className="atlas-moon" viewBox="-18 -18 36 36" role="img" aria-label={`Moon, ${label}`}>
+    <svg
+      className={`atlas-moon${arriving ? ' is-arriving' : ''}`}
+      viewBox="-18 -18 36 36"
+      role="img"
+      aria-label={`Moon, ${label}`}
+    >
       <circle r={r} fill="#1a2238" stroke="rgba(235,225,201,0.25)" strokeWidth="0.6" />
       <path d={`${outer} ${inner} Z`} fill="#efe6d0" />
     </svg>

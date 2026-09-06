@@ -76,6 +76,9 @@ export default function WorkDetailPage() {
   // Reading a sheet surveys its settlement on the atlas, however you got here.
   useEffect(() => {
     if (project) markSurveyed(project.slug);
+    // A hash link lands on its section once the lazy page has mounted; the router does not do this itself.
+    const anchor = window.location.hash.slice(1);
+    if (anchor) document.getElementById(anchor)?.scrollIntoView({ block: 'start' });
   }, [project]);
 
   // An unknown slug is a miss like any other — same sheet, same noindex.

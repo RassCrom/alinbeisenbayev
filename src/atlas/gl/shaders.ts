@@ -112,6 +112,11 @@ void main() {
   vec3 halfDir = normalize(lightDir + vec3(0.0, 0.0, 1.0));
   float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);
   float glint = pow(max(dot(normal, halfDir), 0.0), 110.0);
+  // Highlights break into flecks rather than running the length of a crest,
+  // and thin out as the camera comes close, where a whole lit crest would
+  // read as hatching across the water.
+  float fleck = smoothstep(0.42, 0.78, noise(world * 2400.0 + vec2(t * 0.25, -t * 0.18)));
+  glint *= fleck * (0.5 + 0.5 * fleck) * mix(1.0, 0.45, smoothstep(1800.0, 6000.0, zoom));
 
   // Depth. The shelf field is a wide blur of the land mask: 0 in open
   // water, rising over the last stretch before the shore. The coast field is
@@ -176,9 +181,13 @@ uniform vec3 u_camera;
 uniform vec2 u_center;
 uniform vec2 u_half;
 uniform vec2 u_anchor;
+uniform float u_rotation;
 out vec2 v_uv;
 void main() {
-  vec2 world = u_center + (a_pos - u_anchor) * u_half * 2.0;
+  vec2 local = (a_pos - u_anchor) * u_half * 2.0;
+  float c = cos(u_rotation);
+  float s = sin(u_rotation);
+  vec2 world = u_center + vec2(local.x * c - local.y * s, local.x * s + local.y * c);
   vec2 screen = (world - u_camera.xy) * u_camera.z + u_resolution * 0.5;
   vec2 clip = vec2(screen.x / u_resolution.x * 2.0 - 1.0, 1.0 - screen.y / u_resolution.y * 2.0);
   gl_Position = vec4(clip, 0.0, 1.0);

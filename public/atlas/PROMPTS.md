@@ -74,3 +74,20 @@ Shared frame:
 | `glow.webp` | 1:1, 1k | A single soft warm amber light glow: one round radial gradient of orange-gold light, brightest at the centre, fading smoothly and evenly to pure black at the edges, centred on a flat pure black background. No objects, no lens flare, no text, nothing else in the frame. *(No background removal: drawn with additive blending, where black is transparent.)* |
 | `crown.webp` | 1:1, 1k | A small flat gold heraldic crown emblem for a map legend, like a game user-interface icon: simple silhouette with five points and small round jewels, thin elegant matte gold lines and fills, softly lit from the upper right, front view, isolated on a flat pure black background, centred, filling about 60% of the frame, no text, nothing else in the frame. |
 | `pennant.webp` | 2:3, 1k | A small heraldic pennant: a long triangular crimson red flag with a thin gold border fluttering to the right from a short dark wooden pole with a small gold finial, painted photoreal, softly lit from the upper right, isolated on a flat pure black background, centred, filling about 70% of the frame, no text, nothing else in the frame. |
+
+## Ambient life sprites (stage 5)
+
+Lighthouse and windmill tower use reference 07 for the camera angle and
+lighting; the sails, gull and boat are seen from above and need none.
+
+| File | Size | Prompt |
+| --- | --- | --- |
+| `lighthouse.webp` | 1:1, 1k, ref 07 | A single small stone lighthouse on a rocky outcrop, a white tower with two red bands and a glass lantern room with a small copper roof, in exactly the painted photoreal style, camera angle and lighting of the reference image: high-angle three-quarter view from above, key light from the upper right, dark cinematic dusk grade, a faint warm light in the lantern. Isolated on a flat pure black background, nothing else in the frame, no text, no labels. Centred, filling about 60% of the frame. |
+| `windmill-tower.webp` | 1:1, 1k, ref 07 | A single stone windmill tower with a conical wooden cap and a small door, with NO sails and NO blades attached (the tower only, sails removed), in exactly the painted photoreal style, camera angle and lighting of the reference image: high-angle three-quarter view from above, key light from the upper right, dark cinematic dusk grade, a warm lit window. Isolated on a flat pure black background, nothing else in the frame, no text, no labels. Centred, filling about 60% of the frame. |
+| `windmill-sails.webp` | 1:1, 1k | The four sails of a windmill only, seen straight on from the front as a symmetrical cross centred on the hub: four lattice wooden sails with weathered cream cloth, no tower, no ground, painted photoreal, softly lit from the upper right, isolated on a flat pure black background, centred, filling about 85% of the frame, no text, nothing else in the frame. |
+| `gull.webp` | 1:1, 1k | A single seagull in flight seen directly from above, wings spread wide, white body with grey wings and black wing tips, painted photoreal, softly lit from the upper right, isolated on a flat pure black background, centred, filling about 70% of the frame, no text, nothing else in the frame. |
+| `boat.webp` | 1:1, 1k | A single small wooden sailing boat seen directly from above, bow pointing to the right, dark tarred hull, one square cream sail full of wind, a tiny red pennant, painted photoreal, softly lit from the upper right, isolated on a flat pure black background, centred, filling about 65% of the frame, no water, no wake, no text, nothing else in the frame. |
+
+Chimney smoke, the lighthouse beam and the boat wakes are drawn from
+textures the renderer generates at start-up (soft radial and wedge
+gradients), not from generated images.

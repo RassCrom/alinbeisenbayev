@@ -1,4 +1,4 @@
-import LocatorInset from '../LocatorInset/LocatorInset';
+import IslandLocator from '../../atlas/IslandLocator';
 import type { Project } from '../../types';
 
 export interface SourceNoteProps {
@@ -54,6 +54,7 @@ export default function SourceNote({ project }: SourceNoteProps) {
 
   return (
     <aside
+      id="source-note"
       aria-label="Source note"
       className="mt-[var(--space-16)] border-t border-[var(--color-border-default)] pt-[var(--space-6)]"
     >
@@ -71,13 +72,11 @@ export default function SourceNote({ project }: SourceNoteProps) {
           ))}
         </dl>
 
-        {/* The locator: gold marks what the work is about, blue where it was made. */}
-        {geography.contexts.length > 0 && (
-          <figure className="flex shrink-0 flex-col items-center gap-[var(--space-2)]">
-            <LocatorInset contexts={geography.contexts} origin={geography.origin} size={132} />
-            <figcaption className="mono-label text-center">Locator</figcaption>
-          </figure>
-        )}
+        {/* The locator: the island this work sits on, with its settlement pinned. */}
+        <figure className="flex shrink-0 flex-col items-center gap-[var(--space-2)]">
+          <IslandLocator slug={project.slug} size={148} />
+          <figcaption className="mono-label text-center">Locator</figcaption>
+        </figure>
       </div>
 
       {sourceNote?.note && (

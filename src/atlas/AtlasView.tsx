@@ -3,11 +3,12 @@ import { flushSync } from 'react-dom';
 import { useNavigate, useNavigationType } from 'react-router-dom';
 import { projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { LifeSim, planAmbient } from './ambient.ts';
+import { loadImages, textureSources } from './assets.ts';
 import AtlasFocus from './AtlasFocus';
 import AtlasHud from './AtlasHud';
 import AtlasLabels from './AtlasLabels';
 import AtlasLanes from './AtlasLanes';
-import { loadImages, textureSources } from './assets.ts';
 import {
   clampCamera,
   createCameraAnimator,
@@ -18,6 +19,7 @@ import {
   readSavedCamera,
   saveCamera,
   worldToScreen,
+  type Camera,
   type Point,
 } from './camera.ts';
 import { TIER_LABEL } from './config.ts';
@@ -27,23 +29,30 @@ import { AtlasRenderer, type FrameState } from './gl/renderer.ts';
 import { buildAtlas } from './index.ts';
 import { createInteractionStore, hitTest } from './interaction.ts';
 import { sheetOrder } from './order.ts';
+import { tradeGoods } from './tools.ts';
 import type { Island } from './types.ts';
-import { setViewMode } from './viewMode.ts';
+import { defaultViewMode, setViewMode } from './viewMode.ts';
 import { WeatherSim, initialSnowCover, targetLook } from './weather/sim.ts';
 import { PRESET_LABEL, presetWeather, useWeather, type WeatherPreset, type WeatherState } from './weather/weather.ts';
 import './atlas.css';
 
 /*
  * The atlas at `/`: one WebGL canvas for sea, islands, settlements, the
- * hover dim and the fog, and DOM layers above it for lanes, labels, the
- * ring and card, and the HUD. This component owns the single
- * requestAnimationFrame loop; it stops while the tab is hidden and on
- * unmount, which is what happens when the sheet view takes over.
+ * ambient life, the highlight dim and the fog, and DOM layers above it for
+ * lanes, labels, the rings and card, and the HUD. This component owns the
+ * single requestAnimationFrame loop; it stops while the tab is hidden and
+ * on unmount, which is what happens when the sheet view takes over.
  *
  * Opening a settlement zooms toward it, then routes to its sheet inside a
  * view transition so the card's cover morphs into the detail hero, the
  * same mechanism the works grid uses. The camera is saved first, and Back
  * restores it exactly.
+ *
+ * A first visit arrives from above (stage 5): the camera starts far out
+ * behind a veil of cloud and settles on the fitted archipelago while the
+ * HUD fades in. Once is enough; a flag in localStorage remembers, and the
+ * flight is skipped under reduced motion, on Back, and when the sheet is
+ * the default view for this device.
  */
 
 type Status = { kind: 'loading' } | { kind: 'ready' } | { kind: 'error'; message: string };
@@ -54,6 +63,37 @@ const MAX_DPR = 2;
 const REVEAL_FOOTPRINTS = 5;
 /** Settlements within this many pixels of the edge get panned into view on keyboard focus. */
 const FOCUS_MARGIN = 80;
+/** The first-visit flight: how long, how far out it starts, and where the HUD begins to fade in. */
+const FLY_MS = 3600;
+const FLY_START_ZOOM = 0.3;
+const FLY_HUD_AT = 0.62;
+const FLOWN_KEY = 'atlas:flown';
+
+interface Flight {
+  from: Camera;
+  to: Camera;
+  start: number;
+  /** Dev only: freeze part-way so a headless render can capture the arrival. */
+  hold: boolean;
+}
+
+function hasFlown(): boolean {
+  try {
+    return localStorage.getItem(FLOWN_KEY) === '1';
+  } catch {
+    return true;
+  }
+}
+
+function rememberFlown(): void {
+  try {
+    localStorage.setItem(FLOWN_KEY, '1');
+  } catch {
+    // Private mode: the visitor gets the flight again next time; no harm.
+  }
+}
+
+const easeInOutCubic = (t: number): number => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 export default function AtlasView() {
   usePageMeta();
@@ -68,6 +108,14 @@ export default function AtlasView() {
   const animator = useMemo(() => createCameraAnimator(store, atlas.bounds), [atlas.bounds, store]);
   const bySlug = useMemo(() => new Map(atlas.settlements.map((s) => [s.slug, s])), [atlas]);
   const sheet = useMemo(() => sheetOrder(projects).filter((p) => bySlug.has(p.slug)), [bySlug]);
+  // Trade goods worth a chip: tags shared by at least two settlements on the map.
+  const goods = useMemo(
+    () =>
+      tradeGoods(projects)
+        .map((good) => ({ ...good, slugs: good.slugs.filter((slug) => bySlug.has(slug)) }))
+        .filter((good) => good.slugs.length >= 2),
+    [bySlug],
+  );
   const surveyed = useSurveyed();
   const surveyedRef = useRef(surveyed);
   surveyedRef.current = surveyed;
@@ -89,13 +137,16 @@ export default function AtlasView() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
+  const [arriving, setArriving] = useState(false);
   const opening = useRef(false);
 
   /*
    * Dev only: lets the console and the browser tooling read the layout and
-   * camera, and `?atlas-hover=<slug>` opens with that settlement active so a
-   * headless render can capture the hover state. Both disappear from the
-   * production build with the DEV branch.
+   * camera, and a few URL parameters open the map in a state a headless
+   * render can capture: `?atlas-hover=<slug>` with that settlement active,
+   * `?atlas-tool=<key>` with that trade good pinned, `?atlas-weather=<preset>`
+   * under that weather, `?atlas-flyin[=hold]` mid-arrival, `?atlas-camera=x,y,zoom` at a camera. All of it
+   * disappears from the production build with the DEV branch.
    */
   useEffect(() => {
     if (!import.meta.env.DEV) return;
@@ -104,12 +155,15 @@ export default function AtlasView() {
     const params = new URLSearchParams(window.location.search);
     const hover = params.get('atlas-hover');
     if (hover && status.kind === 'ready') interaction.set({ hovered: hover });
+    const tool = params.get('atlas-tool');
+    const good = tool ? goods.find((g) => g.key === tool) : undefined;
+    if (good && status.kind === 'ready') interaction.set({ pinnedTool: good });
     const weatherParam = params.get('atlas-weather');
     if (weatherParam && weatherParam in PRESET_LABEL) setPreset(weatherParam as WeatherPreset);
     return () => {
       delete debugWindow.__atlas;
     };
-  }, [atlas, interaction, status.kind, store]);
+  }, [atlas, goods, interaction, status.kind, store]);
 
   /*
    * Warm the detail route while the visitor is still pointing at a
@@ -157,7 +211,7 @@ export default function AtlasView() {
   );
 
   const clearInteraction = useCallback(() => {
-    interaction.set({ hovered: null, selected: null, focused: null });
+    interaction.set({ hovered: null, selected: null, focused: null, tool: null, pinnedTool: null });
   }, [interaction]);
 
   const hoverAt = useCallback(
@@ -191,7 +245,7 @@ export default function AtlasView() {
         return;
       }
       if (slug) void openProject(slug);
-      else interaction.set({ selected: null });
+      else interaction.set({ selected: null, pinnedTool: null });
     },
     [atlas, interaction, openProject, store, warmDetail],
   );
@@ -240,9 +294,23 @@ export default function AtlasView() {
     let cancelled = false;
     let sized = false;
     let lastTime = 0;
+    const params = new URLSearchParams(window.location.search);
     // Dev only: a preset asked for by URL snaps into place, so a headless render shows the settled look.
-    const snapWeather = import.meta.env.DEV && new URLSearchParams(window.location.search).has('atlas-weather');
-    const instant = prefersReducedMotion() || snapWeather;
+    const snapWeather = import.meta.env.DEV && params.has('atlas-weather');
+    const reducedMotion = prefersReducedMotion();
+    const instant = reducedMotion || snapWeather;
+    const flyParam = import.meta.env.DEV ? params.get('atlas-flyin') : null;
+    const wantsFlight =
+      flyParam !== null ||
+      (!reducedMotion &&
+        navigationType !== 'POP' &&
+        defaultViewMode() === 'map' &&
+        !snapWeather &&
+        !params.has('atlas-hover') &&
+        !params.has('atlas-tool') &&
+        !params.has('atlas-camera') &&
+        !hasFlown());
+    let flight: Flight | null = null;
     const dpr = (): number => Math.min(window.devicePixelRatio || 1, MAX_DPR);
 
     const applyViewport = (): void => {
@@ -254,12 +322,45 @@ export default function AtlasView() {
       if (!sized) {
         // Back lands on the view the visitor left; any other arrival fits the archipelago.
         const saved = navigationType === 'POP' ? readSavedCamera() : null;
-        camera = saved ?? fitBounds(atlas.bounds, viewport);
+        const fit = fitBounds(atlas.bounds, viewport);
+        camera = saved ?? fit;
+        // Dev only: `?atlas-camera=x,y,zoom` opens at that world point, zoom as a multiple of the fit.
+        const cameraParam = import.meta.env.DEV ? params.get('atlas-camera') : null;
+        if (cameraParam) {
+          const [x, y, zoom] = cameraParam.split(',').map(Number);
+          if ([x, y, zoom].every(Number.isFinite)) camera = { x, y, zoom: fit.zoom * zoom };
+        }
+        if (wantsFlight) {
+          // Start high above and a little to the south-east, the way a chart is approached from the sea.
+          const width = atlas.bounds.maxX - atlas.bounds.minX;
+          flight = {
+            from: { x: fit.x + width * 0.08, y: fit.y + width * 0.05, zoom: fit.zoom * FLY_START_ZOOM },
+            to: fit,
+            start: 0,
+            hold: flyParam === 'hold',
+          };
+          camera = flight.from;
+          frameState.veil = 1;
+          setArriving(true);
+          rememberFlown();
+        }
         sized = true;
       }
-      store.set({ viewport, camera: clampCamera(camera, viewport, atlas.bounds) });
+      // Mid-flight the camera sits outside the clamp on purpose.
+      store.set({ viewport, camera: flight ? camera : clampCamera(camera, viewport, atlas.bounds) });
       renderer?.resize(viewport.width, viewport.height, dpr());
     };
+
+    const endFlight = (): void => {
+      if (!flight) return;
+      const { viewport } = store.get();
+      store.set({ camera: clampCamera(flight.to, viewport, atlas.bounds) });
+      flight = null;
+      frameState.veil = 0;
+      setArriving(false);
+    };
+    // Any gesture during the arrival lands the camera at once.
+    const onGesture = (): void => endFlight();
 
     // Fog reveal progress per settlement, 0 to 1, eased toward the surveyed set.
     const progress = new Float32Array(atlas.settlements.length);
@@ -269,14 +370,20 @@ export default function AtlasView() {
     const reveals = new Float32Array((atlas.settlements.length + 1) * 3);
     const sim = simRef.current ?? new WeatherSim(targetLook(weatherRef.current, Date.now()), initialSnowCover(weatherRef.current));
     simRef.current = sim;
+    const plan = planAmbient(atlas);
+    const life = new LifeSim(atlas, plan);
     if (import.meta.env.DEV) {
-      const debugWindow = window as unknown as { __atlas?: { sim?: WeatherSim } };
-      if (debugWindow.__atlas) debugWindow.__atlas.sim = sim;
+      const debugWindow = window as unknown as { __atlas?: { sim?: WeatherSim; life?: LifeSim; plan?: unknown } };
+      if (debugWindow.__atlas) {
+        debugWindow.__atlas.sim = sim;
+        debugWindow.__atlas.life = life;
+        debugWindow.__atlas.plan = plan;
+      }
     }
     let weatherTime = 0;
     const frameState: FrameState = {
-      hoverSlug: null,
-      hoverStrength: 0,
+      highlights: [],
+      highlightStrength: 0,
       reveals,
       revealCount: 0,
       fog: 1,
@@ -284,6 +391,9 @@ export default function AtlasView() {
       weatherTime: 0,
       driftX: 0,
       driftY: 0,
+      veil: 0,
+      life,
+      plan,
     };
     // Dev only: a running average of the frame time, readable from window.__atlas.frameMs.
     let frameMs = 0;
@@ -294,13 +404,34 @@ export default function AtlasView() {
       const dt = lastTime === 0 ? 1 / 60 : Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
 
-      const active = interaction.active();
-      if (active) frameState.hoverSlug = active;
-      const goal = active ? 1 : 0;
-      frameState.hoverStrength = instant ? goal : frameState.hoverStrength + (goal - frameState.hoverStrength) * Math.min(1, dt * 9);
-      if (!active && frameState.hoverStrength < 0.01) {
-        frameState.hoverStrength = 0;
-        frameState.hoverSlug = null;
+      // The arrival: zoom eased in log space so the descent reads evenly, the veil thinning ahead of it.
+      if (flight) {
+        if (flight.start === 0) flight.start = now;
+        const t = flight.hold ? 0.38 : Math.min(1, (now - flight.start) / FLY_MS);
+        const e = easeInOutCubic(t);
+        const { from, to } = flight;
+        store.set({
+          camera: {
+            x: from.x + (to.x - from.x) * e,
+            y: from.y + (to.y - from.y) * e,
+            zoom: from.zoom * Math.pow(to.zoom / from.zoom, e),
+          },
+        });
+        frameState.veil = Math.max(0, 1 - e * 1.35);
+        if (t >= FLY_HUD_AT) setArriving(false);
+        if (t >= 1) endFlight();
+      }
+
+      // Highlights keep their last set while the dim fades out, so the redraw does not pop.
+      const highlights = interaction.highlights();
+      if (highlights.length > 0) frameState.highlights = highlights;
+      const goal = highlights.length > 0 ? 1 : 0;
+      frameState.highlightStrength = instant
+        ? goal
+        : frameState.highlightStrength + (goal - frameState.highlightStrength) * Math.min(1, dt * 9);
+      if (goal === 0 && frameState.highlightStrength < 0.01) {
+        frameState.highlightStrength = 0;
+        frameState.highlights = [];
       }
 
       let count = 0;
@@ -328,6 +459,8 @@ export default function AtlasView() {
         frameState.driftY += drift.y;
       }
       frameState.weatherTime = weatherTime;
+      // Ambient life holds still under reduced motion: boats, gulls and smoke stay where they were placed.
+      if (!reducedMotion) life.update(dt, sim.look);
 
       const started = performance.now();
       renderer.render(store.get().camera, dpr(), now / 1000, frameState);
@@ -371,6 +504,9 @@ export default function AtlasView() {
     const observer = new ResizeObserver(() => applyViewport());
     observer.observe(container);
     document.addEventListener('visibilitychange', onVisibility);
+    container.addEventListener('pointerdown', onGesture, true);
+    container.addEventListener('wheel', onGesture, { capture: true, passive: true });
+    container.addEventListener('keydown', onGesture, true);
 
     return () => {
       cancelled = true;
@@ -379,6 +515,9 @@ export default function AtlasView() {
       detachControls?.();
       observer.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
+      container.removeEventListener('pointerdown', onGesture, true);
+      container.removeEventListener('wheel', onGesture, true);
+      container.removeEventListener('keydown', onGesture, true);
       renderer?.dispose();
       renderer = null;
     };
@@ -387,7 +526,7 @@ export default function AtlasView() {
   return (
     <div
       ref={containerRef}
-      className="atlas-view"
+      className={`atlas-view${arriving ? ' is-arriving' : ''}`}
       data-atlas-status={status.kind}
       tabIndex={0}
       aria-label="Atlas of works. Drag to pan, scroll to zoom, arrow keys to move; Tab reaches the settlements."
@@ -407,6 +546,9 @@ export default function AtlasView() {
           <AtlasHud
             atlas={atlas}
             store={store}
+            interaction={interaction}
+            goods={goods}
+            arriving={arriving}
             surveyedCount={surveyedCount}
             weather={shownWeather}
             weatherError={weatherError}

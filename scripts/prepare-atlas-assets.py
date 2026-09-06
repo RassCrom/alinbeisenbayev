@@ -52,6 +52,11 @@ SIZES: dict[str, int] = {
     "crown": 256,
     "pennant": 256,
     "glow": 512,
+    "lighthouse": 512,
+    "windmill-tower": 512,
+    "windmill-sails": 512,
+    "gull": 256,
+    "boat": 384,
 }
 
 

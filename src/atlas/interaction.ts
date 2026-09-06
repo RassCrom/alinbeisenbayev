@@ -5,35 +5,69 @@ import type { Atlas, Settlement } from './types.ts';
 /*
  * Which settlement the visitor is pointing at, by three routes that can
  * coexist: the mouse (hovered), a touch tap (selected) and the keyboard
- * (focused). `active()` is the one the ring, tooltip and lanes follow, in
- * that order of precedence.
+ * (focused). `active()` is the one the ring, card and lanes follow, in that
+ * order of precedence. A trade good (stage 5) highlights a whole set of
+ * settlements instead; `highlights()` is the list every layer lights.
  */
+
+export interface ToolHighlight {
+  key: string;
+  label: string;
+  slugs: readonly string[];
+}
 
 export interface Interaction {
   hovered: string | null;
   selected: string | null;
   focused: string | null;
+  /** The trade good under the pointer, if any. */
+  tool: ToolHighlight | null;
+  /** A trade good clicked to stay lit. */
+  pinnedTool: ToolHighlight | null;
 }
 
 export interface InteractionStore {
   get(): Interaction;
   set(patch: Partial<Interaction>): void;
+  /** The single settlement in focus, or null. */
   active(): string | null;
+  /** The settlements to light: the active one, else the active trade good's. */
+  highlights(): readonly string[];
   subscribe(listener: () => void): () => void;
 }
 
+const NONE: readonly string[] = [];
+
 export function createInteractionStore(): InteractionStore {
-  let state: Interaction = { hovered: null, selected: null, focused: null };
+  let state: Interaction = { hovered: null, selected: null, focused: null, tool: null, pinnedTool: null };
+  let highlightCache: readonly string[] = NONE;
   const listeners = new Set<() => void>();
+
+  const recompute = (): void => {
+    const active = state.hovered ?? state.selected ?? state.focused;
+    const tool = state.tool ?? state.pinnedTool;
+    highlightCache = active ? [active] : tool ? tool.slugs : NONE;
+  };
+
   return {
     get: () => state,
     set(patch) {
       const next = { ...state, ...patch };
-      if (next.hovered === state.hovered && next.selected === state.selected && next.focused === state.focused) return;
+      if (
+        next.hovered === state.hovered &&
+        next.selected === state.selected &&
+        next.focused === state.focused &&
+        next.tool === state.tool &&
+        next.pinnedTool === state.pinnedTool
+      ) {
+        return;
+      }
       state = next;
+      recompute();
       for (const listener of listeners) listener();
     },
     active: () => state.hovered ?? state.selected ?? state.focused,
+    highlights: () => highlightCache,
     subscribe(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);

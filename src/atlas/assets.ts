@@ -32,6 +32,52 @@ export const SETTLEMENT_SPRITES: Record<Tier, SpriteSpec> = {
 
 /** RGB on black, drawn additively; no alpha channel. */
 export const GLOW_SPRITE: SpriteSpec = { src: '/atlas/glow.webp', anchor: { x: 0.5, y: 0.5 } };
+
+/**
+ * A sprite with a fixed size in the world (stage 5): landmarks and ambient
+ * life are not scaled by any settlement, so they carry their own half-width
+ * in world units and, for things that move, the direction the image faces.
+ */
+export interface LifeSpriteSpec extends SpriteSpec {
+  /** Half the drawn width, in world units. */
+  half: number;
+  /** The heading the image faces, in radians clockwise from +x on screen; 0 when the sprite is oriented by hand. */
+  forward: number;
+}
+
+export const LIGHTHOUSE_SPRITE: LifeSpriteSpec = {
+  src: '/atlas/lighthouse.webp',
+  anchor: { x: 0.5, y: 0.88 },
+  half: 0.018,
+  forward: 0,
+};
+export const WINDMILL_TOWER_SPRITE: LifeSpriteSpec = {
+  src: '/atlas/windmill-tower.webp',
+  anchor: { x: 0.5, y: 0.9 },
+  half: 0.017,
+  forward: 0,
+};
+export const WINDMILL_SAILS_SPRITE: LifeSpriteSpec = {
+  src: '/atlas/windmill-sails.webp',
+  anchor: { x: 0.5, y: 0.5 },
+  half: 0.014,
+  forward: 0,
+};
+/** The gull is painted flying toward the upper left. */
+export const GULL_SPRITE: LifeSpriteSpec = {
+  src: '/atlas/gull.webp',
+  anchor: { x: 0.5, y: 0.5 },
+  half: 0.0045,
+  forward: -2.21,
+};
+/** The boat is painted bow to the right. */
+export const BOAT_SPRITE: LifeSpriteSpec = {
+  src: '/atlas/boat.webp',
+  anchor: { x: 0.5, y: 0.5 },
+  half: 0.011,
+  forward: 0,
+};
+const LIFE_SPRITES = [LIGHTHOUSE_SPRITE, WINDMILL_TOWER_SPRITE, WINDMILL_SAILS_SPRITE, GULL_SPRITE, BOAT_SPRITE];
 /** DOM sprites for the label layer. */
 export const CROWN_SRC = '/atlas/crown.webp';
 export const PENNANT_SRC = '/atlas/pennant.webp';
@@ -47,6 +93,7 @@ export function textureSources(islandIds: readonly string[]): string[] {
     ...islandIds.map((id) => islandSprite(id).src),
     ...Object.values(SETTLEMENT_SPRITES).map((sprite) => sprite.src),
     GLOW_SPRITE.src,
+    ...LIFE_SPRITES.map((sprite) => sprite.src),
   ];
 }
 

@@ -413,3 +413,123 @@ hidden and did not run requestAnimationFrame; `window.__atlas.frameMs`
   shadows still point to the upper right regardless of the hour.
 - Weather changes cross-fade; the sea ice and snow cover have their own
   slower memories and are not reset by the picker.
+
+## Stage 5: ambient life, ships, trade goods, fly-in, detail locator (done)
+
+### New sprites
+
+Five more cut-outs in `public/atlas/`, generated with the two concept
+sheets as references and processed by `scripts/prepare-atlas-assets.py`
+(SIZES extended): `lighthouse.webp` (512), `windmill-tower.webp` and
+`windmill-sails.webp` (512 each; the sails are a separate square so they
+can turn about the axle at (0.63, 0.30) of the tower), `gull.webp` (256,
+painted flying toward the upper left, so `forward` is −2.21 rad) and
+`boat.webp` (384, bow to the right). Prompts are in `public/atlas/PROMPTS.md`
+under "Ambient life sprites (stage 5)". `src/atlas/assets.ts` describes
+them as `LifeSpriteSpec` (a `SpriteSpec` plus a fixed `half` width in world
+units and the `forward` heading), and `textureSources` includes them.
+Chimney smoke and the lighthouse beam are procedural canvases the renderer
+uploads once (`generated:puff`, `generated:beam`).
+
+### Life module
+
+`src/atlas/ambient.ts`:
+
+- `planAmbient(atlas)` places, from the seed, one lighthouse per island on
+  the coast (walking the island's bearing out to the last land sample,
+  clear of settlements), one harbour per island on the shore nearest its
+  seat, and a windmill on every island with three or more settlements.
+- `LifeSim` owns the moving parts and is stepped once per frame with the
+  weather look: smoke puffs per settlement (none on ruins; alpha by tier,
+  fortress thinnest), two gulls per harbour circling with a flap phase, the
+  windmill `sailAngle` advancing with the real wind speed, the `beamAngle`
+  sweeping steadily, and two boats.
+- Boats sail the crossing lanes along the same quadratic curves the SVG
+  draws (`src/atlas/lanes.ts`, shared by `AtlasLanes` and the sim), but only
+  over the stretch of each curve that is water (`waterSpan`, sampled against
+  the land masks, standing a little off the beach). They ease into and out
+  of port, wait, then leave along another lane touching that port. A wake
+  ring buffer trails behind. When the look reports `storm > 0.5` or
+  `snow > 0.7` (thunderstorm, blizzard, heavy snow) every boat turns for the
+  nearer shore and anchors there until the weather clears.
+
+Renderer passes 6 and 7 (`gl/renderer.ts`) draw landmarks (tower, sails
+rotated by `u_rotation`, lighthouses) and life (wakes, boats, smoke, gulls);
+the beam pass draws two additive wedges from the lantern at night only.
+Under reduced motion the sim is placed but never stepped.
+
+### Trade goods
+
+`src/atlas/tools.ts` `tradeGoods(projects)` merges every `stack` entry
+case-insensitively (the data has both "d3.js" and "D3.js"), keeps the most
+used spelling as the label and sorts by settlement count. `AtlasView` keeps
+the goods shared by at least two settlements on the map; the HUD's right
+panel shows up to ten as chips with counts.
+
+The interaction store gained `tool` (under the pointer or keyboard focus)
+and `pinnedTool` (clicked), and a cached `highlights()` list: the active
+settlement alone if there is one, else the active good's settlements. Every
+layer lights from that list: the renderer dims and redraws all highlighted
+settlements (`FrameState.highlights`, `highlightStrength`), `AtlasFocus`
+puts a ring under each (the card still needs a single active settlement),
+and `AtlasLanes` lights a lane when one highlight touches it, or when both
+of its ends are highlighted for a set. Escape and a tap on open sea clear
+the pin.
+
+### Fly-in
+
+First visit only: `localStorage['atlas:flown'] = '1'` after the flight
+starts. Skipped under reduced motion, on Back (POP), when `defaultViewMode()`
+is not `map`, and whenever a dev URL hook asks for a specific state. The
+camera starts at 0.3× the fit zoom, offset a little south-east, and eases
+(cubic in and out, zoom in log space) to the fit over 3.6 s while
+`FrameState.veil` runs from 1 to 0 through the sky pass (extra cloud and
+haze). The camera sits outside the clamp on purpose during the flight; any
+pointer, wheel or key gesture lands it at once. HUD, moon, lanes and labels
+carry `is-arriving` until 62 % of the flight and fade in over 1.1 s.
+
+### Detail locator
+
+`src/atlas/IslandLocator.tsx` (+ `locator.css`) replaces `LocatorInset` in
+`SourceNote`: the project's island painting in a dark sea box with a pulsing
+gold pin at the settlement's position within the painting square and a
+caption of island name, tier and category. The atlas is built once per
+session for it. `LocatorInset` itself is left in place, unused. The source
+note aside now has `id="source-note"`, and the detail page scrolls a hash
+target into view on mount (the router does not).
+
+### Dev hooks
+
+`?atlas-hover=<slug>`, `?atlas-tool=<key>`, `?atlas-weather=<preset>`,
+`?atlas-flyin[=hold]` (force the flight; `hold` freezes it at 38 %), and
+`?atlas-camera=x,y,zoom` (zoom as a multiple of the fit). `window.__atlas`
+also exposes `life` and `plan`.
+
+### Sea
+
+Glints now break into flecks (a fine noise mask) and thin out above about
+1800 px per world unit; before this, a lit crest at close zoom ran as a
+continuous diagonal line and the water read as hatching or rain.
+
+### Verified
+
+Headless renders: the fitted view with lighthouses and windmills; QGIS
+pinned (17 settlements ringed, lanes between them lit, the rest dimmed);
+Jailau's harbour close up (windmill sails, gulls, the flecked water); a
+boat off Ottas under the thunderstorm preset; lighthouse beams under the
+clear-night preset; the flight held at 38 % with the veil up. A node run
+of `LifeSim` (60 fps for 20 s calm, then 80 s storm) shows both boats
+sailing, then anchored at the shore ends of their lanes and staying there.
+The locator on `/works/asharshylyq` was verified in the DOM (island
+painting, pin at the settlement, caption "Jailau · walled town · social
+media"); a headless capture of it was not possible because the page is
+taller than a screenshot and the preview pane does not paint while hidden.
+Frame time again could not be measured for the same reason as stage 4.
+
+### Deferred from stage 5
+
+- The wake is drawn as fading rings; it does not perturb the sea shader.
+- The trade-goods row is text chips, not tool icons.
+- Boats ease at ports but do not turn to face the quay; a docked boat
+  keeps its last heading.
+- No frame-time numbers; `window.__atlas.frameMs` awaits a visible tab.
