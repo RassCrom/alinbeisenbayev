@@ -25,6 +25,8 @@ import { BLUR_FRAG, FULLSCREEN_VERT, SEA_FRAG, SPRITE_FRAG, SPRITE_VERT } from '
 const MASK_SIZE = 1024;
 /** Blur step in mask texels; two passes give a coast field a few texels wide. */
 const BLUR_STEP = 1.6;
+/** The shelf blur is wider: the shallows reach a good way out from the shore. */
+const SHELF_STEP = 7.0;
 
 interface Program {
   program: WebGLProgram;
@@ -41,6 +43,7 @@ export class AtlasRenderer {
   private readonly textures = new Map<string, WebGLTexture>();
   private readonly landTexture: WebGLTexture;
   private readonly coastTexture: WebGLTexture;
+  private readonly shelfTexture: WebGLTexture;
   private readonly islands: Island[];
   private readonly settlements: Settlement[];
   private width = 1;
@@ -56,7 +59,9 @@ export class AtlasRenderer {
     if (!gl) throw new Error('WebGL2 is not available');
     this.gl = gl;
 
-    this.sea = createProgram(gl, FULLSCREEN_VERT, SEA_FRAG, ['u_resolution', 'u_camera', 'u_time', 'u_coast', 'u_land']);
+    this.sea = createProgram(gl, FULLSCREEN_VERT, SEA_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_coast', 'u_shelf', 'u_land',
+    ]);
     this.sprite = createProgram(gl, SPRITE_VERT, SPRITE_FRAG, [
       'u_resolution', 'u_camera', 'u_center', 'u_half', 'u_anchor', 'u_tex', 'u_alpha', 'u_tint', 'u_maskMode',
     ]);
@@ -81,6 +86,7 @@ export class AtlasRenderer {
     const baked = this.bakeCoast();
     this.landTexture = baked.land;
     this.coastTexture = baked.coast;
+    this.shelfTexture = baked.shelf;
   }
 
   /** Size in CSS pixels and the device pixel ratio to draw at. */
@@ -109,6 +115,7 @@ export class AtlasRenderer {
     gl.uniform1f(this.sea.uniforms.get('u_time')!, timeSeconds);
     this.bindTexture(this.coastTexture, 0, this.sea.uniforms.get('u_coast')!);
     this.bindTexture(this.landTexture, 1, this.sea.uniforms.get('u_land')!);
+    this.bindTexture(this.shelfTexture, 2, this.sea.uniforms.get('u_shelf')!);
     gl.bindVertexArray(this.empty);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
@@ -149,6 +156,7 @@ export class AtlasRenderer {
     for (const texture of this.textures.values()) gl.deleteTexture(texture);
     gl.deleteTexture(this.landTexture);
     gl.deleteTexture(this.coastTexture);
+    gl.deleteTexture(this.shelfTexture);
     gl.deleteProgram(this.sea.program);
     gl.deleteProgram(this.sprite.program);
     gl.deleteProgram(this.blur.program);
@@ -229,14 +237,16 @@ export class AtlasRenderer {
 
   /**
    * Draw every island's alpha into a unit-world texture (the land mask),
-   * then blur it twice into the coast field the sea shader reads. Islands
-   * never move, so this runs once.
+   * blur it twice into the narrow coast field that shapes the foam, then
+   * blur that much wider into the shelf field that colours the shallows.
+   * Islands never move, so this runs once.
    */
-  private bakeCoast(): { land: WebGLTexture; coast: WebGLTexture } {
+  private bakeCoast(): { land: WebGLTexture; coast: WebGLTexture; shelf: WebGLTexture } {
     const gl = this.gl;
     const land = this.createTarget();
     const temp = this.createTarget();
     const coast = this.createTarget();
+    const shelf = this.createTarget();
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, land.framebuffer);
     gl.viewport(0, 0, MASK_SIZE, MASK_SIZE);
@@ -269,13 +279,24 @@ export class AtlasRenderer {
     gl.uniform2f(this.blur.uniforms.get('u_step')!, 0, step);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
+    const wide = SHELF_STEP / MASK_SIZE;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, temp.framebuffer);
+    this.bindTexture(coast.texture, 0, this.blur.uniforms.get('u_tex')!);
+    gl.uniform2f(this.blur.uniforms.get('u_step')!, wide, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, shelf.framebuffer);
+    this.bindTexture(temp.texture, 0, this.blur.uniforms.get('u_tex')!);
+    gl.uniform2f(this.blur.uniforms.get('u_step')!, 0, wide);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
     gl.bindVertexArray(null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.deleteFramebuffer(land.framebuffer);
     gl.deleteFramebuffer(temp.framebuffer);
     gl.deleteFramebuffer(coast.framebuffer);
+    gl.deleteFramebuffer(shelf.framebuffer);
     gl.deleteTexture(temp.texture);
-    return { land: land.texture, coast: coast.texture };
+    return { land: land.texture, coast: coast.texture, shelf: shelf.texture };
   }
 }
 
