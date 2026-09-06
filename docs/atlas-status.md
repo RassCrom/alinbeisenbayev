@@ -115,8 +115,8 @@ was offered and not taken.
 
 Two or more shared keywords (case-insensitive), or membership of a series
 in `LANE_RULES.series`: fire, heat, motion, kazakh-memory, austria, games.
-35 lanes today: 20 cross water (`crossing: true`, draw as sea lanes), 15
-join settlements on one island (draw as roads). Five settlements have no
+35 lanes today: 20 cross water (`crossing: true`, drawn as sea lanes), 15
+join settlements on one island (drawn as roads). Five settlements have no
 lane: old-map-collection, challenge-1124, chess-map, pie-clock,
 mythical-animals.
 
@@ -137,20 +137,113 @@ are in `public/atlas/PROMPTS.md`. Total 2.9 MB.
 | settlement-hamlet / ruin | 640 | |
 | crown | 256 | flat gold emblem |
 | pennant | 256 | crimson flag on a pole, from a 2:3 render |
-| glow | 512 | RGB on black; draw additively, no alpha |
+| glow | 512 | RGB on black; drawn additively, no alpha |
 
 Approval: every render was shown as a contact sheet; Qaragai was
 regenerated once to remove painted clouds, the glow needed one retry after
 a failed job. The background remover trimmed the settlements' ground
 patches, which suits compositing onto the paintings.
 
-Sprite anchors (for stage 2): islands and glow at the centre; settlements
-at about (0.5, 0.8) of the sprite, where the buildings meet the ground;
-crown at bottom centre; pennant at the pole's foot, bottom left.
+### Deferred from stage 1
 
-### Deferred
-
-- Label collision: the schematic shows crowding on Jailau; stage 2 owns it.
-- Sprite anchors above are estimates; tune in the renderer.
 - `docs/cartographic-roadmap.md` and `docs/experiment-map-prompt.md` were
   untracked on main and are committed here so the branch is self-contained.
+
+## Stage 2: static archipelago, HUD, view switch (done)
+
+### Component tree
+
+```
+App
+  Nav
+  main
+    HomePage (lazy)                 src/pages/HomePage.tsx: map or sheet by view mode
+      AtlasView (lazy chunk)        src/atlas/AtlasView.tsx: owns canvas + rAF loop
+        canvas                      AtlasRenderer, WebGL2
+        AtlasLanes                  SVG arcs, sea lanes gold dashed, roads tan
+        AtlasLabels                 DOM labels, crown and pennant images
+        AtlasHud                    left: compass, weather placeholder, minimap,
+                                    island legend; right: tier legend, Sheet view
+      LandingPage                   unchanged, plus a "Map view" button in the hero
+  AppFooter                         Footer, hidden while the atlas is showing at /
+```
+
+Supporting modules: `assets.ts` (sprite files, anchors, sizes, loader),
+`camera.ts` (Camera, worldToScreen / screenToWorld, fitBounds,
+visibleWorld, the view store), `viewMode.ts` (map or sheet, localStorage,
+defaults), `gl/shaders.ts`, `gl/renderer.ts`, `atlas.css`.
+
+### WebGL
+
+No helper library. Raw WebGL2 in `gl/renderer.ts` (under 300 lines): three
+programs and textured quads were all that was needed, and a dependency
+would have bought abstraction over nothing. Draw order per frame: sea
+(fullscreen shader), island paintings back to front, additive amber glow
+under every lit settlement, settlement sprites back to front. Textures are
+uploaded premultiplied with mipmaps and 4× anisotropy.
+
+The foam is not painted: at start-up the island alphas are drawn into a
+1024² texture covering the unit world (`u_land`), blurred twice
+(`u_coast`), and the sea shader shades a lighter shelf and a noise-broken
+foam band where the coast field is between 0.16 and 0.5 on the water side.
+The sea itself is two octaves of value noise, a broad slow swell at low
+contrast and fine drifting ripples, under a vignette. WebGL2 is required;
+without it the view mode falls back to the sheet and the map never mounts.
+
+`dispose()` frees GPU resources but deliberately does not lose the context:
+hot updates and StrictMode remount the view on the same canvas.
+
+### Coordinates
+
+`src/atlas/camera.ts`: `Camera { x, y, zoom }` is the world point at the
+viewport centre and CSS pixels per world unit. `worldToScreen(camera,
+viewport, x, y)` and `screenToWorld(camera, viewport, x, y)` are the pair
+stage 3 needs; `fitBounds(bounds, viewport, padding)` gives the initial
+camera. `createViewStore` holds camera and viewport outside React; lanes,
+labels and the minimap subscribe and write the DOM directly, so stage 3's
+pan and zoom never re-render the tree. The renderer reads the camera each
+frame and multiplies by devicePixelRatio (capped at 2).
+
+Sprite geometry: an island is a square of half-width `paintingHalfWidth`;
+a settlement sprite is `footprint × 1.25` wide (half) with its anchor at
+0.76 to 0.8 of its height, where the buildings meet the ground; the glow is
+`footprint × 2.1`. Labels hang from the sprite's top edge, or start below
+its bottom edge as a fallback.
+
+### Labels
+
+Greedy placement in two passes on every view change: settlements first
+(capital, then tier, then score), above the sprite or else below, hidden
+when both would overlap something placed; hamlets and ruins only take part
+past 1.5× the fitted zoom. Island names go last and always show, climbing
+in 10px steps over open sea until clear. Titles longer than 30 characters
+are shortened with an ellipsis; the full title is in the element's `title`.
+
+### View switch
+
+`atlas:view` in localStorage, `'map'` or `'sheet'`. With nothing stored the
+default is the map, except: reduced motion, viewport narrower than 640px,
+or no WebGL2, which give the sheet. No WebGL2 also overrides a stored map.
+The default is re-evaluated on resize and motion-preference changes until
+a choice is stored. The "Sheet view" button lives in the right HUD panel;
+"Map view" is a pill at the top right of the landing hero.
+
+### Verified in the browser
+
+Map renders at 1280×656 and 1600×900 with every island, settlement, crown
+and pennant in place; Sheet view and Map view switch both ways and survive
+reload; a 375px viewport with nothing stored opens the sheet; the footer is
+absent in map view and present in sheet view; tsc and `npm run build` are
+clean.
+
+### Deferred from stage 2
+
+- Weather readout shows sample values (−2°C, NW 15 km/h, Astana) until
+  stage 4.
+- The minimap is static; stage 3 makes it clickable and draws the
+  viewport rectangle live (the rectangle already tracks the store).
+- Below 900px the right HUD panel and the island legend are hidden to keep
+  the map clear; a compact mobile HUD is not designed yet.
+- Label placement runs on every store change; it is cheap for 36 labels
+  but stage 3 should throttle it to animation frames while panning.
+- No handling of `webglcontextlost` yet.

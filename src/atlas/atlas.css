@@ -1,0 +1,337 @@
+/*
+ * The atlas view is dark by design and keeps its own palette, so nothing
+ * here reads the site theme tokens: deep navy sea, bone text, thin gold
+ * lines, dark glass panels. Everything is scoped under .atlas-view.
+ */
+
+.atlas-view {
+  --atlas-gold: #d6b66e;
+  --atlas-gold-rgb: 214, 182, 110;
+  --atlas-bone: #ebe1c9;
+  --atlas-bone-dim: rgba(235, 225, 201, 0.68);
+  --atlas-glass: rgba(7, 13, 24, 0.74);
+  --atlas-serif: 'Lora', Georgia, 'Times New Roman', serif;
+
+  position: relative;
+  height: calc(100vh - 4rem);
+  height: calc(100dvh - 4rem);
+  overflow: hidden;
+  background: #071224;
+  color: var(--atlas-bone);
+  color-scheme: dark;
+  font-family: var(--atlas-serif);
+  user-select: none;
+}
+
+.atlas-view canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.atlas-lanes,
+.atlas-labels {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atlas-lanes path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.atlas-lane--sea {
+  stroke: rgba(var(--atlas-gold-rgb), 0.42);
+  stroke-width: 1.2;
+  stroke-dasharray: 6 5;
+}
+
+.atlas-lane--road {
+  stroke: rgba(210, 180, 130, 0.28);
+  stroke-width: 1.6;
+}
+
+/* ---- Labels ---- */
+
+.atlas-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.1;
+  color: var(--atlas-bone);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 0 10px rgba(0, 0, 0, 0.8);
+  will-change: transform;
+  visibility: hidden;
+}
+
+.atlas-label.is-placed {
+  visibility: visible;
+}
+
+.atlas-label--island {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  padding-left: 0.4em; /* balances the trailing letter-spacing */
+  color: #f3ead6;
+}
+
+.atlas-label--fortress {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.atlas-label--walled-town {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.atlas-label--market-town {
+  font-size: 12px;
+}
+
+.atlas-label--hamlet {
+  font-size: 11px;
+  color: rgba(235, 225, 201, 0.9);
+}
+
+.atlas-label--ruin {
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: #aeb7c6;
+}
+
+.atlas-label__text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.atlas-label__crown {
+  display: block;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.atlas-label__pennant {
+  height: 1.15em;
+  width: auto;
+  transform: translateY(0.12em);
+}
+
+/* ---- HUD ---- */
+
+.atlas-hud {
+  position: absolute;
+  bottom: 18px;
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.38);
+  border-radius: 3px;
+  background: var(--atlas-glass);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    0 12px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--atlas-bone);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.atlas-hud--left {
+  left: 18px;
+}
+
+.atlas-hud--right {
+  right: 18px;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.atlas-hud__block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.atlas-hud__divider {
+  width: 1px;
+  background: rgba(var(--atlas-gold-rgb), 0.25);
+}
+
+.atlas-hud__eyebrow {
+  font-size: 9.5px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(var(--atlas-gold-rgb), 0.85);
+}
+
+.atlas-compass {
+  width: 74px;
+  height: 74px;
+}
+
+.atlas-weather {
+  min-width: 96px;
+}
+
+.atlas-weather__icon {
+  width: 26px;
+  height: 26px;
+  color: #bfe3ff;
+}
+
+.atlas-weather__temperature {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.atlas-weather__wind,
+.atlas-weather__place {
+  color: var(--atlas-bone-dim);
+  font-size: 11px;
+}
+
+.atlas-minimap {
+  display: block;
+  width: 168px;
+  height: 118px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
+  border-radius: 2px;
+  background: radial-gradient(ellipse at center, #10233f 0%, #081426 100%);
+}
+
+.atlas-minimap__viewport {
+  fill: rgba(var(--atlas-gold-rgb), 0.08);
+  stroke: var(--atlas-gold);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.atlas-legend {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  align-content: center;
+  font-size: 11px;
+}
+
+.atlas-legend__name {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.atlas-legend__category {
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-tiers {
+  display: grid;
+  grid-template-columns: 34px auto auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 3px;
+  font-size: 11.5px;
+}
+
+.atlas-tiers img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.atlas-tiers__count {
+  color: var(--atlas-bone-dim);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.atlas-button {
+  align-self: stretch;
+  padding: 7px 12px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.55);
+  border-radius: 2px;
+  background: rgba(var(--atlas-gold-rgb), 0.08);
+  color: var(--atlas-bone);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.atlas-button:hover,
+.atlas-button:focus-visible {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.18);
+  outline: none;
+}
+
+/* ---- Status overlays ---- */
+
+.atlas-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #071224;
+  color: var(--atlas-bone-dim);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.atlas-status--error {
+  flex-direction: column;
+  padding: 24px;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .atlas-hud--right {
+    display: none;
+  }
+  .atlas-hud--left {
+    gap: 12px;
+    padding: 10px 12px;
+  }
+  .atlas-legend {
+    display: none;
+  }
+}
