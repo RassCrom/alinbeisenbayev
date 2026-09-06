@@ -57,7 +57,8 @@ const MAX_TITLE = 30;
 
 const TIER_RANK = new Map(TIERS.map((tier, index) => [tier, index]));
 
-export function shortTitle(title: string): string {
+/** Not exported: a non-component export here would defeat Fast Refresh for the whole file. */
+function shortTitle(title: string): string {
   return title.length > MAX_TITLE ? `${title.slice(0, MAX_TITLE - 1).trimEnd()}…` : title;
 }
 
