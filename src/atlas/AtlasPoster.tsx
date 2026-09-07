@@ -56,7 +56,7 @@ export default function AtlasPoster() {
         </nav>
       </div>
       <p className="atlas-poster__note">
-        This browser has no WebGL, so the chart is shown as a still, as of {POSTER_FRAME.asOf}. Every settlement is a
+        This experimental chart needs WebGL, which this browser lacks, so it is shown as a still, as of {POSTER_FRAME.asOf}. Every settlement is a
         link.{' '}
         <button type="button" className="atlas-poster__switch" onClick={() => setViewMode('sheet')}>
           Sheet view

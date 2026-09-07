@@ -895,6 +895,20 @@
   text-align: center;
 }
 
+/* The experiment owns up to being one. Same register as the quality note,
+   but bordered and gold so it reads as a status, not a caption. */
+.atlas-hud__experimental {
+  align-self: center;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold, #c9a227);
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 2px 6px;
+  opacity: 0.85;
+}
+
 /* Dev only: the frame-time readout behind ?atlas-stats. */
 .atlas-stats {
   position: absolute;

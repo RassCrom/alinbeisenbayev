@@ -177,6 +177,12 @@ export default function AtlasHud({
             light rendering
           </span>
         )}
+        <span
+          className="atlas-hud__experimental"
+          title="The atlas is an experiment; the sheet view is the stable face of the site."
+        >
+          experimental
+        </span>
         <button type="button" className="atlas-button" onClick={onSheetView}>
           Sheet view
         </button>
