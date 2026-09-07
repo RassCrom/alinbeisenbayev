@@ -11,6 +11,8 @@ import NotFoundPage from './pages/NotFoundPage';
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const WorksPage = lazy(() => import('./pages/WorksPage'));
 const WorkDetailPage = lazy(() => import('./pages/WorkDetailPage'));
+const StoriesPage = lazy(() => import('./pages/StoriesPage'));
+const StoryDetailPage = lazy(() => import('./pages/StoryDetailPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const SkillsPage = lazy(() => import('./pages/SkillsPage'));
 const ConnectPage = lazy(() => import('./pages/ConnectPage'));
@@ -37,6 +39,8 @@ export default function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/works" element={<WorksPage />} />
             <Route path="/works/:slug" element={<WorkDetailPage />} />
+            <Route path="/stories" element={<StoriesPage />} />
+            <Route path="/stories/:slug" element={<StoryDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/skills" element={<SkillsPage />} />
             <Route path="/connect" element={<ConnectPage />} />

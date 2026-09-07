@@ -12,11 +12,13 @@ import path from 'node:path';
 const ORIGIN = 'https://alinbeisenbayev.com';
 const PROJECTS_DIR = 'src/data/projects';
 const BLOG_DIR = 'src/content/blog';
+const STORIES_FILE = 'src/data/stories.json';
 
 /** Static routes, with the priority each deserves relative to the homepage. */
 const STATIC_ROUTES = [
   ['/', 1.0],
   ['/works', 0.9],
+  ['/stories', 0.8],
   ['/about', 0.8],
   ['/skills', 0.7],
   ['/blog', 0.7],
@@ -55,6 +57,8 @@ function lastmod(value) {
   return match ? `${match[1]}-${match[2]}-01` : null;
 }
 
+const stories = JSON.parse(fs.readFileSync(STORIES_FILE, 'utf8')).stories;
+
 const urls = [
   ...STATIC_ROUTES.map(([loc, priority]) => ({ loc, priority })),
   ...projects.map((p) => ({
@@ -62,6 +66,7 @@ const urls = [
     priority: p.featured ? 0.8 : 0.6,
     lastmod: lastmod(p.endDate) ?? lastmod(p.startDate),
   })),
+  ...stories.map((st) => ({ loc: `/stories/${st.slug}`, priority: 0.7, lastmod: lastmod(st.date) })),
   ...articles.map((a) => ({ loc: `/blog/${a.slug}`, priority: 0.6, lastmod: lastmod(a.date) })),
 ];
 
@@ -88,5 +93,5 @@ ${body}
 fs.writeFileSync('public/sitemap.xml', xml);
 console.log(
   `public/sitemap.xml — ${urls.length} URLs ` +
-    `(${STATIC_ROUTES.length} static, ${projects.length} works, ${articles.length} posts)`,
+    `(${STATIC_ROUTES.length} static, ${projects.length} works, ${stories.length} stories, ${articles.length} posts)`,
 );

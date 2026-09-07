@@ -9,8 +9,9 @@ const DRAWER_SOCIALS = socials.filter(
   (s) => s.featured && s.platform !== 'CV' && s.platform !== 'GitHub',
 );
 
-const NAV_LINKS = [
+export const NAV_LINKS = [
   { to: '/works', label: 'Works' },
+  { to: '/stories', label: 'Stories' },
   { to: '/about', label: 'About' },
   { to: '/skills', label: 'Skills' },
   { to: '/blog', label: 'Blog' },

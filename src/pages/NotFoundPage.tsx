@@ -96,6 +96,9 @@ export default function NotFoundPage() {
             <Link to="/works" className="btn btn-primary">
               Browse the works
             </Link>
+            <Link to="/stories" className="btn btn-secondary">
+              Read the stories
+            </Link>
             <Link to="/" className="btn btn-secondary">
               Back to start
             </Link>

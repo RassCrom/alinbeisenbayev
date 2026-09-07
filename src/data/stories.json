@@ -1,0 +1,79 @@
+{
+  "stories": [
+    {
+      "id": "story-heat-stress-vienna",
+      "slug": "heat-stress-vienna",
+      "title": "Heat Stress in Vienna",
+      "dek": "How summer heat settles unevenly over Vienna — and an experiment in whether a scrolling map holds a reader long enough to care.",
+      "byline": ["Alikhan Beisenbayev"],
+      "date": "2026-07",
+      "format": "scrollytelling",
+      "subject": ["Vienna", "urban heat", "climate"],
+      "coverImage": "/images/projects/heat-stress-vienna/sth-vienna-hero-img.webp",
+      "url": "https://sth-vienna.vercel.app/",
+      "external": true,
+      "award": "MSc thesis — TU München / TU Wien, Erasmus Mundus",
+      "workSlug": "heat-stress-vienna"
+    },
+    {
+      "id": "story-ignition-points-kz",
+      "slug": "ignition-points-kazakhstan",
+      "title": "Dynamics of Ignition Points in Kazakhstan, 2001–2024",
+      "dek": "Twenty-four years of satellite fire detections, read for where and when the steppe burns.",
+      "byline": ["Alikhan Beisenbayev"],
+      "date": "2026-01",
+      "format": "report",
+      "subject": ["Kazakhstan", "wildfire", "remote sensing"],
+      "coverImage": "/images/placeholder.jpg",
+      "url": "https://karasugis.notion.site/Dynamics-of-Wildfires-in-Kazakhstan-2001-2024-Spatial-Temporal-Patterns-and-Risk-Factors-v2-1c2a7211489880a49e4be5197158a566?source=copy_link",
+      "external": true,
+      "sources": ["NASA FIRMS (MODIS, VIIRS)"],
+      "workSlug": "ignition-point-analysis"
+    },
+    {
+      "id": "story-alash-orda",
+      "slug": "alash-orda",
+      "title": "Alash Orda",
+      "dek": "The short life of Kazakhstan's first national government, 1917–1920, mapped across the steppe it tried to hold.",
+      "byline": ["Alikhan Beisenbayev"],
+      "date": "2025-05",
+      "format": "scrollytelling",
+      "subject": ["Kazakhstan", "history"],
+      "coverImage": "/images/projects/alash-orda/preview.webp",
+      "url": "https://rasscrom.github.io/alash-orda/",
+      "external": true,
+      "workSlug": "alash-orda"
+    },
+    {
+      "id": "story-tigranes",
+      "slug": "tigranes-the-greatest",
+      "title": "Tigranes the Greatest",
+      "dek": "Hemmed in by stronger neighbours on every side, Tigranes II built one of the largest empires in Asian history — and held it for barely a generation.",
+      "byline": ["Alikhan Beisenbayev", "Tolegen"],
+      "date": "2025-03",
+      "format": "scrollytelling",
+      "subject": ["Armenia", "history", "empire"],
+      "coverImage": "/images/projects/tigranes-the-greatest/peak.webp",
+      "url": "https://tigranes-great.netlify.app/",
+      "external": true,
+      "award": "Armenia Open Data Contest 2025 — 1st place",
+      "sources": ["Academic sources and historical atlases"],
+      "workSlug": "tigranes-the-greatest"
+    },
+    {
+      "id": "story-armenia-energy",
+      "slug": "armenia-energy",
+      "title": "Armenia's Energy Profile",
+      "dek": "Where Armenia's electricity comes from today, and how much of it the country could draw from renewables instead.",
+      "byline": ["Alikhan Beisenbayev"],
+      "date": "2024-03",
+      "format": "scrollytelling",
+      "subject": ["Armenia", "energy", "renewables"],
+      "coverImage": "/images/projects/armenia-energy/preview.webp",
+      "url": "https://rasscrom.github.io/armenia-energy/",
+      "external": true,
+      "award": "Armenia Open Data Contest 2024 — 3rd place",
+      "workSlug": "armenia-energy"
+    }
+  ]
+}

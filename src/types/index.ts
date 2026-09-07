@@ -134,6 +134,54 @@ export interface ProjectsData {
   projects: Project[];
 }
 
+/* ---- src/data/stories.json ---- */
+
+/**
+ * A published piece — a reportage, a report, a map essay. Distinct from a
+ * /works entry, which is the case study *about* making one: a reader opens a
+ * story for its subject, and a work page for evidence about its author. The
+ * same project can have both, linked by `workSlug`.
+ *
+ * Not to be confused with `StoryPoint` / `StoryType` below, which belong to
+ * about-story.json and describe a stop on the About globe.
+ */
+export type StoryFormat = 'scrollytelling' | 'report' | 'map essay';
+
+export interface Story {
+  id: string;
+  /** Reserved for the eventual /stories/:slug route; today it is the React key. */
+  slug: string;
+  title: string;
+  /** Standfirst — one sentence on what the piece is about, in the reader's terms. */
+  dek: string;
+  /** Signed work, unlike a case study. Every author, in running order. */
+  byline: string[];
+  /** YYYY-MM of publication, not of the build. */
+  date: string;
+  format: StoryFormat;
+  /** What it is about — subjects, not tools. */
+  subject: string[];
+  coverImage: string;
+  /**
+   * Where the piece reads. Every one of these is on someone else's domain
+   * today; when a piece is authored in-repo this becomes a local path and
+   * `external` goes false, which drops the arrow and the new-tab target.
+   */
+  url: string;
+  external: boolean;
+  award?: string;
+  /** Provenance, printed on the card. Omitted rather than guessed. */
+  sources?: string[];
+  /** Slug of the /works case study on how it was made. */
+  workSlug?: string;
+  /** Slugs of /blog articles covering the method. */
+  postSlugs?: string[];
+}
+
+export interface StoriesData {
+  stories: Story[];
+}
+
 /* ---- about-story.json ---- */
 
 export type StoryType = 'origin' | 'education' | 'work' | 'award' | 'life' | 'move';

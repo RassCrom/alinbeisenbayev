@@ -6,6 +6,10 @@ export interface ArticleFrontmatter {
   excerpt: string;
   cover?: string;
   tags?: string[];
+  /** Slug of the /works project this article is the method notes for. */
+  workSlug?: string;
+  /** Slug of the /stories piece this article is the method notes for. */
+  storySlug?: string;
   draft?: boolean;
   hidden?: boolean;
 }

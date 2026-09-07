@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import socialsData from '../../data/socials.json';
+import { NAV_LINKS } from '../Nav/Nav';
 import aboutData from '../../data/about-story.json';
 import type { SocialsData, AboutStoryData } from '../../types';
 
@@ -10,7 +12,17 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)]">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-[var(--space-4)] px-[var(--space-6)] py-[var(--space-10)] sm:flex-row sm:justify-between">
+      <nav
+        aria-label="Footer"
+        className="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-[var(--space-6)] gap-y-[var(--space-2)] px-[var(--space-6)] pt-[var(--space-8)] sm:justify-start"
+      >
+        {NAV_LINKS.map((link) => (
+          <Link key={link.to} to={link.to} className="mono-label transition-colors hover:text-[var(--color-text-primary)]">
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-[var(--space-4)] px-[var(--space-6)] pb-[var(--space-10)] pt-[var(--space-6)] sm:flex-row sm:justify-between">
         <p className="font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
           © {new Date().getFullYear()} {profile.name}
         </p>

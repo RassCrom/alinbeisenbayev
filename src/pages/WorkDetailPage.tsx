@@ -9,6 +9,9 @@ import { projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
 import NotFoundPage from './NotFoundPage';
 import SourceNote from '../components/SourceNote/SourceNote';
+import StoryCallout from '../components/StoryCallout/StoryCallout';
+import { storyForWork } from '../data/stories';
+import { articles } from '../content/blog';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -75,6 +78,17 @@ export default function WorkDetailPage() {
   // An unknown slug is a miss like any other — same sheet, same noindex.
   if (!project) return <NotFoundPage />;
 
+  /*
+   * The published piece this case study is about, if there is one. It takes
+   * over from the 'View Live' button below: on every project that has a story,
+   * liveUrl pointed at exactly the same URL, so the two would have been one
+   * destination described twice.
+   */
+  const story = storyForWork(project.slug);
+  // Articles that walk through this project's method, declared on the article
+  // side (frontmatter.workSlug) so a post can attach itself to a project
+  // without touching the project data.
+  const methodNotes = articles.filter((a) => a.frontmatter.workSlug === project.slug);
   const year = project.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
   const award = project.awards[0];
 
@@ -178,7 +192,7 @@ export default function WorkDetailPage() {
 
         {/* CTA buttons */}
         <div className="mt-[var(--space-4)] flex flex-wrap gap-[var(--space-3)]">
-          {project.liveUrl && project.type === 'website' && (
+          {project.liveUrl && project.type === 'website' && !story && (
             <a href={project.liveUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
               View Live ↗
             </a>
@@ -189,6 +203,8 @@ export default function WorkDetailPage() {
             </a>
           )}
         </div>
+
+        {story && <StoryCallout story={story} />}
 
         {/* Context — blockquote style */}
         {project.context && (
@@ -296,6 +312,29 @@ export default function WorkDetailPage() {
             </Section>
           )}
           <SourceNote project={project} />
+        </div>
+      )}
+
+      {/* Method notes — the blog side of this work. */}
+      {methodNotes.length > 0 && (
+        <div className='mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-16)]'>
+          <Section eyebrow='From the blog' heading='Method notes'>
+            <ul className='flex flex-col gap-[var(--space-4)]'>
+              {methodNotes.map((note) => (
+                <li key={note.slug}>
+                  <Link
+                    to={`/blog/${note.slug}`}
+                    className='font-[family-name:var(--font-heading)] text-[length:var(--text-base)] font-bold text-[var(--color-accent-light)] transition-colors hover:text-[var(--color-text-primary)]'
+                  >
+                    {note.frontmatter.title} →
+                  </Link>
+                  <p className='mt-[var(--space-1)] font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]'>
+                    {note.frontmatter.excerpt}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </Section>
         </div>
       )}
 

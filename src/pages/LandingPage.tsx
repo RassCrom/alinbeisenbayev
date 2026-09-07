@@ -1,6 +1,8 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import WorkCard from '../components/WorkCard/WorkCard';
+import StoryCard from '../components/StoryCard/StoryCard';
+import { stories } from '../data/stories';
 import { projects } from '../data/projects';
 import aboutData from '../data/about-story.json';
 import socialsData from '../data/socials.json';
@@ -42,6 +44,8 @@ export default function LandingPage() {
         (b.featuredOrder ?? Number.MAX_SAFE_INTEGER),
     )
     .slice(0, 6);
+  // Newest three. `stories` is already sorted newest-first.
+  const latestStories = stories.slice(0, 3);
   const heroSocials = socials.filter((s) => s.featured && s.platform !== 'CV');
   const worksSectionRef = useRef<HTMLElement>(null);
   const originCoord = story[6]?.location;
@@ -154,6 +158,36 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* Latest stories — the published pieces, as opposed to the case studies
+          above. The strongest recruiter bait on the site, so it does not live
+          only behind a nav item. */}
+      {latestStories.length > 0 && (
+        <section className="border-t border-[var(--color-border-subtle)]">
+          <div className="mx-auto max-w-6xl px-[var(--space-6)] py-[var(--space-24)]">
+            <div className="flex flex-wrap items-baseline justify-between gap-[var(--space-4)]">
+              <div>
+                <h2 className="heading-section">Stories</h2>
+                <p className="mt-[var(--space-2)] max-w-xl font-[family-name:var(--font-body)] text-[length:var(--text-base)] text-[var(--color-text-secondary)]">
+                  Scroll-driven map narratives, reports and map essays — read for the subject, not
+                  the making.
+                </p>
+              </div>
+              <Link
+                to="/stories"
+                className="font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] text-[var(--color-accent-light)] transition-colors hover:text-[var(--color-text-primary)]"
+              >
+                All stories →
+              </Link>
+            </div>
+            <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-3">
+              {latestStories.map((item) => (
+                <StoryCard key={item.id} story={item} headingLevel="h3" />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </>
   );
 }

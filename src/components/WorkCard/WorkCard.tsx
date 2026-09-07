@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
+import { storyForWork } from '../../data/stories';
 
 export interface WorkCardProps {
   id: string;
@@ -33,6 +34,9 @@ export default function WorkCard({
   index,
   large = false,
 }: WorkCardProps) {
+  // Looked up here rather than passed in: three call sites render this card,
+  // and a badge that one of them forgot to wire would be worse than none.
+  const story = storyForWork(slug);
   const cardRef = useRef<HTMLAnchorElement>(null);
   const reducedMotionRef = useRef<boolean | null>(null);
 
@@ -165,6 +169,11 @@ export default function WorkCard({
             </span>
           )}
         </div>
+        {story && (
+          <span className="absolute bottom-[var(--space-3)] right-[var(--space-3)] rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-light)]">
+            Published {story.format}
+          </span>
+        )}
         {status === 'in-progress' && (
           <span className="absolute bottom-[var(--space-3)] left-[var(--space-3)] rounded-[var(--radius-sm)] bg-[var(--color-accent-glow)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-light)]">
             In Progress
