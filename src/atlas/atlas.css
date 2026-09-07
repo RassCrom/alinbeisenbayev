@@ -1,0 +1,908 @@
+/*
+ * The atlas view is dark by design and keeps its own palette, so nothing
+ * here reads the site theme tokens: deep navy sea, bone text, thin gold
+ * lines, dark glass panels. Everything is scoped under .atlas-view.
+ */
+
+.atlas-view {
+  --atlas-gold: #d6b66e;
+  --atlas-gold-rgb: 214, 182, 110;
+  --atlas-bone: #ebe1c9;
+  --atlas-bone-dim: rgba(235, 225, 201, 0.68);
+  --atlas-glass: rgba(7, 13, 24, 0.74);
+  --atlas-serif: 'Lora', Georgia, 'Times New Roman', serif;
+
+  position: relative;
+  height: calc(100vh - 4rem);
+  height: calc(100dvh - 4rem);
+  overflow: hidden;
+  background: #071224;
+  color: var(--atlas-bone);
+  color-scheme: dark;
+  font-family: var(--atlas-serif);
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+  outline: none;
+}
+
+.atlas-view:active {
+  cursor: grabbing;
+}
+
+.atlas-view:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(var(--atlas-gold-rgb), 0.6);
+}
+
+.atlas-view canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.atlas-lanes,
+.atlas-labels {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atlas-lanes path {
+  fill: none;
+  stroke-linecap: round;
+  transition:
+    opacity 260ms ease,
+    stroke 260ms ease,
+    stroke-width 260ms ease;
+}
+
+.atlas-lane--sea {
+  stroke: rgba(var(--atlas-gold-rgb), 0.42);
+  stroke-width: 1.2;
+  stroke-dasharray: 6 5;
+}
+
+.atlas-lane--road {
+  stroke: rgba(210, 180, 130, 0.28);
+  stroke-width: 1.6;
+}
+
+.atlas-lanes path.is-lit {
+  stroke: rgba(var(--atlas-gold-rgb), 0.95);
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 4px rgba(var(--atlas-gold-rgb), 0.85));
+}
+
+.atlas-lanes path.is-dim {
+  opacity: 0.3;
+}
+
+/* ---- Labels ---- */
+
+.atlas-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.1;
+  color: var(--atlas-bone);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 0 10px rgba(0, 0, 0, 0.8);
+  will-change: transform;
+  visibility: hidden;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.atlas-label.is-placed {
+  visibility: visible;
+}
+
+.atlas-label__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: transform 220ms ease;
+  transform-origin: 50% 100%;
+}
+
+.atlas-label.is-active {
+  z-index: 2;
+  color: #fff6e1;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 0 14px rgba(var(--atlas-gold-rgb), 0.55);
+}
+
+.atlas-label.is-active .atlas-label__inner {
+  transform: translateY(-7px) scale(1.12);
+}
+
+.atlas-label--island {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  padding-left: 0.4em; /* balances the trailing letter-spacing */
+  color: #f3ead6;
+}
+
+.atlas-label--island:hover {
+  color: #fff6e1;
+}
+
+.atlas-label--fortress {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.atlas-label--walled-town {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.atlas-label--market-town {
+  font-size: 12px;
+}
+
+.atlas-label--hamlet {
+  font-size: 11px;
+  color: rgba(235, 225, 201, 0.9);
+}
+
+.atlas-label--ruin {
+  font-size: 11px;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: #aeb7c6;
+}
+
+.atlas-label__text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.atlas-label__crown {
+  display: block;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.atlas-label__pennant {
+  height: 1.15em;
+  width: auto;
+  transform: translateY(0.12em);
+}
+
+/* ---- Ring and card ---- */
+
+.atlas-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 1.5px solid var(--atlas-gold);
+  border-radius: 50%;
+  box-shadow:
+    0 0 14px rgba(var(--atlas-gold-rgb), 0.55),
+    inset 0 0 18px rgba(var(--atlas-gold-rgb), 0.22);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  will-change: transform;
+}
+
+.atlas-ring.is-on {
+  opacity: 1;
+}
+
+.atlas-tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  overflow: hidden;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.55);
+  border-radius: 3px;
+  background: var(--atlas-glass);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 16px 40px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--atlas-bone);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 160ms ease;
+  will-change: transform;
+}
+
+.atlas-tooltip.is-on {
+  opacity: 1;
+}
+
+.atlas-tooltip::before,
+.atlas-tooltip::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--atlas-gold);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.atlas-tooltip::before {
+  top: 4px;
+  left: 4px;
+  border-width: 1px 0 0 1px;
+}
+
+.atlas-tooltip::after {
+  right: 4px;
+  bottom: 4px;
+  border-width: 0 1px 1px 0;
+}
+
+.atlas-tooltip__cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
+}
+
+.atlas-tooltip__body {
+  padding: 12px 14px 14px;
+}
+
+.atlas-tooltip__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f3ead6;
+}
+
+.atlas-tooltip__tagline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  margin: 6px 0 0;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-tooltip__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.atlas-pill {
+  padding: 2px 9px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.55);
+  border-radius: 999px;
+  background: rgba(var(--atlas-gold-rgb), 0.08);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--atlas-gold);
+}
+
+.atlas-pill--award {
+  background: rgba(var(--atlas-gold-rgb), 0.2);
+}
+
+.atlas-tooltip__hint {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
+}
+
+/* ---- Screen-reader list ---- */
+
+.atlas-sr-list {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.atlas-sr-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- HUD ---- */
+
+.atlas-hud {
+  position: absolute;
+  bottom: 18px;
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.38);
+  border-radius: 3px;
+  background: var(--atlas-glass);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    0 12px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--atlas-bone);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: default;
+}
+
+.atlas-hud--left {
+  left: 18px;
+}
+
+.atlas-hud--right {
+  right: 18px;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.atlas-hud__block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.atlas-hud__divider {
+  width: 1px;
+  background: rgba(var(--atlas-gold-rgb), 0.25);
+}
+
+.atlas-hud__eyebrow {
+  font-size: 9.5px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(var(--atlas-gold-rgb), 0.85);
+}
+
+.atlas-compass {
+  width: 74px;
+  height: 74px;
+}
+
+.atlas-weather {
+  min-width: 150px;
+  max-width: 190px;
+}
+
+.atlas-weather__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.atlas-weather__preview select {
+  padding: 3px 6px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.4);
+  border-radius: 2px;
+  background: rgba(7, 13, 24, 0.85);
+  color: var(--atlas-bone);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.atlas-weather__preview select:focus-visible {
+  outline: 1px solid var(--atlas-gold);
+  outline-offset: 1px;
+}
+
+.atlas-moon {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 0 12px rgba(235, 225, 201, 0.35));
+  pointer-events: none;
+}
+
+.atlas-weather__icon {
+  width: 26px;
+  height: 26px;
+  color: #bfe3ff;
+}
+
+.atlas-weather__temperature {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.atlas-weather__wind,
+.atlas-weather__place {
+  color: var(--atlas-bone-dim);
+  font-size: 11px;
+}
+
+.atlas-weather__place {
+  font-style: italic;
+}
+
+.atlas-minimap {
+  display: block;
+  width: 168px;
+  height: 118px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
+  border-radius: 2px;
+  background: radial-gradient(ellipse at center, #10233f 0%, #081426 100%);
+  cursor: crosshair;
+}
+
+.atlas-minimap__viewport {
+  fill: rgba(var(--atlas-gold-rgb), 0.08);
+  stroke: var(--atlas-gold);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.atlas-surveyed {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-legend {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  align-content: center;
+  font-size: 11px;
+}
+
+.atlas-legend__name {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.atlas-legend__category {
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-tiers {
+  display: grid;
+  grid-template-columns: 34px auto auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 3px;
+  font-size: 11.5px;
+}
+
+.atlas-tiers img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.atlas-tiers__count {
+  color: var(--atlas-bone-dim);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.atlas-button {
+  align-self: stretch;
+  padding: 7px 12px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.55);
+  border-radius: 2px;
+  background: rgba(var(--atlas-gold-rgb), 0.08);
+  color: var(--atlas-bone);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.atlas-button:hover,
+.atlas-button:focus-visible {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.18);
+  outline: none;
+}
+
+/* ---- Status overlays ---- */
+
+.atlas-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #071224;
+  color: var(--atlas-bone-dim);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.atlas-status--error {
+  flex-direction: column;
+  padding: 24px;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .atlas-hud--right {
+    display: none;
+  }
+  .atlas-hud--left {
+    gap: 12px;
+    padding: 10px 12px;
+  }
+  .atlas-legend {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-lanes path,
+  .atlas-label__inner,
+  .atlas-ring,
+  .atlas-tooltip,
+  .atlas-button {
+    transition: none;
+  }
+}
+
+/* ---- Stage 5: highlight rings, trade goods, the arrival ---- */
+
+/* Rings and the card share one layer; only the card takes the pointer. */
+.atlas-focus {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.atlas-focus .atlas-tooltip {
+  pointer-events: auto;
+}
+
+.atlas-goods {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 236px;
+}
+
+.atlas-goods__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.atlas-good {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 8px 3px 9px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
+  border-radius: 999px;
+  background: rgba(var(--atlas-gold-rgb), 0.06);
+  color: var(--atlas-bone);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.atlas-good__count {
+  font-size: 9.5px;
+  color: rgba(var(--atlas-gold-rgb), 0.85);
+}
+
+.atlas-good:hover,
+.atlas-good:focus-visible {
+  border-color: rgba(var(--atlas-gold-rgb), 0.85);
+  background: rgba(var(--atlas-gold-rgb), 0.16);
+  outline: none;
+}
+
+.atlas-good.is-pinned {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.28);
+  color: #fff6e0;
+}
+
+.atlas-good.is-pinned .atlas-good__count {
+  color: #fff6e0;
+}
+
+/* The first-visit flight: the panels and the moon fade in as the camera lands. */
+.atlas-hud,
+.atlas-moon {
+  transition: opacity 1100ms ease;
+}
+
+.atlas-hud.is-arriving,
+.atlas-moon.is-arriving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Lanes and labels wait for the landing too; the veil alone carries the descent. */
+.atlas-view.is-arriving .atlas-lanes,
+.atlas-view.is-arriving .atlas-labels {
+  opacity: 0;
+  transition: none;
+}
+
+.atlas-lanes,
+.atlas-labels {
+  transition: opacity 1100ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-hud,
+  .atlas-moon,
+  .atlas-good {
+    transition: none;
+  }
+}
+
+/* ---- Stage 6: the chronicle slider ---- */
+
+.atlas-hud--chronicle {
+  top: 18px;
+  left: 18px;
+  bottom: auto;
+  flex-direction: column;
+  gap: 6px;
+  width: min(376px, calc(100% - 36px));
+  padding: 10px 16px 12px;
+}
+
+.atlas-chronicle__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.atlas-chronicle__date {
+  font-family: var(--atlas-serif);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: #f2e9d3;
+}
+
+.atlas-chronicle__lock {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--atlas-bone-dim);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.atlas-chronicle__lock:hover,
+.atlas-chronicle__lock:focus-visible {
+  color: var(--atlas-bone);
+  border-color: rgba(var(--atlas-gold-rgb), 0.8);
+  outline: none;
+}
+
+.atlas-chronicle__lock.is-on {
+  color: #fff6e0;
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.28);
+}
+
+.atlas-chronicle__track {
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.atlas-chronicle__track input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.atlas-chronicle__track input[type='range']:focus-visible {
+  outline: none;
+}
+
+.atlas-chronicle__track input[type='range']::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, rgba(var(--atlas-gold-rgb), 0.25), rgba(var(--atlas-gold-rgb), 0.7));
+}
+
+.atlas-chronicle__track input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  margin-top: -5.5px;
+  border: 1.5px solid #0a1424;
+  border-radius: 50%;
+  background: var(--atlas-gold);
+  box-shadow: 0 0 10px rgba(var(--atlas-gold-rgb), 0.6);
+}
+
+.atlas-chronicle__track input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 3px rgba(var(--atlas-gold-rgb), 0.35),
+    0 0 10px rgba(var(--atlas-gold-rgb), 0.6);
+}
+
+.atlas-chronicle__track input[type='range']::-moz-range-track {
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, rgba(var(--atlas-gold-rgb), 0.25), rgba(var(--atlas-gold-rgb), 0.7));
+}
+
+.atlas-chronicle__track input[type='range']::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #0a1424;
+  border-radius: 50%;
+  background: var(--atlas-gold);
+  box-shadow: 0 0 10px rgba(var(--atlas-gold-rgb), 0.6);
+}
+
+.atlas-chronicle__ticks {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 0;
+  height: 14px;
+}
+
+.atlas-chronicle__ticks span {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-chronicle__ticks span::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  width: 1px;
+  height: 4px;
+  background: rgba(var(--atlas-gold-rgb), 0.5);
+}
+
+.atlas-chronicle__count {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--atlas-bone-dim);
+}
+
+@media (max-width: 900px) {
+  .atlas-hud--chronicle {
+    width: calc(100% - 36px);
+    padding: 8px 12px 10px;
+  }
+}
+
+/* ---- Stage 7: sound, export, quality ---- */
+
+.atlas-hud__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.atlas-button--quiet {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  opacity: 0.85;
+}
+
+.atlas-button--quiet.is-on {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.22);
+  opacity: 1;
+}
+
+.atlas-button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.atlas-hud__quality {
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
+  text-align: center;
+}
+
+/* Dev only: the frame-time readout behind ?atlas-stats. */
+.atlas-stats {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 9;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffe9a8;
+  font: 600 14px/1.2 monospace;
+}

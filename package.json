@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "atlas:print": "node scripts/print-atlas.ts"
   },
   "dependencies": {
     "maplibre-gl": "^4",

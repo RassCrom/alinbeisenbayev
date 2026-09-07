@@ -12,6 +12,7 @@ import SourceNote from '../components/SourceNote/SourceNote';
 import StoryCallout from '../components/StoryCallout/StoryCallout';
 import { storyForWork } from '../data/stories';
 import { articles } from '../content/blog';
+import { markSurveyed } from '../atlas/fog';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -74,6 +75,14 @@ export default function WorkDetailPage() {
   // Before the not-found branch — hooks can't sit behind a conditional return.
   // NotFoundPage sets its own title/robots when it renders, so skip ours then.
   usePageMeta(project?.title, project?.tagline, { enabled: Boolean(project) });
+
+  // Reading a sheet surveys its settlement on the atlas, however you got here.
+  useEffect(() => {
+    if (project) markSurveyed(project.slug);
+    // A hash link lands on its section once the lazy page has mounted; the router does not do this itself.
+    const anchor = window.location.hash.slice(1);
+    if (anchor) document.getElementById(anchor)?.scrollIntoView({ block: 'start' });
+  }, [project]);
 
   // An unknown slug is a miss like any other — same sheet, same noindex.
   if (!project) return <NotFoundPage />;

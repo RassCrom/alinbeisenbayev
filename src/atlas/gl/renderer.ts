@@ -1,0 +1,658 @@
+import type { AmbientPlan, LifeSim } from '../ambient.ts';
+import {
+  BOAT_SPRITE,
+  GLOW_SCALE,
+  GLOW_SPRITE,
+  GULL_SPRITE,
+  LIGHTHOUSE_SPRITE,
+  SETTLEMENT_SPRITES,
+  SETTLEMENT_SPRITE_SCALE,
+  WINDMILL_SAILS_SPRITE,
+  WINDMILL_TOWER_SPRITE,
+  islandSprite,
+} from '../assets.ts';
+import { TIER_FOOTPRINT } from '../config.ts';
+import type { Tier } from '../types.ts';
+import type { Camera } from '../camera.ts';
+import { paintingHalfWidth } from '../layout.ts';
+import type { Atlas, Island, Settlement } from '../types.ts';
+import type { WeatherLook } from '../weather/sim.ts';
+import {
+  BLUR_FRAG,
+  DIM_FRAG,
+  FOG_FRAG,
+  FULLSCREEN_VERT,
+  MAX_REVEALS,
+  SEA_FRAG,
+  SPRITE_FRAG,
+  SPRITE_VERT,
+} from './shaders.ts';
+import { GRADE_FRAG, SKY_FRAG, SNOW_FRAG } from './weatherShaders.ts';
+
+/*
+ * The WebGL2 layer: one canvas, drawn in order every frame.
+ *
+ *    1. sea          fullscreen shader: waves, shelf, foam, sea ice, sun glints
+ *    2. islands      paintings, back to front by y, tinted for the season
+ *    3. snow         lying snow on the land, from the snow-cover memory
+ *    4. glow         additive amber under every lit settlement, strongest at night
+ *    5. settlements  sprites by tier, back to front by y
+ *    6. landmarks    lighthouses, windmill towers and their turning sails
+ *    7. life         boats and their wakes, chimney smoke, gulls
+ *    8. dim          while something is highlighted: darken everything, then
+ *                    draw the highlighted settlements again on top
+ *    9. grade        multiply: day, twilight and night tint, cloud shadows
+ *   10. sky          clouds, fog haze, rain or snow, lightning
+ *   11. beams        the lighthouse beams, additive, at night
+ *   12. fog          fog of war, torn open around surveyed settlements
+ *
+ * Raw WebGL2 rather than a helper library: the needs are a handful of small
+ * programs and textured quads. The stage prompt allowed one small helper;
+ * none was needed.
+ *
+ * Textures are uploaded premultiplied, so normal blending is
+ * (ONE, ONE_MINUS_SRC_ALPHA), the glow (an RGB image on black) adds with
+ * (ONE, ONE), and the grade multiplies with (DST_COLOR, ZERO). The smoke
+ * puff, wake and beam textures are drawn on a canvas at start-up. The land
+ * mask is baked at start-up into an offscreen texture covering the unit
+ * world, blurred twice for the coast field and twice more, wider, for the
+ * shelf, and handed to the sea, snow and fog shaders.
+ */
+
+const MASK_SIZE = 1024;
+/** Blur step in mask texels; two passes give a coast field a few texels wide. */
+const BLUR_STEP = 1.6;
+/** The shelf blur is wider: the shallows reach a good way out from the shore. */
+const SHELF_STEP = 7.0;
+/** How much the rest of the map darkens under a highlight. */
+const DIM_ALPHA = 0.3;
+const GLOW_ALPHA = 0.38;
+/** A highlighted settlement's glow, as a multiple of the resting glow. */
+const HOVER_GLOW = 1.9;
+/** Cloud drift in world units per second per km/h; exaggerated so it reads. */
+const DRIFT_PER_KMH = 0.00035;
+
+const PUFF_TEXTURE = 'generated:puff';
+const BEAM_TEXTURE = 'generated:beam';
+
+/** Everything that changes from frame to frame besides the camera. */
+/** A settlement's look on the chronicle's month, cross-fading between tiers. */
+export interface SpriteState {
+  tier: Tier;
+  /** The tier being faded out, until `blend` reaches 1. */
+  prevTier: Tier | null;
+  blend: number;
+  /** 0 absent, 1 present; eased so settlements fade in and out of existence. */
+  presence: number;
+}
+
+export interface FrameState {
+  /** Per-settlement states while a date is scrubbed or the map is settling back; null draws today. */
+  chronicle: ReadonlyMap<string, SpriteState> | null;
+  /** Settlements drawn again on top of the dim, and how far the effect has faded in. */
+  highlights: readonly string[];
+  highlightStrength: number;
+  /** x, y, radius triplets in world units; the first `revealCount` are drawn. */
+  reveals: Float32Array;
+  revealCount: number;
+  /** Overall fog-of-war opacity, 0 to 1. */
+  fog: number;
+  /** The blended weather look; see weather/sim.ts. */
+  weather: WeatherLook;
+  /** Seconds the weather animates on; frozen under reduced motion. */
+  weatherTime: number;
+  /** Where the cloud field has drifted to, in world units, accumulated by the caller. */
+  driftX: number;
+  driftY: number;
+  /** Extra haze during the intro fly-in, 0 to 1. */
+  veil: number;
+  /** Ambient life to draw, or null for none. */
+  life: LifeSim | null;
+  plan: AmbientPlan | null;
+}
+
+interface Program {
+  program: WebGLProgram;
+  uniforms: Map<string, WebGLUniformLocation | null>;
+}
+
+export class AtlasRenderer {
+  private readonly gl: WebGL2RenderingContext;
+  private readonly sea: Program;
+  private readonly sprite: Program;
+  private readonly blur: Program;
+  private readonly dim: Program;
+  private readonly fog: Program;
+  private readonly snow: Program;
+  private readonly grade: Program;
+  private readonly sky: Program;
+  private readonly quad: WebGLVertexArrayObject;
+  private readonly empty: WebGLVertexArrayObject;
+  private readonly textures = new Map<string, WebGLTexture>();
+  private readonly landTexture: WebGLTexture;
+  private readonly coastTexture: WebGLTexture;
+  private readonly shelfTexture: WebGLTexture;
+  private readonly islands: Island[];
+  private readonly settlements: Settlement[];
+  private readonly bySlug: Map<string, Settlement>;
+  private readonly revealBuffer = new Float32Array(MAX_REVEALS * 3);
+  private width = 1;
+  private height = 1;
+  private disposed = false;
+
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
+    atlas: Atlas,
+    images: ReadonlyMap<string, HTMLImageElement>,
+  ) {
+    const gl = canvas.getContext('webgl2', { alpha: false, antialias: false, premultipliedAlpha: true });
+    if (!gl) throw new Error('WebGL2 is not available');
+    this.gl = gl;
+
+    this.sea = createProgram(gl, FULLSCREEN_VERT, SEA_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_coast', 'u_shelf', 'u_land', 'u_sun', 'u_sunlight', 'u_ice',
+    ]);
+    this.sprite = createProgram(gl, SPRITE_VERT, SPRITE_FRAG, [
+      'u_resolution', 'u_camera', 'u_center', 'u_half', 'u_anchor', 'u_rotation', 'u_tex', 'u_alpha', 'u_tint', 'u_maskMode',
+    ]);
+    this.blur = createProgram(gl, FULLSCREEN_VERT, BLUR_FRAG, ['u_tex', 'u_step']);
+    this.dim = createProgram(gl, FULLSCREEN_VERT, DIM_FRAG, ['u_alpha']);
+    this.fog = createProgram(gl, FULLSCREEN_VERT, FOG_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_strength', 'u_shelf', 'u_reveals', 'u_revealCount',
+    ]);
+    this.snow = createProgram(gl, FULLSCREEN_VERT, SNOW_FRAG, ['u_resolution', 'u_camera', 'u_land', 'u_cover']);
+    this.grade = createProgram(gl, FULLSCREEN_VERT, GRADE_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_day', 'u_dusk', 'u_cloud', 'u_storm', 'u_drift', 'u_sun',
+    ]);
+    this.sky = createProgram(gl, FULLSCREEN_VERT, SKY_FRAG, [
+      'u_resolution', 'u_camera', 'u_time', 'u_day', 'u_cloud', 'u_storm', 'u_haze', 'u_rain', 'u_snow',
+      'u_flash', 'u_slant', 'u_drift',
+    ]);
+
+    this.empty = must(gl.createVertexArray());
+    this.quad = must(gl.createVertexArray());
+    gl.bindVertexArray(this.quad);
+    const buffer = must(gl.createBuffer());
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
+    const position = gl.getAttribLocation(this.sprite.program, 'a_pos');
+    gl.enableVertexAttribArray(position);
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+
+    for (const [src, image] of images) this.textures.set(src, this.uploadTexture(image));
+    this.textures.set(PUFF_TEXTURE, this.uploadTexture(drawPuff()));
+    this.textures.set(BEAM_TEXTURE, this.uploadTexture(drawBeam()));
+
+    this.islands = [...atlas.islands].sort((a, b) => a.y - b.y);
+    this.settlements = [...atlas.settlements].sort((a, b) => a.y - b.y);
+    this.bySlug = new Map(atlas.settlements.map((settlement) => [settlement.slug, settlement]));
+
+    const baked = this.bakeCoast();
+    this.landTexture = baked.land;
+    this.coastTexture = baked.coast;
+    this.shelfTexture = baked.shelf;
+  }
+
+  /** Size in CSS pixels and the device pixel ratio to draw at. */
+  resize(width: number, height: number, dpr: number): void {
+    this.width = Math.max(1, Math.round(width * dpr));
+    this.height = Math.max(1, Math.round(height * dpr));
+    if (this.canvas.width !== this.width) this.canvas.width = this.width;
+    if (this.canvas.height !== this.height) this.canvas.height = this.height;
+  }
+
+  render(camera: Camera, dpr: number, timeSeconds: number, frame: FrameState): void {
+    if (this.disposed) return;
+    const gl = this.gl;
+    const w = frame.weather;
+    const cameraDevice: [number, number, number] = [camera.x, camera.y, camera.zoom * dpr];
+    const night = 1 - w.day;
+    const glowStrength = 0.35 + 0.65 * night;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, this.width, this.height);
+
+    // 1. sea
+    gl.disable(gl.BLEND);
+    gl.useProgram(this.sea.program);
+    this.fullscreenUniforms(this.sea, cameraDevice, timeSeconds);
+    this.bindTexture(this.coastTexture, 0, this.sea.uniforms.get('u_coast')!);
+    this.bindTexture(this.landTexture, 1, this.sea.uniforms.get('u_land')!);
+    this.bindTexture(this.shelfTexture, 2, this.sea.uniforms.get('u_shelf')!);
+    gl.uniform3f(this.sea.uniforms.get('u_sun')!, w.sunX, w.sunY, w.sunZ);
+    gl.uniform1f(this.sea.uniforms.get('u_sunlight')!, w.day * (1 - 0.75 * w.cloud));
+    gl.uniform1f(this.sea.uniforms.get('u_ice')!, w.ice);
+    gl.bindVertexArray(this.empty);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // 2. islands
+    gl.enable(gl.BLEND);
+    this.useSprites(cameraDevice);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    for (const island of this.islands) {
+      const half = paintingHalfWidth(island);
+      const sprite = islandSprite(island.id);
+      this.drawSprite(sprite.src, island.x, island.y, half, half, sprite.anchor.x, sprite.anchor.y, 1, 0, [w.tintR, w.tintG, w.tintB]);
+    }
+
+    // 3. snow on the land
+    if (w.snowCover > 0.005) {
+      gl.useProgram(this.snow.program);
+      gl.bindVertexArray(this.empty);
+      gl.uniform2f(this.snow.uniforms.get('u_resolution')!, this.width, this.height);
+      gl.uniform3f(this.snow.uniforms.get('u_camera')!, ...cameraDevice);
+      gl.uniform1f(this.snow.uniforms.get('u_cover')!, w.snowCover);
+      this.bindTexture(this.landTexture, 0, this.snow.uniforms.get('u_land')!);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      this.useSprites(cameraDevice);
+    }
+
+    // 4 and 5. glows, settlements; through the chronicle's states while a date is scrubbed
+    const states = frame.chronicle;
+    const stateOf = (s: Settlement): SpriteState | null => (states ? (states.get(s.slug) ?? null) : null);
+    const present = (s: Settlement): boolean => !states || (states.get(s.slug)?.presence ?? 0) > 0.005;
+    const shown = states ? this.settlements.filter(present) : this.settlements;
+    gl.blendFunc(gl.ONE, gl.ONE);
+    for (const settlement of shown) this.drawGlow(settlement, GLOW_ALPHA * glowStrength, stateOf(settlement));
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    for (const settlement of shown) this.drawSettlement(settlement, stateOf(settlement));
+
+    // 6 and 7. landmarks and life
+    if (frame.plan) this.drawLandmarks(frame.plan, frame.life);
+    if (frame.life) this.drawLife(frame.life);
+
+    // 8. dim, then the highlighted settlements again on top, a little brighter
+    if (frame.highlights.length > 0 && frame.highlightStrength > 0.002) {
+      gl.useProgram(this.dim.program);
+      gl.bindVertexArray(this.empty);
+      gl.uniform1f(this.dim.uniforms.get('u_alpha')!, DIM_ALPHA * frame.highlightStrength);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      this.useSprites(cameraDevice);
+      const lit = frame.highlights
+        .map((slug) => this.bySlug.get(slug))
+        .filter((s): s is Settlement => s !== undefined && present(s))
+        .sort((a, b) => a.y - b.y);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      for (const settlement of lit) {
+        this.drawGlow(settlement, GLOW_ALPHA * glowStrength * (1 + (HOVER_GLOW - 1) * frame.highlightStrength), stateOf(settlement));
+      }
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      for (const settlement of lit) this.drawSettlement(settlement, stateOf(settlement));
+    }
+
+    // 9. grade (multiply)
+    gl.useProgram(this.grade.program);
+    gl.bindVertexArray(this.empty);
+    gl.blendFunc(gl.DST_COLOR, gl.ZERO);
+    this.fullscreenUniforms(this.grade, cameraDevice, frame.weatherTime);
+    gl.uniform1f(this.grade.uniforms.get('u_day')!, w.day);
+    gl.uniform1f(this.grade.uniforms.get('u_dusk')!, w.dusk);
+    gl.uniform1f(this.grade.uniforms.get('u_cloud')!, w.cloud);
+    gl.uniform1f(this.grade.uniforms.get('u_storm')!, w.storm);
+    gl.uniform2f(this.grade.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
+    gl.uniform3f(this.grade.uniforms.get('u_sun')!, w.sunX, w.sunY, w.sunZ);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // 10. sky
+    gl.useProgram(this.sky.program);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    this.fullscreenUniforms(this.sky, cameraDevice, frame.weatherTime);
+    gl.uniform1f(this.sky.uniforms.get('u_day')!, w.day);
+    gl.uniform1f(this.sky.uniforms.get('u_cloud')!, Math.min(1, w.cloud + frame.veil * 0.6));
+    gl.uniform1f(this.sky.uniforms.get('u_storm')!, w.storm);
+    gl.uniform1f(this.sky.uniforms.get('u_haze')!, Math.min(1, w.haze + frame.veil));
+    gl.uniform1f(this.sky.uniforms.get('u_rain')!, w.rain);
+    gl.uniform1f(this.sky.uniforms.get('u_snow')!, w.snow);
+    gl.uniform1f(this.sky.uniforms.get('u_flash')!, w.flash);
+    // Precipitation leans with the wind's east-west push; strong wind lays it nearly flat.
+    gl.uniform1f(this.sky.uniforms.get('u_slant')!, Math.max(-1.2, Math.min(1.2, (w.windX * w.windSpeed) / 35)));
+    gl.uniform2f(this.sky.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // 11. lighthouse beams
+    if (frame.plan && frame.life && night > 0.05) {
+      this.useSprites(cameraDevice);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      const half = LIGHTHOUSE_SPRITE.half;
+      for (const lighthouse of frame.plan.lighthouses) {
+        const lanternY = lighthouse.y - half * 2 * (LIGHTHOUSE_SPRITE.anchor.y - 0.12);
+        this.drawSprite(BEAM_TEXTURE, lighthouse.x, lanternY, 0.05, 0.011, 0, 0.5, 0.42 * night, frame.life.beamAngle);
+        this.drawSprite(BEAM_TEXTURE, lighthouse.x, lanternY, 0.05, 0.011, 0, 0.5, 0.42 * night, frame.life.beamAngle + Math.PI);
+      }
+    }
+
+    // 12. fog of war
+    if (frame.fog > 0.002) {
+      gl.useProgram(this.fog.program);
+      gl.bindVertexArray(this.empty);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      this.fullscreenUniforms(this.fog, cameraDevice, timeSeconds);
+      gl.uniform1f(this.fog.uniforms.get('u_strength')!, frame.fog);
+      this.bindTexture(this.shelfTexture, 0, this.fog.uniforms.get('u_shelf')!);
+      const count = Math.min(frame.revealCount, MAX_REVEALS);
+      this.revealBuffer.set(frame.reveals.subarray(0, count * 3));
+      gl.uniform3fv(this.fog.uniforms.get('u_reveals')!, this.revealBuffer);
+      gl.uniform1i(this.fog.uniforms.get('u_revealCount')!, count);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    gl.bindVertexArray(null);
+  }
+
+  /** How far the cloud field moves in one frame, for the caller to accumulate. */
+  static drift(weather: WeatherLook, dt: number): { x: number; y: number } {
+    const speed = weather.windSpeed * DRIFT_PER_KMH * dt;
+    return { x: weather.windX * speed, y: weather.windY * speed };
+  }
+
+  dispose(): void {
+    if (this.disposed) return;
+    this.disposed = true;
+    const gl = this.gl;
+    for (const texture of this.textures.values()) gl.deleteTexture(texture);
+    gl.deleteTexture(this.landTexture);
+    gl.deleteTexture(this.coastTexture);
+    gl.deleteTexture(this.shelfTexture);
+    for (const program of [this.sea, this.sprite, this.blur, this.dim, this.fog, this.snow, this.grade, this.sky]) {
+      gl.deleteProgram(program.program);
+    }
+    gl.deleteVertexArray(this.quad);
+    gl.deleteVertexArray(this.empty);
+    // Deliberately no loseContext(): React remounts this view on hot updates
+    // and under StrictMode, on the same canvas, and a lost context cannot
+    // compile the next renderer's shaders. The GPU memory above is freed;
+    // the context itself goes with the canvas.
+  }
+
+  /* ---- internals ------------------------------------------------------ */
+
+  private useSprites(cameraDevice: [number, number, number]): void {
+    const gl = this.gl;
+    gl.useProgram(this.sprite.program);
+    gl.bindVertexArray(this.quad);
+    gl.uniform2f(this.sprite.uniforms.get('u_resolution')!, this.width, this.height);
+    gl.uniform3f(this.sprite.uniforms.get('u_camera')!, ...cameraDevice);
+    gl.uniform1i(this.sprite.uniforms.get('u_maskMode')!, 0);
+  }
+
+  private fullscreenUniforms(program: Program, cameraDevice: [number, number, number], time: number): void {
+    const gl = this.gl;
+    gl.uniform2f(program.uniforms.get('u_resolution')!, this.width, this.height);
+    gl.uniform3f(program.uniforms.get('u_camera')!, ...cameraDevice);
+    const timeLocation = program.uniforms.get('u_time');
+    if (timeLocation) gl.uniform1f(timeLocation, time);
+  }
+
+  private drawLandmarks(plan: AmbientPlan, life: LifeSim | null): void {
+    const gl = this.gl;
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    for (const mill of plan.windmills) {
+      const tower = WINDMILL_TOWER_SPRITE;
+      this.drawSprite(tower.src, mill.x, mill.y, tower.half, tower.half, tower.anchor.x, tower.anchor.y, 1);
+      const sails = WINDMILL_SAILS_SPRITE;
+      // The axle sits up and to the right of the tower's anchor.
+      const axleX = mill.x + tower.half * 2 * (0.63 - tower.anchor.x);
+      const axleY = mill.y + tower.half * 2 * (0.3 - tower.anchor.y);
+      this.drawSprite(sails.src, axleX, axleY, sails.half, sails.half, 0.5, 0.5, 1, life?.sailAngle ?? 0);
+    }
+    for (const lighthouse of plan.lighthouses) {
+      const sprite = LIGHTHOUSE_SPRITE;
+      this.drawSprite(sprite.src, lighthouse.x, lighthouse.y, sprite.half, sprite.half, sprite.anchor.x, sprite.anchor.y, 1);
+    }
+  }
+
+  private drawLife(life: LifeSim): void {
+    const gl = this.gl;
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    for (const boat of life.boats) {
+      if (boat.state === 'sailing') {
+        const count = boat.wake.length;
+        boat.wake.forEach((point, index) => {
+          const age = (index + 1) / count;
+          this.drawSprite(PUFF_TEXTURE, point.x, point.y, 0.003 + 0.004 * (1 - age), 0.003 + 0.004 * (1 - age), 0.5, 0.5, 0.22 * age);
+        });
+      }
+      this.drawSprite(BOAT_SPRITE.src, boat.x, boat.y, BOAT_SPRITE.half, BOAT_SPRITE.half, 0.5, 0.5, 1, boat.heading);
+    }
+    for (const source of life.smoke) {
+      for (const puff of source.puffs) {
+        const t = puff.age / puff.life;
+        const size = 0.004 + 0.011 * t;
+        const alpha = source.alpha * (1 - t) * Math.min(1, t / 0.15);
+        this.drawSprite(PUFF_TEXTURE, puff.x, puff.y, size, size, 0.5, 0.5, alpha);
+      }
+    }
+    for (const gull of life.gulls) {
+      const wobble = Math.sin(gull.phase * 2.2) * 0.15;
+      const x = gull.cx + Math.cos(gull.angle) * gull.radius * (1 + wobble * 0.3);
+      const y = gull.cy + Math.sin(gull.angle) * gull.radius * (1 + wobble * 0.3);
+      const heading = gull.angle + (gull.speed > 0 ? Math.PI / 2 : -Math.PI / 2);
+      this.drawSprite(GULL_SPRITE.src, x, y, GULL_SPRITE.half, GULL_SPRITE.half, 0.5, 0.5, 0.95, heading - GULL_SPRITE.forward);
+    }
+  }
+
+  /** Today's footprint for today's tier; a settlement still growing takes the footprint of the tier it has reached. */
+  private static footprintFor(settlement: Settlement, tier: Tier): number {
+    return tier === settlement.tier ? settlement.footprint : TIER_FOOTPRINT[tier];
+  }
+
+  private drawGlow(settlement: Settlement, alpha: number, state: SpriteState | null = null): void {
+    const tier = state?.tier ?? settlement.tier;
+    if (tier === 'ruin') return;
+    const half = AtlasRenderer.footprintFor(settlement, tier) * GLOW_SCALE;
+    this.drawSprite(GLOW_SPRITE.src, settlement.x, settlement.y, half, half, 0.5, 0.5, alpha * (state?.presence ?? 1));
+  }
+
+  private drawSettlement(settlement: Settlement, state: SpriteState | null = null): void {
+    if (!state) {
+      this.drawTier(settlement, settlement.tier, 1);
+      return;
+    }
+    const fading = state.prevTier !== null && state.blend < 1;
+    if (fading) this.drawTier(settlement, state.prevTier as Tier, (1 - state.blend) * state.presence);
+    this.drawTier(settlement, state.tier, (fading ? state.blend : 1) * state.presence);
+  }
+
+  private drawTier(settlement: Settlement, tier: Tier, alpha: number): void {
+    const sprite = SETTLEMENT_SPRITES[tier];
+    const half = AtlasRenderer.footprintFor(settlement, tier) * SETTLEMENT_SPRITE_SCALE;
+    this.drawSprite(sprite.src, settlement.x, settlement.y, half, half, sprite.anchor.x, sprite.anchor.y, alpha);
+  }
+
+  private drawSprite(
+    src: string,
+    x: number,
+    y: number,
+    halfWidth: number,
+    halfHeight: number,
+    anchorX: number,
+    anchorY: number,
+    alpha: number,
+    rotation = 0,
+    tint: [number, number, number] = [1, 1, 1],
+  ): void {
+    const texture = this.textures.get(src);
+    if (!texture) return;
+    const gl = this.gl;
+    const u = this.sprite.uniforms;
+    gl.uniform2f(u.get('u_center')!, x, y);
+    gl.uniform2f(u.get('u_half')!, halfWidth, halfHeight);
+    gl.uniform2f(u.get('u_anchor')!, anchorX, anchorY);
+    gl.uniform1f(u.get('u_rotation')!, rotation);
+    gl.uniform1f(u.get('u_alpha')!, alpha);
+    gl.uniform3f(u.get('u_tint')!, tint[0], tint[1], tint[2]);
+    this.bindTexture(texture, 0, u.get('u_tex')!);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+
+  private bindTexture(texture: WebGLTexture, unit: number, location: WebGLUniformLocation): void {
+    const gl = this.gl;
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(location, unit);
+  }
+
+  private uploadTexture(image: HTMLImageElement | HTMLCanvasElement): WebGLTexture {
+    const gl = this.gl;
+    const texture = must(gl.createTexture());
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    const anisotropy = gl.getExtension('EXT_texture_filter_anisotropic');
+    if (anisotropy) {
+      const max = gl.getParameter(anisotropy.MAX_TEXTURE_MAX_ANISOTROPY_EXT) as number;
+      gl.texParameterf(gl.TEXTURE_2D, anisotropy.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(4, max));
+    }
+    return texture;
+  }
+
+  private createTarget(): { texture: WebGLTexture; framebuffer: WebGLFramebuffer } {
+    const gl = this.gl;
+    const texture = must(gl.createTexture());
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, MASK_SIZE, MASK_SIZE, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    const framebuffer = must(gl.createFramebuffer());
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+    return { texture, framebuffer };
+  }
+
+  /**
+   * Draw every island's alpha into a unit-world texture (the land mask),
+   * blur it twice into the narrow coast field that shapes the foam, then
+   * blur that much wider into the shelf field that colours the shallows and
+   * carries the fog. Islands never move, so this runs once.
+   */
+  private bakeCoast(): { land: WebGLTexture; coast: WebGLTexture; shelf: WebGLTexture } {
+    const gl = this.gl;
+    const land = this.createTarget();
+    const temp = this.createTarget();
+    const coast = this.createTarget();
+    const shelf = this.createTarget();
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, land.framebuffer);
+    gl.viewport(0, 0, MASK_SIZE, MASK_SIZE);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    this.useSprites([0.5, 0.5, MASK_SIZE]);
+    gl.uniform2f(this.sprite.uniforms.get('u_resolution')!, MASK_SIZE, MASK_SIZE);
+    gl.uniform1i(this.sprite.uniforms.get('u_maskMode')!, 1);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    for (const island of this.islands) {
+      const half = paintingHalfWidth(island);
+      this.drawSprite(islandSprite(island.id).src, island.x, island.y, half, half, 0.5, 0.5, 1);
+    }
+    gl.disable(gl.BLEND);
+    gl.uniform1i(this.sprite.uniforms.get('u_maskMode')!, 0);
+
+    gl.useProgram(this.blur.program);
+    gl.bindVertexArray(this.empty);
+    const pass = (from: WebGLTexture, to: WebGLFramebuffer, stepX: number, stepY: number): void => {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, to);
+      this.bindTexture(from, 0, this.blur.uniforms.get('u_tex')!);
+      gl.uniform2f(this.blur.uniforms.get('u_step')!, stepX, stepY);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
+    const step = BLUR_STEP / MASK_SIZE;
+    pass(land.texture, temp.framebuffer, step, 0);
+    pass(temp.texture, coast.framebuffer, 0, step);
+    const wide = SHELF_STEP / MASK_SIZE;
+    pass(coast.texture, temp.framebuffer, wide, 0);
+    pass(temp.texture, shelf.framebuffer, 0, wide);
+
+    gl.bindVertexArray(null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    for (const target of [land, temp, coast, shelf]) gl.deleteFramebuffer(target.framebuffer);
+    gl.deleteTexture(temp.texture);
+    return { land: land.texture, coast: coast.texture, shelf: shelf.texture };
+  }
+}
+
+/** A soft white disc: smoke puffs and boat wakes. */
+function drawPuff(): HTMLCanvasElement {
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext('2d')!;
+  const gradient = context.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  gradient.addColorStop(0, 'rgba(235, 238, 245, 0.9)');
+  gradient.addColorStop(0.45, 'rgba(225, 230, 240, 0.45)');
+  gradient.addColorStop(1, 'rgba(220, 226, 238, 0)');
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, size, size);
+  return canvas;
+}
+
+/** A wedge of light from the left edge outward: the lighthouse beam, drawn additively. */
+function drawBeam(): HTMLCanvasElement {
+  const width = 256;
+  const height = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d')!;
+  const gradient = context.createLinearGradient(0, 0, width, 0);
+  gradient.addColorStop(0, 'rgba(255, 240, 200, 0.95)');
+  gradient.addColorStop(0.35, 'rgba(255, 236, 190, 0.45)');
+  gradient.addColorStop(1, 'rgba(255, 230, 180, 0)');
+  context.fillStyle = gradient;
+  context.beginPath();
+  context.moveTo(0, height / 2 - 2);
+  context.lineTo(width, 0);
+  context.lineTo(width, height);
+  context.lineTo(0, height / 2 + 2);
+  context.closePath();
+  context.fill();
+  return canvas;
+}
+
+function must<T>(value: T | null): T {
+  if (value === null) throw new Error('WebGL resource allocation failed');
+  return value;
+}
+
+function createProgram(
+  gl: WebGL2RenderingContext,
+  vertexSource: string,
+  fragmentSource: string,
+  uniformNames: readonly string[],
+): Program {
+  const compile = (type: number, source: string): WebGLShader => {
+    const shader = must(gl.createShader(type));
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      const log = gl.getShaderInfoLog(shader) ?? 'unknown error';
+      gl.deleteShader(shader);
+      throw new Error(`shader failed to compile: ${log}`);
+    }
+    return shader;
+  };
+  const program = must(gl.createProgram());
+  const vertex = compile(gl.VERTEX_SHADER, vertexSource);
+  const fragment = compile(gl.FRAGMENT_SHADER, fragmentSource);
+  gl.attachShader(program, vertex);
+  gl.attachShader(program, fragment);
+  gl.linkProgram(program);
+  gl.deleteShader(vertex);
+  gl.deleteShader(fragment);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    const log = gl.getProgramInfoLog(program) ?? 'unknown error';
+    gl.deleteProgram(program);
+    throw new Error(`program failed to link: ${log}`);
+  }
+  const uniforms = new Map(uniformNames.map((name) => [name, gl.getUniformLocation(program, name)]));
+  return { program, uniforms };
+}

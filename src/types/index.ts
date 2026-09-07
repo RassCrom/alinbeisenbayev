@@ -128,6 +128,12 @@ export interface Project {
   geography: Geography;
   /** Margin source note; see SourceNote. */
   sourceNote?: SourceNote;
+  /**
+   * Hand nudge for the atlas view: absolute world coordinates (0 to 1) that
+   * override the seeded placement on the given axis. Leave unset to let
+   * src/atlas/layout.ts place the settlement.
+   */
+  map?: { x?: number; y?: number };
 }
 
 export interface ProjectsData {
