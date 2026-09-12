@@ -7,6 +7,7 @@ import { articles } from '../content/blog';
 import { storyBodies } from '../content/stories';
 import { formatStoryByline, formatStoryDate } from '../utils/story';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { COVER_SIZES, coverSrcSet } from '../utils/images';
 import NotFoundPage from './NotFoundPage';
 
 /**
@@ -69,6 +70,8 @@ export default function StoryDetailPage() {
       <header className="relative h-[45vh] overflow-hidden md:h-[60vh]">
         <img
           src={story.coverImage}
+          srcSet={coverSrcSet(story.coverImage)}
+          sizes={COVER_SIZES.hero}
           alt={story.title}
           width={1200}
           height={630}

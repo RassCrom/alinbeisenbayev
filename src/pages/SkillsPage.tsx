@@ -4,6 +4,7 @@ import skillsData from '../data/skills.json';
 import { projects } from '../data/projects';
 import type { SkillsData, SkillLevel, Project } from '../types';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { coverSrcSet } from '../utils/images';
 
 const { categories, skills } = skillsData as SkillsData;
 
@@ -221,6 +222,8 @@ export default function SkillsPage() {
           <div className="w-[230px] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-overlay)] shadow-[var(--shadow-elevated)]">
             <img
               src={preview.project.coverImage}
+              srcSet={coverSrcSet(preview.project.coverImage)}
+              sizes="230px"
               alt={preview.project.title}
               width={1200}
               height={630}

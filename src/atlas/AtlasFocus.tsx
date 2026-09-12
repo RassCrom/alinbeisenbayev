@@ -4,6 +4,7 @@ import { worldToScreen, type ViewStore } from './camera.ts';
 import { TIER_LABEL } from './config.ts';
 import { spriteRect, type InteractionStore } from './interaction.ts';
 import type { Atlas } from './types.ts';
+import { coverSrcSet } from '../utils/images';
 
 /*
  * What follows the highlighted settlements: a gold ring on the ground under
@@ -89,6 +90,8 @@ export default function AtlasFocus({ atlas, store, interaction, onOpen }: Props)
         >
           <img
             src={project.coverImage}
+            srcSet={coverSrcSet(project.coverImage)}
+            sizes={`${CARD_WIDTH}px`}
             alt=""
             width={1200}
             height={630}

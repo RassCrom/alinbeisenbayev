@@ -42,8 +42,10 @@
   --gradient-overlay: linear-gradient(to bottom, transparent 0%, #0d1320 100%);
 
   /* Typography */
-  --font-heading: 'Manrope', system-ui, sans-serif;
-  --font-body:    'Lora', Georgia, serif;
+  /* Self-hosted via @fontsource (imported in main.tsx); the variable builds
+     cover every weight the site uses in one file per script subset. */
+  --font-heading: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+  --font-body:    'Lora Variable', 'Lora', Georgia, serif;
   --font-mono:    'DM Mono', 'Courier New', monospace;
 
   /* Type scale */

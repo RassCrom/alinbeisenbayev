@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { Story } from '../../types';
 import { formatStoryByline, formatStoryDate } from '../../utils/story';
+import { COVER_SIZES, coverSrcSet } from '../../utils/images';
 
 export interface StoryCardProps {
   story: Story;
@@ -40,6 +41,8 @@ export default function StoryCard({ story, lead = false, headingLevel = 'h2' }: 
       >
         <img
           src={story.coverImage}
+          srcSet={coverSrcSet(story.coverImage)}
+          sizes={lead ? COVER_SIZES.card : COVER_SIZES.cardThird}
           alt=""
           width={1200}
           height={630}

@@ -32,7 +32,10 @@ MASKS = ROOT / "src" / "atlas" / "masks.ts"
 
 MASK_SIZE = 48
 MARGIN = 0.03  # of the larger bounding-box side, kept around the subject
-QUALITY = 88
+# 80/80 is indistinguishable from 88/100 at 100% crop on the forest islands and
+# cuts the home route's texture weight by about a third (2.4 MB -> 1.5 MB).
+QUALITY = 80
+ALPHA_QUALITY = 80
 
 # Output size per file. Islands drawn large get 2048; islets, sprites and
 # icons never cover that many screen pixels.
@@ -106,7 +109,7 @@ def main() -> None:
                 masks[name.removeprefix("island-")] = land_mask(prepared)
         prepared = prepared.resize((size, size), Image.Resampling.LANCZOS)
         target = OUT / f"{name}.webp"
-        prepared.save(target, "WEBP", quality=QUALITY, method=6)
+        prepared.save(target, "WEBP", quality=QUALITY, alpha_quality=ALPHA_QUALITY, method=6)
         print(f"{name:24s} {image.size[0]}x{image.size[1]} -> {size}x{size}  {target.stat().st_size / 1024:6.0f} KB")
 
     lines = [

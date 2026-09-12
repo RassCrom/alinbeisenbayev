@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { storyForWork } from '../../data/stories';
+import { COVER_SIZES, coverSrcSet } from '../../utils/images';
 
 export interface WorkCardProps {
   id: string;
@@ -142,6 +143,8 @@ export default function WorkCard({
       <div className={`relative overflow-hidden ${large ? 'aspect-[2/1]' : 'aspect-video'}`}>
         <img
           src={coverImage}
+          srcSet={coverSrcSet(coverImage)}
+          sizes={large ? COVER_SIZES.cardWide : COVER_SIZES.card}
           alt={title}
           width={1200}
           height={630}

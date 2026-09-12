@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 
 const SITE_NAME = 'Alikhan Beisenbayev';
+/** Kept in sync with SITE_ORIGIN in scripts/prerender-routes.mjs. */
+const SITE_ORIGIN = 'https://alinbeisenbayev.com';
 const SITE_TITLE = `${SITE_NAME} — Cartographer & GIS Engineer`;
 
 /** Kept in sync with the <meta name="description"> fallback in index.html. */
@@ -66,5 +68,9 @@ export function usePageMeta(
     document.title = title ? `${title} — ${SITE_NAME}` : SITE_TITLE;
     setDescription(description || SITE_DESCRIPTION);
     setRobots(noindex);
+    // index.html ships canonical = "/", which on any other route tells a
+    // crawler the page is a duplicate of the homepage.
+    const canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (canonical) canonical.href = `${SITE_ORIGIN}${window.location.pathname}`;
   }, [title, description, noindex, enabled]);
 }
