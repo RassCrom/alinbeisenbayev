@@ -5,11 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node scripts/prerender-routes.mjs",
+    "images": "python scripts/prepare-images.py",
     "preview": "vite preview",
     "atlas:print": "node scripts/print-atlas.ts"
   },
   "dependencies": {
+    "@fontsource-variable/lora": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource/dm-mono": "^5.3.0",
     "maplibre-gl": "^4",
     "medium-zoom": "^1",
     "react": "^18",

@@ -13,6 +13,7 @@ import StoryCallout from '../components/StoryCallout/StoryCallout';
 import { storyForWork } from '../data/stories';
 import { articles } from '../content/blog';
 import { markSurveyed } from '../atlas/fog';
+import { COVER_SIZES, coverSrcSet } from '../utils/images';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -139,6 +140,8 @@ export default function WorkDetailPage() {
       <header className="relative h-[45vh] overflow-hidden md:h-[60vh]">
         <img
           src={project.coverImage}
+          srcSet={coverSrcSet(project.coverImage)}
+          sizes={COVER_SIZES.hero}
           alt={project.title}
           width={1200}
           height={630}

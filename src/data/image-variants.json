@@ -1,0 +1,181 @@
+{
+  "/images/blog/stockholm-metro-guide/01-source-map.webp": {
+    "width": 2000,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/blog-stockholm-metro-guide-01-source-map.jpg"
+  },
+  "/images/projects/alash-orda/preview.webp": {
+    "width": 1583,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-alash-orda-preview.jpg"
+  },
+  "/images/projects/armenia-energy/preview.webp": {
+    "width": 1560,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-armenia-energy-preview.jpg"
+  },
+  "/images/projects/asharshylyq/cover.webp": {
+    "width": 1083,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-asharshylyq-cover.jpg"
+  },
+  "/images/projects/astana-buildings/intro.webp": {
+    "width": 1600,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-astana-buildings-intro.jpg"
+  },
+  "/images/projects/austria-income/image.webp": {
+    "width": 1511,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-austria-income-image.jpg"
+  },
+  "/images/projects/chess-map/opening-desktop.webp": {
+    "width": 350,
+    "variants": [],
+    "og": "/og/projects-chess-map-opening-desktop.jpg"
+  },
+  "/images/projects/coral-city-roads/cover.webp": {
+    "width": 1200,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-coral-city-roads-cover.jpg"
+  },
+  "/images/projects/earth-on-fire/dark.webp": {
+    "width": 350,
+    "variants": [],
+    "og": "/og/projects-earth-on-fire-dark.jpg"
+  },
+  "/images/projects/europe-ignition/cover.webp": {
+    "width": 350,
+    "variants": [],
+    "og": "/og/projects-europe-ignition-cover.jpg"
+  },
+  "/images/projects/figura/preview.webp": {
+    "width": 592,
+    "variants": [],
+    "og": "/og/projects-figura-preview.jpg"
+  },
+  "/images/projects/football-mapped/cover.webp": {
+    "width": 1200,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-football-mapped-cover.jpg"
+  },
+  "/images/projects/gulag/cover.webp": {
+    "width": 2108,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-gulag-cover.jpg"
+  },
+  "/images/projects/heat-mortality/cover.webp": {
+    "width": 1400,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-heat-mortality-cover.jpg"
+  },
+  "/images/projects/heat-stress-vienna/sth-vienna-hero-img.webp": {
+    "width": 3200,
+    "variants": [
+      640,
+      1280,
+      1920
+    ],
+    "og": "/og/projects-heat-stress-vienna-sth-vienna-hero-img.jpg"
+  },
+  "/images/projects/historical-vienna/preview.webp": {
+    "width": 1487,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-historical-vienna-preview.jpg"
+  },
+  "/images/projects/metro-animation/cover.webp": {
+    "width": 1200,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-metro-animation-cover.jpg"
+  },
+  "/images/projects/mythical-animals/unstable-dragons-gameplay.webp": {
+    "width": 3200,
+    "variants": [
+      640,
+      1280,
+      1920
+    ],
+    "og": "/og/projects-mythical-animals-unstable-dragons-gameplay.jpg"
+  },
+  "/images/projects/notable-kazakhs/preview.webp": {
+    "width": 1600,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-notable-kazakhs-preview.jpg"
+  },
+  "/images/projects/orhon-stories/turkic_nomadic-countries.webp": {
+    "width": 1082,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-orhon-stories-turkic_nomadic-countries.jpg"
+  },
+  "/images/projects/pie-clock/year-clock-astana-classic.webp": {
+    "width": 1600,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-pie-clock-year-clock-astana-classic.jpg"
+  },
+  "/images/projects/silk-road/preview.webp": {
+    "width": 1317,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-silk-road-preview.jpg"
+  },
+  "/images/projects/tigranes-the-greatest/peak.webp": {
+    "width": 1600,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-tigranes-the-greatest-peak.jpg"
+  },
+  "/images/projects/tropical-night/preview.webp": {
+    "width": 717,
+    "variants": [],
+    "og": "/og/projects-tropical-night-preview.jpg"
+  },
+  "/images/projects/who-comes-third-akmola/cover.webp": {
+    "width": 1400,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-who-comes-third-akmola-cover.jpg"
+  }
+}
