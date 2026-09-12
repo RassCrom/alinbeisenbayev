@@ -1,21 +1,26 @@
+import { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import StoryCard from '../components/StoryCard/StoryCard';
+import ChapterNav from '../components/ChapterNav/ChapterNav';
 import { stories } from '../data/stories';
 import { articles } from '../content/blog';
+import { storyBodies } from '../content/stories';
 import { formatStoryByline, formatStoryDate } from '../utils/story';
 import { usePageMeta } from '../hooks/usePageMeta';
 import NotFoundPage from './NotFoundPage';
 
 /**
  * A story's page on this domain — its permanent record, the same way
- * /works/:slug is a project's. The piece itself may read elsewhere (every one
- * does today, see `Story.external`); this page carries the standfirst, the
+ * /works/:slug is a project's. Most pieces still read elsewhere (see
+ * `Story.external`), in which case this page carries the standfirst, the
  * credits and the colophon, and hands the reader on. When a piece is authored
- * in-repo this route becomes the piece, and the record folds into its foot.
+ * in-repo (`external: false` with a matching src/content/stories/*.mdx) this
+ * route becomes the piece itself, and the record folds into its foot.
  */
 export default function StoryDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const story = stories.find((s) => s.slug === slug);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   // Before the not-found branch — hooks can't sit behind a conditional return.
   // NotFoundPage sets its own title/robots when it renders, so skip ours then.
@@ -23,6 +28,16 @@ export default function StoryDetailPage() {
 
   // An unknown slug is a miss like any other — same sheet, same noindex.
   if (!story) return <NotFoundPage />;
+
+  // Set when this story is authored in-repo (external: false) and has a
+  // matching src/content/stories/<slug>.mdx — the case the type comment on
+  // `Story.url` anticipates: the record page becomes the piece itself.
+  const Body = !story.external ? storyBodies[story.slug] : undefined;
+  if (import.meta.env.DEV && !story.external && !Body) {
+    console.error(
+      `[stories] ${story.slug} is external: false but src/content/stories/${story.slug}.mdx wasn't found — falling back to the external CTA layout.`,
+    );
+  }
 
   /*
    * Method notes are declared on the story (`postSlugs`) and resolved here, in
@@ -95,17 +110,36 @@ export default function StoryDetailPage() {
           ))}
         </div>
 
-        {/* The point of the page */}
-        <div className="mt-[var(--space-6)] flex flex-wrap gap-[var(--space-3)]">
-          <a href={story.url} {...externalProps} className="btn btn-primary">
-            Read the story {story.external ? '↗' : '→'}
-          </a>
-          {story.workSlug && (
-            <Link to={`/works/${story.workSlug}`} className="btn btn-secondary">
-              How it was made →
-            </Link>
-          )}
-        </div>
+        {/* The point of the page — the piece itself when it's authored
+            in-repo, otherwise the hand-off to wherever it reads. */}
+        {Body ? (
+          <>
+            <div className="mt-[var(--space-8)]">
+              <ChapterNav containerRef={bodyRef} />
+            </div>
+            <div ref={bodyRef} className="mdx-prose mt-[var(--space-8)]">
+              <Body />
+            </div>
+            {story.workSlug && (
+              <div className="mt-[var(--space-8)]">
+                <Link to={`/works/${story.workSlug}`} className="btn btn-secondary">
+                  How it was made →
+                </Link>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="mt-[var(--space-6)] flex flex-wrap gap-[var(--space-3)]">
+            <a href={story.url} {...externalProps} className="btn btn-primary">
+              Read the story {story.external ? '↗' : '→'}
+            </a>
+            {story.workSlug && (
+              <Link to={`/works/${story.workSlug}`} className="btn btn-secondary">
+                How it was made →
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Method notes — the blog articles behind the piece. */}
         {methodNotes.length > 0 && (

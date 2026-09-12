@@ -699,3 +699,71 @@ built. `docs/experiment-map-pr.md` is the PR description for
 - The locator on the detail page and the export were verified by DOM
   inspection and review respectively, not by capture.
 - `LocatorInset` remains in the tree, unused.
+
+## Declutter pass (2026-09-12)
+
+The fitted view carried nineteen labels, thirty-five lanes and three
+panels of text; the map was the last thing a visitor read. This pass keeps
+the features and takes the chrome off the map.
+
+### Labels (`AtlasLabels.tsx`, `atlas.css`)
+
+- Island names are placed first and always show; settlement names must
+  clear them (before, a settlement label could sit on an island name).
+- Each tier joins in past its own zoom, as a multiple of the fit
+  (`LABEL_ZOOM`): fortress always, walled town 1.3×, market town 1.8×,
+  hamlet and ruin 2.6×. The fitted view shows the seven island names and
+  the three fortresses; the active settlement's label always shows.
+- Quieter type: island names 15px at 0.34em (were 20px at 0.4em), the
+  tiers a point smaller and tighter, the crown 24px. Labels fade in and
+  out over 200 ms instead of popping.
+
+### Lanes (`AtlasLanes.tsx`)
+
+Below 1.4× the fit the svg carries `is-far`: sea lanes at 55 % and roads
+hidden, unless lit by a hover or a trade good.
+
+### HUD (`AtlasHud.tsx`)
+
+- Top left: the chronicle collapses to one pill ("Chronicle · Today"); a
+  click opens the slider, which stays open while a month is shown or the
+  lock is on, and has a close that returns the map to today.
+- Bottom left, 196px wide: a 48px compass, the weather as temperature
+  plus one line (condition, wind, "Astana"; the source note and "The map
+  lives in Astana's weather" moved to the tooltip), the preview picker
+  behind an eye button, the minimap, and the survey count as a 2px gold
+  bar with the numbers in its tooltip and `role="progressbar"`.
+- Right: a vertical rail (`.atlas-rail`, not cloned by the chart export)
+  of icon buttons whose names slide out on hover: zoom in, zoom out, fit
+  the archipelago, Legend (a drawer with the tier counts, the islands as
+  buttons that fit the island, and the trade goods), sound, export, then
+  "Sheet" as a vertical button and one word, "beta" (or "lite" under the
+  light tier), in place of the bordered "experimental" badge.
+- A first-visit hint along the bottom ("drag to pan · scroll to zoom ·
+  point at a settlement, click to open its sheet"), cleared by the first
+  gesture or after nine seconds, remembered in `atlas:hinted`.
+- The moon moved to the top centre, out of the rail's way.
+
+### Map
+
+- `PAN_SLACK` 0.12 → 0.2 and `ZOOM_OUT_LIMIT` 0.7 → 0.6: more sea to roam.
+- Depth contours in the sea shader: faint isolines of the shelf field
+  around every island, gone in open water, so the water reads as a chart.
+
+### Performance
+
+- `MAX_DPR.full` 2 → 1.5: the fullscreen passes cost 56 % of the pixels;
+  labels are DOM and stay sharp.
+- Idle throttling: four seconds after the last gesture, camera move,
+  interaction or chronicle change, with no flight, scrub, or highlight
+  fading, the loop renders every other frame. The watchdog's interval is
+  halved after a skipped frame so an idle 30 fps never trips the lite tier.
+- The grade pass is skipped on a clear full day (an identity tint), the
+  sky pass when there is no cloud, haze, rain, snow, flash or veil.
+- The sea shader skips the bottom and caustic octaves in open water and
+  the foam break-up noise away from the coast.
+
+Verified in the browser pane: fitted view 10 labels and `is-far`, rail
+zoom brings the walled and market towns in, the legend drawer opens and
+closes, no console errors, `tsc` clean. Headless 1920 px renders of the
+fitted view and a hover at 2.2× are in this session's scratchpad.

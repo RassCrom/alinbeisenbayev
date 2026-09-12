@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { worldToScreen, type ViewStore } from './camera.ts';
+import { fitBounds, worldToScreen, type ViewStore } from './camera.ts';
 import type { InteractionStore } from './interaction.ts';
 import { laneCurve } from './lanes.ts';
 import type { Atlas } from './types.ts';
@@ -10,8 +10,14 @@ import type { Atlas } from './types.ts';
  * so projecting the three world points is exact. Paths are rewritten
  * straight from the view store, outside React's render. While a settlement
  * is active its lanes light up gold and the rest step back; while a trade
- * good is active, the lanes between its settlements light.
+ * good is active, the lanes between its settlements light. At the fitted
+ * view the svg carries `is-far`: the sea lanes thin out and the roads wait
+ * for the camera to come closer, so the overview reads as islands and
+ * names rather than a web of dashes.
  */
+
+/** Zoom, as a multiple of the fit, below which the lanes step back. */
+const FAR_ZOOM = 1.4;
 
 interface Props {
   atlas: Atlas;
@@ -40,6 +46,7 @@ export default function AtlasLanes({ atlas, store, interaction }: Props) {
 
     const unsubscribeView = store.subscribe(({ camera, viewport }) => {
       svg.setAttribute('viewBox', `0 0 ${viewport.width} ${viewport.height}`);
+      svg.classList.toggle('is-far', camera.zoom < fitBounds(atlas.bounds, viewport).zoom * FAR_ZOOM);
       atlas.lanes.forEach((lane, index) => {
         const path = paths.get(lane.id);
         const curve = curves[index];

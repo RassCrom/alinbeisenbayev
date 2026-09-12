@@ -169,9 +169,10 @@ export interface Story {
   subject: string[];
   coverImage: string;
   /**
-   * Where the piece reads. Every one of these is on someone else's domain
-   * today; when a piece is authored in-repo this becomes a local path and
-   * `external` goes false, which drops the arrow and the new-tab target.
+   * Where the piece reads. Most of these are on someone else's domain today
+   * (`external: true`). A piece authored in-repo instead sets `external:
+   * false`, points `url` at its own /stories/:slug route, and supplies its
+   * body as src/content/stories/<slug>.mdx — see src/content/stories.ts.
    */
   url: string;
   external: boolean;

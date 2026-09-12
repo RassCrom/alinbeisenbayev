@@ -134,11 +134,19 @@ void main() {
   color = mix(color, teal, shallow * 0.7);
   color = mix(color, lagoon, pow(shallow, 2.5) * 0.5);
   // The bottom shows through in the shallows: sand ripples and the light
-  // net that moving water throws on it.
-  float bottom = fbm(world * 240.0 + vec2(3.1, 7.7));
-  float caustic = pow(fbm(world * 420.0 + vec2(t * 0.09, -t * 0.06)), 3.0);
-  color = mix(color, sand, pow(shallow, 3.0) * 0.28 * bottom);
-  color += vec3(0.22, 0.36, 0.36) * caustic * pow(shallow, 2.5);
+  // net that moving water throws on it. Open water skips the two octaves.
+  if (shallow > 0.01) {
+    float bottom = fbm(world * 240.0 + vec2(3.1, 7.7));
+    float caustic = pow(fbm(world * 420.0 + vec2(t * 0.09, -t * 0.06)), 3.0);
+    color = mix(color, sand, pow(shallow, 3.0) * 0.28 * bottom);
+    color += vec3(0.22, 0.36, 0.36) * caustic * pow(shallow, 2.5);
+  }
+  // Depth contours, as a chart would sound them: faint isolines of the
+  // shelf field around every island, fading out in open water.
+  float sounding = smoothstep(0.03, 0.10, shelf) * (1.0 - smoothstep(0.42, 0.55, shelf)) * (1.0 - land);
+  float iso = abs(fract(shelf * 9.0) - 0.5);
+  float contour = (1.0 - smoothstep(0.0, 0.09, iso)) * sounding;
+  color += vec3(0.30, 0.44, 0.50) * contour * 0.16;
   // Shading from the wave slopes, kept gentle so the sea stays dark.
   color *= 0.90 + 0.16 * lambert;
 
@@ -147,7 +155,7 @@ void main() {
   // where the wind patches are.
   float band = smoothstep(0.14, 0.5, coast) * (1.0 - land);
   float edge = smoothstep(0.36, 0.5, coast) * (1.0 - land);
-  float breakup = fbm(world * 380.0 + vec2(t * 0.22, t * 0.16));
+  float breakup = band > 0.0 ? fbm(world * 380.0 + vec2(t * 0.22, t * 0.16)) : 0.0;
   float shoreFoam = band * smoothstep(0.34, 0.80, breakup * 0.7 + band * 0.5 + h0 * 0.2);
   float wind = smoothstep(0.52, 0.72, fbm(world * 28.0 + vec2(t * 0.02, 0.0)));
   float cap = smoothstep(1.00, 1.30, h0) * wind * (1.0 - band);

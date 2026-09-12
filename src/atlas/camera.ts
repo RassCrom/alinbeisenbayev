@@ -64,10 +64,10 @@ export function islandBounds(island: Island): Bounds {
 /* ---- Limits ---------------------------------------------------------- */
 
 /** Zoom limits as multiples of the fitted zoom. */
-export const ZOOM_OUT_LIMIT = 0.7;
+export const ZOOM_OUT_LIMIT = 0.6;
 export const ZOOM_IN_LIMIT = 9;
 /** How far past the archipelago's edge the screen centre may travel, as a fraction of its size. */
-const PAN_SLACK = 0.12;
+const PAN_SLACK = 0.2;
 
 const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
 

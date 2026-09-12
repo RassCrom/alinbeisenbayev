@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { SETTLEMENT_SPRITES, islandSprite } from './assets.ts';
 import { visibleWorld, type Point, type ViewStore } from './camera.ts';
 import type { AmbientAudio } from './audio.ts';
@@ -8,7 +8,7 @@ import { TIERS, TIER_LABEL } from './config.ts';
 import type { InteractionStore } from './interaction.ts';
 import { paintingHalfWidth } from './layout.ts';
 import type { TradeGood } from './tools.ts';
-import type { Atlas } from './types.ts';
+import type { Atlas, Island } from './types.ts';
 import { moonPhase } from './weather/sun.ts';
 import {
   CONDITION_LABEL,
@@ -21,14 +21,20 @@ import {
 } from './weather/weather.ts';
 
 /*
- * The two dark-glass panels from concept 10. Bottom left: compass, the
- * live weather readout with a preview picker, the survey count, and a
- * minimap of the paintings that doubles as the category legend and
- * recentres the camera when clicked. Bottom right: the settlement tier
- * legend, the trade goods (stage 5: a chip per tag shared by several
- * settlements; pointing at one lights every settlement that trades in it,
- * clicking pins it) and the switch back to the sheet view. At night a moon
- * with the real phase hangs at the top right of the map.
+ * The HUD, kept out of the map's way. Three small things stay on screen:
+ *
+ *   top left      the chronicle as a single pill ("Today"); a click opens
+ *                 the slider, which stays open while a month is shown;
+ *   bottom left   compass, the weather in one line, and the minimap with
+ *                 the survey count as a thin bar under it;
+ *   right         a rail of icon buttons: zoom in and out, fit, the legend
+ *                 drawer (tiers, trade goods, islands), sound, the chart
+ *                 export, and the switch to the sheet view.
+ *
+ * Everything else, the island list, the tier counts, the trade goods, the
+ * weather presets, lives behind one of those buttons, so the map, not the
+ * chrome, is what a visitor reads first. At night a moon with the real
+ * phase hangs at the top of the map.
  */
 
 interface Props {
@@ -52,11 +58,18 @@ interface Props {
   onSheetView: () => void;
   /** A click on the minimap, in world coordinates. */
   onMinimapClick: (point: Point) => void;
+  /** The rail's zoom buttons: a factor about the viewport centre. */
+  onZoom: (factor: number) => void;
+  onFit: () => void;
+  onIslandClick: (island: Island) => void;
 }
 
 const PRESETS = Object.keys(PRESET_LABEL) as WeatherPreset[];
 /** Chips shown; the rest of the tags stay in the sheet view's filters. */
-const MAX_GOODS = 10;
+const MAX_GOODS = 12;
+const RAIL_ZOOM = 1.6;
+
+type Drawer = 'legend' | null;
 
 export default function AtlasHud({
   atlas,
@@ -77,12 +90,12 @@ export default function AtlasHud({
   onPreset,
   onSheetView,
   onMinimapClick,
+  onZoom,
+  onFit,
+  onIslandClick,
 }: Props) {
-  const counts = useMemo(() => {
-    const byTier = new Map<string, number>();
-    for (const settlement of atlas.settlements) byTier.set(settlement.tier, (byTier.get(settlement.tier) ?? 0) + 1);
-    return byTier;
-  }, [atlas]);
+  const [drawer, setDrawer] = useState<Drawer>(null);
+  const toggleDrawer = (which: Exclude<Drawer, null>): void => setDrawer((open) => (open === which ? null : which));
 
   const sourceNote =
     preset !== null
@@ -102,92 +115,103 @@ export default function AtlasHud({
       <Chronicle atlas={atlas} store={chronicle} range={range} arriving={arriving} />
 
       <div className={`atlas-hud atlas-hud--left${arrivingClass}`}>
-        <div className="atlas-hud__block">
+        <div className="atlas-hud__row">
           <Compass />
+          <Weather
+            weather={weather}
+            preset={preset}
+            onPreset={onPreset}
+            sourceNote={sourceNote}
+          />
         </div>
-        <div className="atlas-hud__divider" />
-        <div className="atlas-hud__block atlas-weather" title={sourceNote}>
-          <WeatherIcon condition={weather.condition} isDay={weather.isDay} />
-          <span className="atlas-weather__temperature">{formatTemperature(weather.temperature)}</span>
-          <span className="atlas-weather__wind">
-            {compassPoint(weather.windDirection)} {Math.round(weather.windSpeed)} km/h · {CONDITION_LABEL[weather.condition]}
-          </span>
-          <span className="atlas-weather__place">The map lives in Astana's weather.</span>
-          <label className="atlas-weather__preview">
-            <span className="atlas-hud__eyebrow">Preview</span>
-            <select
-              value={preset ?? 'live'}
-              onChange={(event) => onPreset(event.target.value === 'live' ? null : (event.target.value as WeatherPreset))}
-              aria-label="Preview the map under another weather"
-            >
-              <option value="live">Live Astana</option>
-              {PRESETS.map((key) => (
-                <option key={key} value={key}>
-                  {PRESET_LABEL[key]}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="atlas-hud__divider" />
-        <div className="atlas-hud__block">
+        <div className="atlas-hud__block atlas-hud__block--minimap">
           <Minimap atlas={atlas} store={store} onClick={onMinimapClick} />
-          <span className="atlas-surveyed" aria-live="polite">
-            surveyed {surveyedCount} of {atlas.settlements.length} settlements
-          </span>
-        </div>
-        <div className="atlas-hud__block atlas-legend" aria-label="Islands">
-          {atlas.islands.map((island) => (
-            <div key={island.id} style={{ display: 'contents' }}>
-              <span className="atlas-legend__name">{island.name}</span>
-              <span className="atlas-legend__category">
-                {island.category} · {island.projectCount}
-              </span>
-            </div>
-          ))}
+          <div
+            className="atlas-surveyed"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={atlas.settlements.length}
+            aria-valuenow={surveyedCount}
+            aria-label={`Surveyed ${surveyedCount} of ${atlas.settlements.length} settlements`}
+            title={`Surveyed ${surveyedCount} of ${atlas.settlements.length} settlements. Point at a settlement to lift the fog around it.`}
+          >
+            <span style={{ width: `${(100 * surveyedCount) / Math.max(1, atlas.settlements.length)}%` }} />
+          </div>
         </div>
       </div>
 
-      <div className={`atlas-hud atlas-hud--right${arrivingClass}`}>
-        <span className="atlas-hud__eyebrow">Settlements</span>
-        <div className="atlas-tiers" aria-label="Settlement tiers">
-          {TIERS.map((tier) => (
-            <div key={tier} style={{ display: 'contents' }}>
-              <img src={SETTLEMENT_SPRITES[tier].src} alt="" />
-              <span>{TIER_LABEL[tier]}</span>
-              <span className="atlas-tiers__count">{counts.get(tier) ?? 0}</span>
-            </div>
-          ))}
-        </div>
-        {goods.length > 0 && <TradeGoods goods={goods.slice(0, MAX_GOODS)} interaction={interaction} />}
-        <div className="atlas-hud__actions">
-          <SoundToggle audio={audio} />
+      <div className={`atlas-rail${arrivingClass}`} role="toolbar" aria-label="Map tools">
+        <RailButton label="Zoom in" onClick={() => onZoom(RAIL_ZOOM)}>
+          <path d="M8 3.5v9M3.5 8h9" />
+        </RailButton>
+        <RailButton label="Zoom out" onClick={() => onZoom(1 / RAIL_ZOOM)}>
+          <path d="M3.5 8h9" />
+        </RailButton>
+        <RailButton label="Fit the archipelago" onClick={onFit}>
+          <path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" />
+        </RailButton>
+        <div className="atlas-rail__gap" />
+        <RailButton label="Legend" pressed={drawer === 'legend'} onClick={() => toggleDrawer('legend')}>
+          <path d="M3 4.5h10M3 8h10M3 11.5h6" />
+        </RailButton>
+        <SoundToggle audio={audio} />
+        <RailButton label={exporting ? 'Drawing the chart…' : 'Export chart'} onClick={onExport} disabled={exporting}>
+          <path d="M8 2.5v8M5 7.5l3 3 3-3M3 13.5h10" />
+        </RailButton>
+        <div className="atlas-rail__gap" />
+        <button type="button" className="atlas-rail__sheet" onClick={onSheetView} title="The plain index of works">
+          Sheet
+        </button>
+        <span className="atlas-rail__note" title="The atlas is an experiment; the sheet view is the stable face of the site.">
+          {quality === 'lite' ? 'lite' : 'beta'}
+        </span>
+      </div>
+
+      {drawer === 'legend' && (
+        <div className="atlas-hud atlas-drawer" role="region" aria-label="Legend">
           <button
             type="button"
-            className="atlas-button atlas-button--quiet"
-            onClick={onExport}
-            disabled={exporting}
-            title="Download the current view as a PNG chart"
+            className="atlas-drawer__close"
+            aria-label="Close the legend"
+            onClick={() => setDrawer(null)}
           >
-            {exporting ? 'Drawing…' : 'Export chart'}
+            ×
           </button>
+          <Legend atlas={atlas} onIslandClick={(island) => onIslandClick(island)} />
+          {goods.length > 0 && <TradeGoods goods={goods.slice(0, MAX_GOODS)} interaction={interaction} />}
         </div>
-        {quality === 'lite' && (
-          <span className="atlas-hud__quality" title="Fewer effects: this device asked for a lighter map.">
-            light rendering
-          </span>
-        )}
-        <span
-          className="atlas-hud__experimental"
-          title="The atlas is an experiment; the sheet view is the stable face of the site."
-        >
-          experimental
-        </span>
-        <button type="button" className="atlas-button" onClick={onSheetView}>
-          Sheet view
-        </button>
-      </div>
+      )}
     </>
+  );
+}
+
+function RailButton({
+  label,
+  pressed,
+  disabled,
+  onClick,
+  children,
+}: {
+  label: string;
+  pressed?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      className={`atlas-rail__button${pressed ? ' is-on' : ''}`}
+      aria-label={label}
+      aria-pressed={pressed}
+      data-label={label}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        {children}
+      </svg>
+    </button>
   );
 }
 
@@ -195,28 +219,116 @@ export default function AtlasHud({
 function SoundToggle({ audio }: { audio: AmbientAudio }) {
   const on = useSyncExternalStore(audio.subscribe, audio.enabled);
   return (
-    <button
-      type="button"
-      className={`atlas-button atlas-button--quiet${on ? ' is-on' : ''}`}
-      aria-pressed={on}
-      onClick={() => void audio.toggle()}
-      title={on ? 'Mute the sea and the wind' : 'Hear the sea and the wind'}
-    >
-      <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" fill="currentColor">
-        <path d="M2 6h3l4-3v10l-4-3H2z" />
-        {on && <path d="M11 5.5a3.2 3.2 0 0 1 0 5M12.5 3.5a5.6 5.6 0 0 1 0 9" fill="none" stroke="currentColor" strokeWidth="1.3" />}
-        {!on && <path d="M11 6l3 4M14 6l-3 4" fill="none" stroke="currentColor" strokeWidth="1.3" />}
-      </svg>
-      {on ? 'Sound on' : 'Sound off'}
-    </button>
+    <RailButton label={on ? 'Sound on' : 'Sound off'} pressed={on} onClick={() => void audio.toggle()}>
+      <path d="M2.5 6h2.5l3.5-2.8v9.6L5 10H2.5z" />
+      {on ? (
+        <path d="M11 5.5a3.2 3.2 0 0 1 0 5M12.6 3.6a5.8 5.8 0 0 1 0 8.8" />
+      ) : (
+        <path d="M10.5 6l3 4M13.5 6l-3 4" />
+      )}
+    </RailButton>
+  );
+}
+
+/** The tiers with today's counts, then the islands: name, category, count; a click fits the island. */
+function Legend({ atlas, onIslandClick }: { atlas: Atlas; onIslandClick: (island: Island) => void }) {
+  const counts = useMemo(() => {
+    const byTier = new Map<string, number>();
+    for (const settlement of atlas.settlements) byTier.set(settlement.tier, (byTier.get(settlement.tier) ?? 0) + 1);
+    return byTier;
+  }, [atlas]);
+  return (
+    <>
+      <span className="atlas-hud__eyebrow">Settlements</span>
+      <div className="atlas-tiers" aria-label="Settlement tiers">
+        {TIERS.map((tier) => (
+          <div key={tier} style={{ display: 'contents' }}>
+            <img src={SETTLEMENT_SPRITES[tier].src} alt="" />
+            <span>{TIER_LABEL[tier]}</span>
+            <span className="atlas-tiers__count">{counts.get(tier) ?? 0}</span>
+          </div>
+        ))}
+      </div>
+      <span className="atlas-hud__eyebrow">Islands</span>
+      <div className="atlas-legend" aria-label="Islands">
+        {atlas.islands.map((island) => (
+          <button
+            key={island.id}
+            type="button"
+            className="atlas-legend__row"
+            title={`Fit ${island.name}`}
+            onClick={() => onIslandClick(island)}
+          >
+            <span className="atlas-legend__name">{island.name}</span>
+            <span className="atlas-legend__category">{island.category}</span>
+            <span className="atlas-legend__count">{island.projectCount}</span>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/** Temperature, condition and wind in one line; the preview picker behind a small button. */
+function Weather({
+  weather,
+  preset,
+  onPreset,
+  sourceNote,
+}: {
+  weather: WeatherState;
+  preset: WeatherPreset | null;
+  onPreset: (preset: WeatherPreset | null) => void;
+  sourceNote: string;
+}) {
+  const [picking, setPicking] = useState(preset !== null);
+  return (
+    <div className="atlas-weather" title={`${sourceNote} The map lives in Astana's weather.`}>
+      <div className="atlas-weather__line">
+        <WeatherIcon condition={weather.condition} isDay={weather.isDay} />
+        <span className="atlas-weather__temperature">{formatTemperature(weather.temperature)}</span>
+        <button
+          type="button"
+          className={`atlas-weather__toggle${preset !== null ? ' is-on' : ''}`}
+          aria-label="Preview the map under another weather"
+          aria-expanded={picking}
+          title={preset !== null ? `Previewing ${PRESET_LABEL[preset]}` : 'Preview another weather'}
+          onClick={() => setPicking((open) => !open)}
+        >
+          <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+            <path d="M1.5 8s2.5-4 6.5-4 6.5 4 6.5 4-2.5 4-6.5 4S1.5 8 1.5 8z" />
+            <circle cx="8" cy="8" r="1.8" />
+          </svg>
+        </button>
+      </div>
+      <span className="atlas-weather__wind">
+        {CONDITION_LABEL[weather.condition]} · {compassPoint(weather.windDirection)} {Math.round(weather.windSpeed)} km/h · Astana
+      </span>
+      {picking && (
+        <select
+          className="atlas-weather__preview"
+          value={preset ?? 'live'}
+          onChange={(event) => onPreset(event.target.value === 'live' ? null : (event.target.value as WeatherPreset))}
+          aria-label="Preview the map under another weather"
+        >
+          <option value="live">Live Astana</option>
+          {PRESETS.map((key) => (
+            <option key={key} value={key}>
+              {PRESET_LABEL[key]}
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
   );
 }
 
 /**
- * The chronicle slider (stage 6), top left: a month from the first project's
- * start to today, year ticks under the track, the date and a settlement
- * count as readout, and a lock. Dragging or keying the slider scrubs; on
- * release the view eases back to today unless the lock holds it.
+ * The chronicle slider (stage 6), top left. Collapsed it is one pill with
+ * the month shown ("Today" most of the time); open, it is the slider with
+ * year ticks, a settlement count and a lock. It stays open while a month
+ * other than today is shown, so the map never eases back with its control
+ * out of sight.
  */
 function Chronicle({
   atlas,
@@ -230,6 +342,8 @@ function Chronicle({
   arriving: boolean;
 }) {
   const state = useSyncExternalStore(store.subscribe, store.get);
+  const [open, setOpen] = useState(state.month !== null);
+  const shown = open || state.month !== null || state.pinned;
   const month = state.month ?? range.last;
   const settled = useMemo(() => new Set(atlas.settlements.map((s) => s.islandId)).size, [atlas]);
   const years: number[] = [];
@@ -237,13 +351,33 @@ function Chronicle({
   const span = Math.max(1, range.last - range.first);
   const at = (m: Month): string => `${(((m - range.first) / span) * 100).toFixed(2)}%`;
   const scrub = (on: boolean): void => store.set({ scrubbing: on });
+  const label = state.month === null ? 'Today' : formatMonth(state.month);
+
+  if (!shown) {
+    return (
+      <button
+        type="button"
+        className={`atlas-hud atlas-hud--chronicle atlas-chronicle__pill${arriving ? ' is-arriving' : ''}`}
+        onClick={() => setOpen(true)}
+        title="Replay how the archipelago grew"
+        aria-expanded={false}
+      >
+        <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+          <circle cx="8" cy="8" r="6" />
+          <path d="M8 4.5V8l2.5 1.5" />
+        </svg>
+        <span className="atlas-hud__eyebrow">Chronicle</span>
+        <span className="atlas-chronicle__date">{label}</span>
+      </button>
+    );
+  }
 
   return (
     <div className={`atlas-hud atlas-hud--chronicle${arriving ? ' is-arriving' : ''}`}>
       <div className="atlas-chronicle__head">
         <span className="atlas-hud__eyebrow">Chronicle</span>
         <span className="atlas-chronicle__date" aria-live="polite">
-          {state.month === null ? 'Today' : formatMonth(state.month)}
+          {label}
         </span>
         <button
           type="button"
@@ -263,6 +397,18 @@ function Chronicle({
             />
           </svg>
         </button>
+        <button
+          type="button"
+          className="atlas-chronicle__close"
+          aria-label="Close the chronicle"
+          title={state.month === null ? 'Close' : 'Close; the map returns to today'}
+          onClick={() => {
+            store.set({ pinned: false, month: null, scrubbing: false });
+            setOpen(false);
+          }}
+        >
+          ×
+        </button>
       </div>
       <div className="atlas-chronicle__track">
         <input
@@ -272,7 +418,7 @@ function Chronicle({
           step={1}
           value={month}
           aria-label="Chronicle: the archipelago on a month"
-          aria-valuetext={state.month === null ? 'Today' : formatMonth(month)}
+          aria-valuetext={label}
           onChange={(event) => {
             const value = Number(event.target.value);
             store.set({ month: value >= range.last ? null : value });
@@ -293,7 +439,7 @@ function Chronicle({
         </div>
       </div>
       <span className="atlas-chronicle__count">
-        {atlas.settlements.length} settlements, {settled} of {atlas.islands.length} islands settled
+        {atlas.settlements.length} settlements · {settled} of {atlas.islands.length} islands settled
       </span>
     </div>
   );
@@ -312,7 +458,9 @@ function TradeGoods({ goods, interaction }: { goods: readonly TradeGood[]; inter
   };
   return (
     <div className="atlas-goods" role="group" aria-label="Trade goods">
-      <span className="atlas-hud__eyebrow">Trade goods</span>
+      <span className="atlas-hud__eyebrow" title="The tools the works were made with; point at one to light the settlements that use it">
+        Trade goods
+      </span>
       <div className="atlas-goods__chips">
         {goods.map((good) => {
           const isPinned = pinned?.key === good.key;
@@ -396,7 +544,11 @@ function Minimap({ atlas, store, onClick }: { atlas: Atlas; store: ViewStore; on
             y={island.y - half}
             width={2 * half}
             height={2 * half}
-          />
+          >
+            <title>
+              {island.name} · {island.category}
+            </title>
+          </image>
         );
       })}
       <rect ref={rectRef} className="atlas-minimap__viewport" x="0" y="0" width="0" height="0" />
@@ -447,11 +599,8 @@ function Compass() {
       </g>
       <polygon points="0,-28 4,-4 -4,-4" fill="#efe6d0" />
       <circle r="2" fill="#efe6d0" />
-      <g fill="#efe6d0" fontFamily="var(--atlas-serif)" fontSize="8" textAnchor="middle">
+      <g fill="#efe6d0" fontFamily="var(--atlas-serif)" fontSize="9" textAnchor="middle">
         <text y="-31">N</text>
-        <text y="37">S</text>
-        <text x="-34" y="3">W</text>
-        <text x="34" y="3">E</text>
       </g>
     </svg>
   );

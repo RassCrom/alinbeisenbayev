@@ -62,7 +62,7 @@
 }
 
 .atlas-lane--sea {
-  stroke: rgba(var(--atlas-gold-rgb), 0.42);
+  stroke: rgba(var(--atlas-gold-rgb), 0.36);
   stroke-width: 1.2;
   stroke-dasharray: 6 5;
 }
@@ -70,6 +70,16 @@
 .atlas-lane--road {
   stroke: rgba(210, 180, 130, 0.28);
   stroke-width: 1.6;
+}
+
+/* The overview keeps the sea lanes faint and the roads out of it; both
+   come up as the camera closes in. A lit lane always shows in full. */
+.atlas-lanes.is-far .atlas-lane--sea:not(.is-lit) {
+  stroke-opacity: 0.55;
+}
+
+.atlas-lanes.is-far .atlas-lane--road:not(.is-lit) {
+  opacity: 0;
 }
 
 .atlas-lanes path.is-lit {
@@ -90,7 +100,7 @@
   left: 0;
   white-space: nowrap;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.11em;
   line-height: 1.1;
   color: var(--atlas-bone);
   text-shadow:
@@ -98,12 +108,20 @@
     0 0 10px rgba(0, 0, 0, 0.8);
   will-change: transform;
   visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 200ms ease,
+    visibility 0s linear 200ms;
   pointer-events: auto;
   cursor: pointer;
 }
 
 .atlas-label.is-placed {
   visibility: visible;
+  opacity: 1;
+  transition:
+    opacity 200ms ease,
+    visibility 0s;
 }
 
 .atlas-label__inner {
@@ -127,12 +145,13 @@
   transform: translateY(-7px) scale(1.12);
 }
 
+/* Island names are the wayfinding anchors: wide-set, but not loud. */
 .atlas-label--island {
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
-  letter-spacing: 0.4em;
-  padding-left: 0.4em; /* balances the trailing letter-spacing */
-  color: #f3ead6;
+  letter-spacing: 0.34em;
+  padding-left: 0.34em; /* balances the trailing letter-spacing */
+  color: rgba(243, 234, 214, 0.86);
 }
 
 .atlas-label--island:hover {
@@ -140,29 +159,30 @@
 }
 
 .atlas-label--fortress {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
 }
 
 .atlas-label--walled-town {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .atlas-label--market-town {
-  font-size: 12px;
+  font-size: 11px;
+  color: rgba(235, 225, 201, 0.92);
 }
 
 .atlas-label--hamlet {
-  font-size: 11px;
-  color: rgba(235, 225, 201, 0.9);
+  font-size: 10.5px;
+  color: rgba(235, 225, 201, 0.85);
 }
 
 .atlas-label--ruin {
-  font-size: 11px;
+  font-size: 10.5px;
   font-style: italic;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: none;
   color: #aeb7c6;
 }
@@ -175,8 +195,8 @@
 
 .atlas-label__crown {
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
 }
@@ -346,12 +366,12 @@
 
 .atlas-hud {
   position: absolute;
-  bottom: 18px;
+  bottom: 16px;
   display: flex;
-  align-items: stretch;
-  gap: 16px;
-  padding: 12px 16px;
-  border: 1px solid rgba(var(--atlas-gold-rgb), 0.38);
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.32);
   border-radius: 3px;
   background: var(--atlas-glass);
   box-shadow:
@@ -366,14 +386,14 @@
 }
 
 .atlas-hud--left {
-  left: 18px;
+  left: 16px;
+  width: 196px;
 }
 
-.atlas-hud--right {
-  right: 18px;
-  flex-direction: column;
+.atlas-hud__row {
+  display: flex;
+  align-items: center;
   gap: 10px;
-  padding-top: 10px;
 }
 
 .atlas-hud__block {
@@ -383,9 +403,8 @@
   gap: 4px;
 }
 
-.atlas-hud__divider {
-  width: 1px;
-  background: rgba(var(--atlas-gold-rgb), 0.25);
+.atlas-hud__block--minimap {
+  gap: 6px;
 }
 
 .atlas-hud__eyebrow {
@@ -396,23 +415,71 @@
 }
 
 .atlas-compass {
-  width: 74px;
-  height: 74px;
+  flex: none;
+  width: 48px;
+  height: 48px;
 }
 
 .atlas-weather {
-  min-width: 150px;
-  max-width: 190px;
-}
-
-.atlas-weather__preview {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-top: 4px;
+  min-width: 0;
 }
 
-.atlas-weather__preview select {
+.atlas-weather__line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.atlas-weather__icon {
+  width: 20px;
+  height: 20px;
+  color: #bfe3ff;
+}
+
+.atlas-weather__temperature {
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.atlas-weather__wind {
+  color: var(--atlas-bone-dim);
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+.atlas-weather__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--atlas-bone-dim);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.atlas-weather__toggle:hover,
+.atlas-weather__toggle:focus-visible,
+.atlas-weather__toggle.is-on {
+  color: var(--atlas-gold);
+  border-color: rgba(var(--atlas-gold-rgb), 0.5);
+  outline: none;
+}
+
+.atlas-weather__preview {
+  margin-top: 4px;
   padding: 3px 6px;
   border: 1px solid rgba(var(--atlas-gold-rgb), 0.4);
   border-radius: 2px;
@@ -424,7 +491,7 @@
   cursor: pointer;
 }
 
-.atlas-weather__preview select:focus-visible {
+.atlas-weather__preview:focus-visible {
   outline: 1px solid var(--atlas-gold);
   outline-offset: 1px;
 }
@@ -432,39 +499,17 @@
 .atlas-moon {
   position: absolute;
   top: 18px;
-  right: 22px;
-  width: 44px;
-  height: 44px;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  transform: translateX(-50%);
   filter: drop-shadow(0 0 12px rgba(235, 225, 201, 0.35));
   pointer-events: none;
 }
 
-.atlas-weather__icon {
-  width: 26px;
-  height: 26px;
-  color: #bfe3ff;
-}
-
-.atlas-weather__temperature {
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.02em;
-}
-
-.atlas-weather__wind,
-.atlas-weather__place {
-  color: var(--atlas-bone-dim);
-  font-size: 11px;
-}
-
-.atlas-weather__place {
-  font-style: italic;
-}
-
 .atlas-minimap {
   display: block;
-  width: 168px;
+  width: 100%;
   height: 118px;
   border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
   border-radius: 2px;
@@ -480,21 +525,234 @@
   pointer-events: none;
 }
 
+/* The survey: a thin gold bar filling as the fog lifts, the numbers in its tooltip. */
 .atlas-surveyed {
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(var(--atlas-gold-rgb), 0.18);
+  overflow: hidden;
+}
+
+.atlas-surveyed span {
+  display: block;
+  height: 100%;
+  background: var(--atlas-gold);
+  transition: width 400ms ease;
+}
+
+/* ---- The rail ---- */
+
+.atlas-rail {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.32);
+  border-radius: 3px;
+  background: var(--atlas-glass);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    0 12px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateY(-50%);
+  cursor: default;
+  z-index: 3;
+}
+
+.atlas-rail__gap {
+  width: 20px;
+  height: 1px;
+  margin: 3px 0;
+  background: rgba(var(--atlas-gold-rgb), 0.25);
+}
+
+.atlas-rail__button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--atlas-bone);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.atlas-rail__button:hover,
+.atlas-rail__button:focus-visible {
+  border-color: rgba(var(--atlas-gold-rgb), 0.6);
+  background: rgba(var(--atlas-gold-rgb), 0.12);
+  outline: none;
+}
+
+.atlas-rail__button.is-on {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.24);
+  color: #fff6e0;
+}
+
+.atlas-rail__button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+/* The button's name slides out to the left on hover or focus. */
+.atlas-rail__button::after {
+  content: attr(data-label);
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  padding: 4px 8px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.4);
+  border-radius: 2px;
+  background: rgba(7, 13, 24, 0.92);
+  color: var(--atlas-bone);
   font-family: var(--font-mono, 'DM Mono', monospace);
   font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.atlas-rail__button:hover::after,
+.atlas-rail__button:focus-visible::after {
+  opacity: 1;
+}
+
+.atlas-rail__sheet {
+  width: 32px;
+  padding: 6px 0;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.55);
+  border-radius: 2px;
+  background: rgba(var(--atlas-gold-rgb), 0.08);
+  color: var(--atlas-bone);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  writing-mode: vertical-rl;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.atlas-rail__sheet:hover,
+.atlas-rail__sheet:focus-visible {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.18);
+  outline: none;
+}
+
+/* The experiment owns up to being one, in one quiet word. */
+.atlas-rail__note {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold, #c9a227);
+  opacity: 0.8;
+}
+
+/* ---- Drawer beside the rail ---- */
+
+.atlas-drawer {
+  top: 50%;
+  right: 66px;
+  bottom: auto;
+  width: 250px;
+  max-height: calc(100% - 40px);
+  overflow-y: auto;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+.atlas-drawer__close {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--atlas-bone-dim);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.atlas-drawer__close:hover,
+.atlas-drawer__close:focus-visible {
+  color: var(--atlas-bone);
+  outline: none;
+}
+
+.atlas-tiers {
+  display: grid;
+  grid-template-columns: 30px auto auto;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  font-size: 11.5px;
+}
+
+.atlas-tiers img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.atlas-tiers__count {
+  color: var(--atlas-bone-dim);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .atlas-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.atlas-legend__row {
   display: grid;
-  grid-template-columns: auto auto;
-  column-gap: 12px;
-  row-gap: 2px;
-  align-content: center;
+  grid-template-columns: auto 1fr auto;
+  column-gap: 10px;
+  align-items: baseline;
+  padding: 3px 4px;
+  margin: 0 -4px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--atlas-bone);
+  font: inherit;
   font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.atlas-legend__row:hover,
+.atlas-legend__row:focus-visible {
+  background: rgba(var(--atlas-gold-rgb), 0.12);
+  outline: none;
 }
 
 .atlas-legend__name {
@@ -502,28 +760,12 @@
   text-transform: uppercase;
 }
 
-.atlas-legend__category {
+.atlas-legend__category,
+.atlas-legend__count {
   color: var(--atlas-bone-dim);
 }
 
-.atlas-tiers {
-  display: grid;
-  grid-template-columns: 34px auto auto;
-  align-items: center;
-  column-gap: 10px;
-  row-gap: 3px;
-  font-size: 11.5px;
-}
-
-.atlas-tiers img {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-}
-
-.atlas-tiers__count {
-  color: var(--atlas-bone-dim);
-  text-align: right;
+.atlas-legend__count {
   font-variant-numeric: tabular-nums;
 }
 
@@ -549,6 +791,31 @@
   border-color: var(--atlas-gold);
   background: rgba(var(--atlas-gold-rgb), 0.18);
   outline: none;
+}
+
+/* ---- First-visit hint ---- */
+
+.atlas-hint {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  padding: 6px 14px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
+  border-radius: 999px;
+  background: var(--atlas-glass);
+  color: var(--atlas-bone-dim);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: opacity 1100ms ease;
+}
+
+.atlas-hint.is-arriving {
+  opacity: 0;
 }
 
 /* ---- Status overlays ---- */
@@ -577,15 +844,17 @@
 }
 
 @media (max-width: 900px) {
-  .atlas-hud--right {
+  .atlas-hud__block--minimap,
+  .atlas-hint {
     display: none;
   }
   .atlas-hud--left {
-    gap: 12px;
-    padding: 10px 12px;
+    width: auto;
+    padding: 8px 10px;
   }
-  .atlas-legend {
-    display: none;
+  .atlas-drawer {
+    right: 60px;
+    width: min(240px, calc(100% - 90px));
   }
 }
 
@@ -668,13 +937,15 @@
   color: #fff6e0;
 }
 
-/* The first-visit flight: the panels and the moon fade in as the camera lands. */
+/* The first-visit flight: the panels, the rail and the moon fade in as the camera lands. */
 .atlas-hud,
+.atlas-rail,
 .atlas-moon {
   transition: opacity 1100ms ease;
 }
 
 .atlas-hud.is-arriving,
+.atlas-rail.is-arriving,
 .atlas-moon.is-arriving {
   opacity: 0;
   pointer-events: none;
@@ -703,19 +974,63 @@
 /* ---- Stage 6: the chronicle slider ---- */
 
 .atlas-hud--chronicle {
-  top: 18px;
-  left: 18px;
+  top: 16px;
+  left: 16px;
   bottom: auto;
   flex-direction: column;
   gap: 6px;
-  width: min(376px, calc(100% - 36px));
-  padding: 10px 16px 12px;
+  width: min(340px, calc(100% - 32px));
+  padding: 10px 14px 12px;
+}
+
+/* Collapsed: one pill that names the month shown. */
+.atlas-chronicle__pill {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  padding: 6px 12px 6px 10px;
+  color: var(--atlas-bone-dim);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.atlas-chronicle__pill:hover,
+.atlas-chronicle__pill:focus-visible {
+  border-color: rgba(var(--atlas-gold-rgb), 0.7);
+  color: var(--atlas-bone);
+  outline: none;
+}
+
+.atlas-chronicle__pill .atlas-chronicle__date {
+  font-size: 13px;
 }
 
 .atlas-chronicle__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
+}
+
+.atlas-chronicle__close {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--atlas-bone-dim);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.atlas-chronicle__close:hover,
+.atlas-chronicle__close:focus-visible {
+  color: var(--atlas-bone);
+  outline: none;
 }
 
 .atlas-chronicle__date {
@@ -851,65 +1166,13 @@
 }
 
 @media (max-width: 900px) {
-  .atlas-hud--chronicle {
-    width: calc(100% - 36px);
+  .atlas-hud--chronicle:not(.atlas-chronicle__pill) {
+    width: calc(100% - 32px);
     padding: 8px 12px 10px;
   }
 }
 
-/* ---- Stage 7: sound, export, quality ---- */
-
-.atlas-hud__actions {
-  display: flex;
-  gap: 6px;
-}
-
-.atlas-button--quiet {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 8px;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  opacity: 0.85;
-}
-
-.atlas-button--quiet.is-on {
-  border-color: var(--atlas-gold);
-  background: rgba(var(--atlas-gold-rgb), 0.22);
-  opacity: 1;
-}
-
-.atlas-button:disabled {
-  opacity: 0.5;
-  cursor: progress;
-}
-
-.atlas-hud__quality {
-  font-size: 9.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--atlas-bone-dim);
-  text-align: center;
-}
-
-/* The experiment owns up to being one. Same register as the quality note,
-   but bordered and gold so it reads as a status, not a caption. */
-.atlas-hud__experimental {
-  align-self: center;
-  font-size: 9.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--color-accent-gold, #c9a227);
-  border: 1px solid currentColor;
-  border-radius: 3px;
-  padding: 2px 6px;
-  opacity: 0.85;
-}
-
-/* Dev only: the frame-time readout behind ?atlas-stats. */
+/* ---- Dev only: the frame-time readout behind ?atlas-stats. ---- */
 .atlas-stats {
   position: absolute;
   top: 8px;

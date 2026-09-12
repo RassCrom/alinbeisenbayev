@@ -42,7 +42,9 @@ import { GRADE_FRAG, SKY_FRAG, SNOW_FRAG } from './weatherShaders.ts';
  *    8. dim          while something is highlighted: darken everything, then
  *                    draw the highlighted settlements again on top
  *    9. grade        multiply: day, twilight and night tint, cloud shadows
- *   10. sky          clouds, fog haze, rain or snow, lightning
+ *                    (skipped on a clear full day, when it would be identity)
+ *   10. sky          clouds, fog haze, rain or snow, lightning (skipped when
+ *                    there is none of it)
  *   11. beams        the lighthouse beams, additive, at night
  *   12. fog          fog of war, torn open around surveyed settlements
  *
@@ -281,34 +283,43 @@ export class AtlasRenderer {
       for (const settlement of lit) this.drawSettlement(settlement, stateOf(settlement));
     }
 
-    // 9. grade (multiply)
-    gl.useProgram(this.grade.program);
-    gl.bindVertexArray(this.empty);
-    gl.blendFunc(gl.DST_COLOR, gl.ZERO);
-    this.fullscreenUniforms(this.grade, cameraDevice, frame.weatherTime);
-    gl.uniform1f(this.grade.uniforms.get('u_day')!, w.day);
-    gl.uniform1f(this.grade.uniforms.get('u_dusk')!, w.dusk);
-    gl.uniform1f(this.grade.uniforms.get('u_cloud')!, w.cloud);
-    gl.uniform1f(this.grade.uniforms.get('u_storm')!, w.storm);
-    gl.uniform2f(this.grade.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
-    gl.uniform3f(this.grade.uniforms.get('u_sun')!, w.sunX, w.sunY, w.sunZ);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    // 9. grade (multiply). A clear, full day with no cloud is an identity tint: skip the pass.
+    const graded = w.day < 0.995 || w.dusk > 0.005 || w.cloud > 0.005 || w.storm > 0.005;
+    if (graded) {
+      gl.useProgram(this.grade.program);
+      gl.bindVertexArray(this.empty);
+      gl.blendFunc(gl.DST_COLOR, gl.ZERO);
+      this.fullscreenUniforms(this.grade, cameraDevice, frame.weatherTime);
+      gl.uniform1f(this.grade.uniforms.get('u_day')!, w.day);
+      gl.uniform1f(this.grade.uniforms.get('u_dusk')!, w.dusk);
+      gl.uniform1f(this.grade.uniforms.get('u_cloud')!, w.cloud);
+      gl.uniform1f(this.grade.uniforms.get('u_storm')!, w.storm);
+      gl.uniform2f(this.grade.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
+      gl.uniform3f(this.grade.uniforms.get('u_sun')!, w.sunX, w.sunY, w.sunZ);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
 
-    // 10. sky
-    gl.useProgram(this.sky.program);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    this.fullscreenUniforms(this.sky, cameraDevice, frame.weatherTime);
-    gl.uniform1f(this.sky.uniforms.get('u_day')!, w.day);
-    gl.uniform1f(this.sky.uniforms.get('u_cloud')!, Math.min(1, w.cloud + frame.veil * 0.6));
-    gl.uniform1f(this.sky.uniforms.get('u_storm')!, w.storm);
-    gl.uniform1f(this.sky.uniforms.get('u_haze')!, Math.min(1, w.haze + frame.veil));
-    gl.uniform1f(this.sky.uniforms.get('u_rain')!, w.rain);
-    gl.uniform1f(this.sky.uniforms.get('u_snow')!, w.snow);
-    gl.uniform1f(this.sky.uniforms.get('u_flash')!, w.flash);
-    // Precipitation leans with the wind's east-west push; strong wind lays it nearly flat.
-    gl.uniform1f(this.sky.uniforms.get('u_slant')!, Math.max(-1.2, Math.min(1.2, (w.windX * w.windSpeed) / 35)));
-    gl.uniform2f(this.sky.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    // 10. sky, only when there is weather to draw.
+    const cloud = Math.min(1, w.cloud + frame.veil * 0.6);
+    const haze = Math.min(1, w.haze + frame.veil);
+    const skied = cloud > 0.005 || haze > 0.005 || w.rain > 0.01 || w.snow > 0.01 || w.flash > 0.001;
+    if (skied) {
+      gl.useProgram(this.sky.program);
+      gl.bindVertexArray(this.empty);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      this.fullscreenUniforms(this.sky, cameraDevice, frame.weatherTime);
+      gl.uniform1f(this.sky.uniforms.get('u_day')!, w.day);
+      gl.uniform1f(this.sky.uniforms.get('u_cloud')!, cloud);
+      gl.uniform1f(this.sky.uniforms.get('u_storm')!, w.storm);
+      gl.uniform1f(this.sky.uniforms.get('u_haze')!, haze);
+      gl.uniform1f(this.sky.uniforms.get('u_rain')!, w.rain);
+      gl.uniform1f(this.sky.uniforms.get('u_snow')!, w.snow);
+      gl.uniform1f(this.sky.uniforms.get('u_flash')!, w.flash);
+      // Precipitation leans with the wind's east-west push; strong wind lays it nearly flat.
+      gl.uniform1f(this.sky.uniforms.get('u_slant')!, Math.max(-1.2, Math.min(1.2, (w.windX * w.windSpeed) / 35)));
+      gl.uniform2f(this.sky.uniforms.get('u_drift')!, frame.driftX, frame.driftY);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
 
     // 11. lighthouse beams
     if (frame.plan && frame.life && night > 0.05) {

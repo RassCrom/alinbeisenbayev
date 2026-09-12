@@ -12,12 +12,14 @@ import type { Atlas, Island, Tier } from './types.ts';
  * view store moves them with transforms, and the interaction store lifts
  * the active one.
  *
- * Placement is greedy, in two passes. Settlements go first, in tier order
- * then score, the capital ahead of all: each tries above its sprite, then
- * below, and is hidden when both would overlap a label already placed.
- * Hamlets and ruins only take part once the camera is zoomed past one and a
- * half times the fitted view. Island names go second and always show; they
- * float upward, over open sea, until they clear whatever is beneath them.
+ * Placement is greedy, in two passes. Island names go first and always
+ * show: they are the wayfinding anchors, so nothing may cover them.
+ * Settlements follow, in tier order then score, the capital ahead of all:
+ * each tries above its sprite, then below, and is hidden when both would
+ * overlap something already placed. Each tier joins in only past its own
+ * zoom threshold (LABEL_ZOOM), so the fitted view carries the island names
+ * and the fortresses alone, and the smaller names arrive as the camera
+ * comes closer. The active settlement's label always shows.
  */
 
 interface Props {
@@ -51,8 +53,14 @@ interface Rect {
   h: number;
 }
 
-/** Zoom, as a multiple of the fitted zoom, at which the smallest tiers get labels. */
-const SMALL_LABEL_ZOOM = 1.5;
+/** Zoom, as a multiple of the fitted zoom, past which each tier's labels take part. */
+const LABEL_ZOOM: Record<Tier, number> = {
+  fortress: 0,
+  'walled-town': 1.3,
+  'market-town': 1.8,
+  hamlet: 2.6,
+  ruin: 2.6,
+};
 /** Clearance between two labels, in CSS pixels. */
 const GAP = 4;
 /** How far, in CSS pixels per step, an island name climbs to clear a settlement label. */
@@ -117,7 +125,7 @@ export default function AtlasLabels({ atlas, store, interaction, onOpen, onIslan
 
     const place = (): void => {
       const { camera, viewport } = store.get();
-      const showSmall = camera.zoom >= fitBounds(atlas.bounds, viewport).zoom * SMALL_LABEL_ZOOM;
+      const relative = camera.zoom / fitBounds(atlas.bounds, viewport).zoom;
       const active = interaction.active();
       const kept: Rect[] = [];
       const show = (element: HTMLElement, rect: Rect): void => {
@@ -127,26 +135,6 @@ export default function AtlasLabels({ atlas, store, interaction, onOpen, onIslan
       };
       const hide = (element: HTMLElement): void => element.classList.remove('is-placed');
       const clear = (rect: Rect): boolean => !kept.some((other) => overlaps(other, rect));
-
-      for (const item of settlementItems) {
-        const element = elements.get(item.key);
-        const size = sizes.get(item.key);
-        if (!element || !size) continue;
-        const isActive = active !== null && item.key === `settlement:${active}`;
-        const small = item.tier === 'hamlet' || item.tier === 'ruin';
-        // The active settlement's label always shows, whatever the zoom.
-        if (small && !showSmall && !isActive) {
-          hide(element);
-          continue;
-        }
-        const candidates = [
-          hangingFrom(camera, viewport, item.x, item.above, size),
-          startingAt(camera, viewport, item.x, item.below, size),
-        ];
-        const rect = candidates.find((candidate) => onScreen(candidate, viewport) && (isActive || clear(candidate)));
-        if (rect) show(element, rect);
-        else hide(element);
-      }
 
       for (const item of islandItems) {
         const element = elements.get(item.key);
@@ -158,6 +146,25 @@ export default function AtlasLabels({ atlas, store, interaction, onOpen, onIslan
           rect = { ...base, y: base.y - step * ISLAND_NUDGE };
         }
         if (onScreen(rect, viewport)) show(element, rect);
+        else hide(element);
+      }
+
+      for (const item of settlementItems) {
+        const element = elements.get(item.key);
+        const size = sizes.get(item.key);
+        if (!element || !size) continue;
+        const isActive = active !== null && item.key === `settlement:${active}`;
+        // The active settlement's label always shows, whatever the zoom.
+        if (relative < LABEL_ZOOM[item.tier] && !isActive) {
+          hide(element);
+          continue;
+        }
+        const candidates = [
+          hangingFrom(camera, viewport, item.x, item.above, size),
+          startingAt(camera, viewport, item.x, item.below, size),
+        ];
+        const rect = candidates.find((candidate) => onScreen(candidate, viewport) && (isActive || clear(candidate)));
+        if (rect) show(element, rect);
         else hide(element);
       }
     };

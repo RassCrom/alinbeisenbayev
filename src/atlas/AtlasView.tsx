@@ -20,6 +20,7 @@ import {
   readSavedCamera,
   saveCamera,
   worldToScreen,
+  zoomAround,
   type Camera,
   type Point,
 } from './camera.ts';
@@ -75,8 +76,15 @@ import './atlas.css';
 
 type Status = { kind: 'loading' } | { kind: 'ready' } | { kind: 'error'; message: string };
 
-/** Above 2 the sea shader costs more than it shows; lite quality stops at 1. */
-const MAX_DPR: Record<Quality, number> = { full: 2, lite: 1 };
+/**
+ * The sea shader is the frame's cost and is soft by nature; 1.5 keeps the
+ * paintings crisp enough (the text is DOM and always sharp) at 56% of the
+ * pixels a 2× canvas would cost. Lite quality stops at 1.
+ */
+const MAX_DPR: Record<Quality, number> = { full: 1.5, lite: 1 };
+/** With nothing moving but the water, the loop drops to every other frame after this long. */
+const IDLE_AFTER_MS = 4000;
+const HINT_KEY = 'atlas:hinted';
 /** Fog clears this many footprints around a surveyed settlement. */
 const REVEAL_FOOTPRINTS = 5;
 /** Settlements within this many pixels of the edge get panned into view on keyboard focus. */
@@ -110,6 +118,22 @@ function rememberFlown(): void {
     localStorage.setItem(FLOWN_KEY, '1');
   } catch {
     // Private mode: the visitor gets the flight again next time; no harm.
+  }
+}
+
+function wantsHint(): boolean {
+  try {
+    return localStorage.getItem(HINT_KEY) !== '1';
+  } catch {
+    return false;
+  }
+}
+
+function rememberHint(): void {
+  try {
+    localStorage.setItem(HINT_KEY, '1');
+  } catch {
+    // Nothing to do.
   }
 }
 
@@ -168,6 +192,8 @@ export default function AtlasView() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
   const [arriving, setArriving] = useState(false);
+  // A one-line hint on how to move, for the first visit; the first gesture or the timer clears it.
+  const [hint, setHint] = useState(() => wantsHint());
   const opening = useRef(false);
   // Stage 7: sound, quality and the export hook the frame loop fills in.
   const audio = useMemo(() => createAmbientAudio(), []);
@@ -352,6 +378,25 @@ export default function AtlasView() {
     [animator, store],
   );
 
+  /** The rail's zoom buttons: scale about the viewport centre. */
+  const zoomBy = useCallback(
+    (factor: number) => {
+      const { camera, viewport } = store.get();
+      void animator.to(zoomAround(camera, viewport, viewport.width / 2, viewport.height / 2, factor), 260);
+    },
+    [animator, store],
+  );
+
+  const fitAll = useCallback(() => {
+    void animator.to(fitBounds(atlas.bounds, store.get().viewport), 520);
+  }, [animator, atlas.bounds, store]);
+
+  useEffect(() => {
+    if (!hint) return;
+    const timer = window.setTimeout(() => setHint(false), 9000);
+    return () => window.clearTimeout(timer);
+  }, [hint]);
+
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -430,8 +475,20 @@ export default function AtlasView() {
       frameState.veil = 0;
       setArriving(false);
     };
-    // Any gesture during the arrival lands the camera at once.
-    const onGesture = (): void => endFlight();
+    // Any gesture during the arrival lands the camera at once, and counts as activity.
+    let lastActivity = performance.now();
+    const touch = (): void => {
+      lastActivity = performance.now();
+    };
+    const onGesture = (): void => {
+      endFlight();
+      touch();
+      setHint((shown) => {
+        if (shown) rememberHint();
+        return false;
+      });
+    };
+    const unsubscribeActivity = [store.subscribe(touch), interaction.subscribe(touch), chronicle.subscribe(touch)];
 
     // Fog reveal progress per settlement, 0 to 1, eased toward the surveyed set.
     const progress = new Float32Array(atlas.settlements.length);
@@ -478,13 +535,27 @@ export default function AtlasView() {
     let intervalMs = 1000 / 60;
     let frames = 0;
 
+    // With nothing moving but the water, every other frame is enough: the
+    // sea at 30 fps reads the same and the GPU works half as hard.
+    let skipNext = false;
+    let skippedLast = false;
     const tick = (now: number): void => {
       frame = 0;
       if (!renderer || document.hidden) return;
+      if (skipNext) {
+        skipNext = false;
+        skippedLast = true;
+        frame = requestAnimationFrame(tick);
+        return;
+      }
       // The raw interval is the honest measure of a struggling device (GPU or CPU); the
-      // simulation step is clamped so a stall does not leap the world forward.
-      const interval = lastTime === 0 ? 1 / 60 : (now - lastTime) / 1000;
-      const dt = Math.min(0.05, interval);
+      // simulation step is clamped so a stall does not leap the world forward. After a
+      // skipped frame the raw interval spans two frames, so the watchdog's measure is
+      // halved: an idle map at 30 fps is a choice, not a struggling device.
+      const raw = lastTime === 0 ? 1 / 60 : (now - lastTime) / 1000;
+      const interval = skippedLast ? raw / 2 : raw;
+      skippedLast = false;
+      const dt = Math.min(0.05, raw);
       lastTime = now;
 
       // The arrival: zoom eased in log space so the descent reads evenly, the veil thinning ahead of it.
@@ -610,6 +681,13 @@ export default function AtlasView() {
           statsRef.current.textContent = `${intervalMs.toFixed(1)} ms between frames · ${frameMs.toFixed(2)} ms to submit · ${frames} frames · ${qualityRef.current} · dpr ${dpr()}`;
         }
       }
+      const busy =
+        flight !== null ||
+        chronicle.get().month !== null ||
+        frameState.chronicle !== null ||
+        frameState.highlightStrength > 0 ||
+        (!instant && now - lastActivity < IDLE_AFTER_MS);
+      skipNext = !busy;
       frame = requestAnimationFrame(tick);
     };
     const start = (): void => {
@@ -654,6 +732,7 @@ export default function AtlasView() {
       cancelled = true;
       stop();
       animator.cancel();
+      for (const unsubscribe of unsubscribeActivity) unsubscribe();
       detachControls?.();
       observer.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
@@ -706,7 +785,15 @@ export default function AtlasView() {
             onPreset={setPreset}
             onSheetView={() => setViewMode('sheet')}
             onMinimapClick={flyTo}
+            onZoom={zoomBy}
+            onFit={fitAll}
+            onIslandClick={fitIsland}
           />
+          {hint && (
+            <div className={`atlas-hint${arriving ? ' is-arriving' : ''}`} role="note">
+              Drag to pan · scroll to zoom · point at a settlement, click to open its sheet
+            </div>
+          )}
         </>
       )}
       <nav className="atlas-sr-list" aria-label="Settlements in sheet order">

@@ -1,0 +1,46 @@
+This is a **scaffold**, not a published piece — it isn't wired to any entry in
+`src/data/stories.json` yet, so it renders nowhere on the site. It exists to show the
+shape of an in-repo story; replace this prose with the real piece, then follow the
+steps below to publish it.
+
+## How this fits together
+
+A story has two parts, kept separate on purpose (see `src/content/stories.ts`):
+
+- **Metadata** — title, dek, byline, date, format, subject, cover image — lives in
+  `src/data/stories.json`, exactly like every other story.
+- **Body** — the piece itself — lives here, in a `.mdx` file under
+  `src/content/stories/` whose filename matches the story's `slug`.
+
+## Publishing this one
+
+1. Write the real piece in this file, in place of this scaffold text. Plain Markdown —
+   headings, **bold**, *italic*, links, lists, blockquotes — plus any component this
+   codebase exports, imported and used inline like MDX blog posts already do.
+2. Add an entry to `src/data/stories.json`:
+
+   ```json
+   {
+     "id": "story-eurasian-split",
+     "slug": "eurasian-split",
+     "title": "How Eurasian Split Evolved",
+     "dek": "One sentence on what the piece is about, in the reader's terms.",
+     "byline": ["Alikhan Beisenbayev"],
+     "date": "2026-09",
+     "format": "report",
+     "subject": ["subject", "keywords", "here"],
+     "coverImage": "/images/placeholder.jpg",
+     "url": "/stories/eurasian-split",
+     "external": false
+   }
+   ```
+
+   `url` just needs to point at this story's own route; nothing links out to it since
+   the piece now reads on this page. `format` is one of `scrollytelling`, `report` or
+   `map essay` — whichever this actually is.
+3. Delete this scaffold note once the real prose is in place.
+
+## Headings become chapters
+
+Any `##` heading here shows up in the chapter nav beside the piece, the same as in a
+blog post — `rehype-slug` gives each one an anchor automatically.
