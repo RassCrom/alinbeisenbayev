@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build && node scripts/prerender-routes.mjs",
     "images": "python scripts/prepare-images.py",
+    "gallery": "python scripts/gallery.py",
     "preview": "vite preview",
     "atlas:print": "node scripts/print-atlas.ts"
   },

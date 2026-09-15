@@ -1,3 +1,6 @@
+# Personal job-application tracker (standalone, not part of the site)
+job-tracker/
+
 # Dependencies
 node_modules/
 .pnp
@@ -78,6 +81,10 @@ coverage/
 
 # TypeScript
 *.tsbuildinfo
+
+# Python
+__pycache__/
+*.pyc
 
 # Package manager locks (keep only one — remove lines for ones you use)
 # package-lock.json

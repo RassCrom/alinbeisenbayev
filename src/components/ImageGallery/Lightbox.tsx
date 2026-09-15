@@ -441,6 +441,7 @@ export default function Lightbox({ images, index, onIndexChange, onClose }: Ligh
             ref={mediaRef as React.RefObject<HTMLVideoElement>}
             key={active.url}
             src={active.url}
+            poster={active.poster}
             controls
             autoPlay
             loop
@@ -517,7 +518,9 @@ export default function Lightbox({ images, index, onIndexChange, onClose }: Ligh
                     : 'border-[var(--color-border-subtle)] opacity-45 hover:opacity-80'
                 }`}
               >
-                {isVideoUrl(img.url) ? (
+                {img.poster ? (
+                  <img src={img.poster} alt="" loading="lazy" className="h-full w-full object-cover" />
+                ) : isVideoUrl(img.url) ? (
                   <video src={img.url} muted playsInline className="h-full w-full object-cover" />
                 ) : (
                   <img src={img.url} alt="" loading="lazy" className="h-full w-full object-cover" />

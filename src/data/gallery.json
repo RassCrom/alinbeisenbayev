@@ -1,0 +1,915 @@
+{
+  "_note": "Written by scripts/gallery.py. Edit title, series, date or add \"hidden\": true — those edits survive re-runs.",
+  "items": [
+    {
+      "id": "metro-animation-stock-tt-3",
+      "key": "metro-animation/stock-tt-3:video",
+      "title": "Stock Tt 3",
+      "series": "Metro Animation",
+      "date": "2026-09-15",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/metro-animation-stock-tt-3-8ea942.mp4",
+      "poster": "/gallery/metro-animation-stock-tt-3-8ea942-poster.webp",
+      "preview": "/gallery/metro-animation-stock-tt-3-8ea942-loop.mp4",
+      "duration": 7.6,
+      "source": {
+        "path": "metro-animation/stock-tt-3.mp4",
+        "size": 1428243,
+        "mtime": 1789425124
+      }
+    },
+    {
+      "id": "forest-1992-2020",
+      "key": "./forest_1992_2020:video",
+      "title": "Forest 1992 2020",
+      "date": "2026-09-14",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/forest-1992-2020-fce6b0.mp4",
+      "poster": "/gallery/forest-1992-2020-fce6b0-poster.webp",
+      "preview": "/gallery/forest-1992-2020-fce6b0-loop.mp4",
+      "duration": 20.0,
+      "source": {
+        "path": "forest_1992_2020.mp4",
+        "size": 18657304,
+        "mtime": 1789392748
+      }
+    },
+    {
+      "id": "metro-animation-lausanne-2",
+      "key": "metro-animation/lausanne-2:video",
+      "title": "Lausanne 2",
+      "series": "Metro Animation",
+      "date": "2026-09-14",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/metro-animation-lausanne-2-622fe4.mp4",
+      "poster": "/gallery/metro-animation-lausanne-2-622fe4-poster.webp",
+      "preview": "/gallery/metro-animation-lausanne-2-622fe4-loop.mp4",
+      "duration": 7.6,
+      "source": {
+        "path": "metro-animation/lausanne-2.mp4",
+        "size": 588521,
+        "mtime": 1789386974
+      }
+    },
+    {
+      "id": "safires",
+      "key": "./safires:video",
+      "title": "Safires",
+      "date": "2026-09-14",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/safires-1cd352.mp4",
+      "poster": "/gallery/safires-1cd352-poster.webp",
+      "preview": "/gallery/safires-1cd352-loop.mp4",
+      "duration": 35.0,
+      "source": {
+        "path": "safires_1080x1350.webm",
+        "size": 11089801,
+        "mtime": 1789383498
+      }
+    },
+    {
+      "id": "tsunami-tohoku-preview",
+      "key": "./tsunami_tohoku_preview:image",
+      "title": "Tsunami Tohoku Preview",
+      "date": "2026-09-14",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/tsunami-tohoku-preview-0832c6.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "tsunami_tohoku_preview.png",
+        "size": 780604,
+        "mtime": 1789396327
+      }
+    },
+    {
+      "id": "zurich-v2-years-3d",
+      "key": "./zurich_v2_years_3d:video",
+      "title": "Zurich V2 Years 3d",
+      "date": "2026-09-14",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/zurich-v2-years-3d-0a44e0.mp4",
+      "poster": "/gallery/zurich-v2-years-3d-0a44e0-poster.webp",
+      "preview": "/gallery/zurich-v2-years-3d-0a44e0-loop.mp4",
+      "duration": 22.9,
+      "source": {
+        "path": "zurich_v2_years_3d.mp4",
+        "size": 65684900,
+        "mtime": 1789384859
+      }
+    },
+    {
+      "id": "5-germany-unrest-v2-4x5",
+      "key": "./5 germany_unrest_v2_4x5:video",
+      "title": "5 germany unrest v2 4x5",
+      "date": "2026-09-13",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/5-germany-unrest-v2-4x5-958a57.mp4",
+      "poster": "/gallery/5-germany-unrest-v2-4x5-958a57-poster.webp",
+      "preview": "/gallery/5-germany-unrest-v2-4x5-958a57-loop.mp4",
+      "duration": 25.0,
+      "source": {
+        "path": "5 germany_unrest_v2_4x5.mp4",
+        "size": 6458159,
+        "mtime": 1789287328
+      }
+    },
+    {
+      "id": "metro-animation-berlin-morph",
+      "key": "metro-animation/berlin-morph:video",
+      "title": "Berlin Morph",
+      "series": "Metro Animation",
+      "date": "2026-09-13",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/metro-animation-berlin-morph-f1d270.mp4",
+      "poster": "/gallery/metro-animation-berlin-morph-f1d270-poster.webp",
+      "preview": "/gallery/metro-animation-berlin-morph-f1d270-loop.mp4",
+      "duration": 7.6,
+      "source": {
+        "path": "metro-animation/berlin-morph.mp4",
+        "size": 1467309,
+        "mtime": 1789333882
+      }
+    },
+    {
+      "id": "dodo-pizza-kaz",
+      "key": "./dodo-pizza-kaz:image",
+      "title": "Dodo Pizza Kaz",
+      "date": "2026-09-13",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/dodo-pizza-kaz-62d6d2.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "dodo-pizza-kaz.png",
+        "size": 243651,
+        "mtime": 1789328665
+      }
+    },
+    {
+      "id": "first-voyage-around-the-world-dark",
+      "key": "./first-voyage-around-the-world-dark:video",
+      "title": "First Voyage Around the World Dark",
+      "date": "2026-09-13",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/first-voyage-around-the-world-dark-e63b31.mp4",
+      "poster": "/gallery/first-voyage-around-the-world-dark-e63b31-poster.webp",
+      "preview": "/gallery/first-voyage-around-the-world-dark-e63b31-loop.mp4",
+      "duration": 112.9,
+      "source": {
+        "path": "first-voyage-around-the-world-dark.mp4",
+        "size": 37063905,
+        "mtime": 1789251081
+      }
+    },
+    {
+      "id": "us-open-womens-champions-2000-2026",
+      "key": "./us_open_womens_champions_2000_2026:video",
+      "title": "Us Open Womens Champions 2000 2026",
+      "date": "2026-09-13",
+      "kind": "video",
+      "width": 1080,
+      "height": 1920,
+      "src": "/gallery/us-open-womens-champions-2000-2026-98ee7c.mp4",
+      "poster": "/gallery/us-open-womens-champions-2000-2026-98ee7c-poster.webp",
+      "preview": "/gallery/us-open-womens-champions-2000-2026-98ee7c-loop.mp4",
+      "duration": 36.8,
+      "source": {
+        "path": "us_open_womens_champions_2000_2026.mp4",
+        "size": 10167643,
+        "mtime": 1789326116
+      }
+    },
+    {
+      "id": "ocean-chlorophyl",
+      "key": "./ocean_chlorophyl:image",
+      "title": "Ocean Chlorophyl",
+      "date": "2026-09-12",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/ocean-chlorophyl-604a73.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "ocean_chlorophyl.png",
+        "size": 1056992,
+        "mtime": 1789214473
+      }
+    },
+    {
+      "id": "temperature-anomaly",
+      "key": "./temperature_anomaly:image",
+      "title": "Temperature Anomaly",
+      "date": "2026-09-12",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/temperature-anomaly-23268a.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "temperature_anomaly.png",
+        "size": 996026,
+        "mtime": 1789226752
+      }
+    },
+    {
+      "id": "temperature-anomaly-bathy",
+      "key": "./temperature_anomaly_bathy:image",
+      "title": "Temperature Anomaly Bathy",
+      "date": "2026-09-12",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/temperature-anomaly-bathy-22179e.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "temperature_anomaly_bathy.png",
+        "size": 1048146,
+        "mtime": 1789226465
+      }
+    },
+    {
+      "id": "trains-of-netherlands-20260922-night",
+      "key": "./trains_of_netherlands_20260922_night:video",
+      "title": "Trains of Netherlands 20260922 Night",
+      "date": "2026-09-12",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/trains-of-netherlands-20260922-night-85d70b.mp4",
+      "poster": "/gallery/trains-of-netherlands-20260922-night-85d70b-poster.webp",
+      "preview": "/gallery/trains-of-netherlands-20260922-night-85d70b-loop.mp4",
+      "duration": 40.0,
+      "source": {
+        "path": "trains_of_netherlands_20260922_night.mp4",
+        "size": 16237680,
+        "mtime": 1789215108
+      }
+    },
+    {
+      "id": "art-style",
+      "key": "./art_style:image",
+      "title": "Art Style",
+      "date": "2026-09-09",
+      "kind": "image",
+      "width": 720,
+      "height": 1018,
+      "src": "/gallery/art-style-32fa04.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "art_style.png",
+        "size": 595809,
+        "mtime": 1788954952
+      }
+    },
+    {
+      "id": "3-europe-at-nomad-games-26",
+      "key": "./3 europe-at-nomad-games-26:image",
+      "title": "3 europe-at-nomad-games-26",
+      "date": "2026-09-07",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/3-europe-at-nomad-games-26-6b9464.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "3 europe-at-nomad-games-26.png",
+        "size": 844047,
+        "mtime": 1788771207
+      }
+    },
+    {
+      "id": "kazakhstan-2022-2026",
+      "key": "./kazakhstan_2022_2026:video",
+      "title": "Kazakhstan 2022 2026",
+      "date": "2026-09-07",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/kazakhstan-2022-2026-88aedd.mp4",
+      "poster": "/gallery/kazakhstan-2022-2026-88aedd-poster.webp",
+      "preview": "/gallery/kazakhstan-2022-2026-88aedd-loop.mp4",
+      "duration": 18.7,
+      "source": {
+        "path": "kazakhstan_2022_2026.mp4",
+        "size": 2810439,
+        "mtime": 1788777232
+      }
+    },
+    {
+      "id": "warming-kazakhstan",
+      "key": "./warming_kazakhstan:video",
+      "title": "Warming Kazakhstan",
+      "date": "2026-09-07",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/warming-kazakhstan-d68515.mp4",
+      "poster": "/gallery/warming-kazakhstan-d68515-poster.webp",
+      "preview": "/gallery/warming-kazakhstan-d68515-loop.mp4",
+      "duration": 35.0,
+      "source": {
+        "path": "warming_kazakhstan.mp4",
+        "size": 20347160,
+        "mtime": 1788771222
+      }
+    },
+    {
+      "id": "at-rail-travel-20260904-experiment",
+      "key": "./at_rail_travel_20260904_experiment:video",
+      "title": "At Rail Travel 20260904 Experiment",
+      "date": "2026-09-04",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/at-rail-travel-20260904-experiment-27d7d1.mp4",
+      "poster": "/gallery/at-rail-travel-20260904-experiment-27d7d1-poster.webp",
+      "preview": "/gallery/at-rail-travel-20260904-experiment-27d7d1-loop.mp4",
+      "duration": 40.0,
+      "source": {
+        "path": "at_rail_travel_20260904_experiment.mp4",
+        "size": 33240867,
+        "mtime": 1788507610
+      }
+    },
+    {
+      "id": "amsterdam-v2-years-3d",
+      "key": "./amsterdam_v2_years_3d:video",
+      "title": "Amsterdam V2 Years 3d",
+      "date": "2026-09-03",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/amsterdam-v2-years-3d-99ff51.mp4",
+      "poster": "/gallery/amsterdam-v2-years-3d-99ff51-poster.webp",
+      "preview": "/gallery/amsterdam-v2-years-3d-99ff51-loop.mp4",
+      "duration": 23.8,
+      "source": {
+        "path": "amsterdam_v2_years_3d.mp4",
+        "size": 69435921,
+        "mtime": 1788464534
+      }
+    },
+    {
+      "id": "heat-peaks-austria-july-2026",
+      "key": "./heat-peaks-austria-july-2026:video",
+      "title": "Heat Peaks Austria July 2026",
+      "date": "2026-09-03",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/heat-peaks-austria-july-2026-d7d6b2.mp4",
+      "poster": "/gallery/heat-peaks-austria-july-2026-d7d6b2-poster.webp",
+      "preview": "/gallery/heat-peaks-austria-july-2026-d7d6b2-loop.mp4",
+      "duration": 12.0,
+      "source": {
+        "path": "heat-peaks-austria-july-2026.mp4",
+        "size": 2773635,
+        "mtime": 1788424197
+      }
+    },
+    {
+      "id": "metro-animation-prague-light",
+      "key": "metro-animation/prague-light:video",
+      "title": "Prague Light",
+      "series": "Metro Animation",
+      "date": "2026-09-03",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/metro-animation-prague-light-93cbc6.mp4",
+      "poster": "/gallery/metro-animation-prague-light-93cbc6-poster.webp",
+      "preview": "/gallery/metro-animation-prague-light-93cbc6-loop.mp4",
+      "duration": 7.6,
+      "source": {
+        "path": "metro-animation/prague-light.mp4",
+        "size": 964585,
+        "mtime": 1788386405
+      }
+    },
+    {
+      "id": "germany-flight-movement",
+      "key": "./germany_flight_movement:video",
+      "title": "Germany Flight Movement",
+      "date": "2026-08-30",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/germany-flight-movement-a583ac.mp4",
+      "poster": "/gallery/germany-flight-movement-a583ac-poster.webp",
+      "preview": "/gallery/germany-flight-movement-a583ac-loop.mp4",
+      "duration": 30.0,
+      "source": {
+        "path": "germany_flight_movement_1080x1350.mp4",
+        "size": 11238593,
+        "mtime": 1788097526
+      }
+    },
+    {
+      "id": "switzerland-train-movement-real-delays-aug25",
+      "key": "./switzerland_train_movement_real_delays_aug25:video",
+      "title": "Switzerland Train Movement Real Delays Aug25",
+      "date": "2026-08-30",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/switzerland-train-movement-real-delays-aug25-35a1a5.mp4",
+      "poster": "/gallery/switzerland-train-movement-real-delays-aug25-35a1a5-poster.webp",
+      "preview": "/gallery/switzerland-train-movement-real-delays-aug25-35a1a5-loop.mp4",
+      "duration": 30.0,
+      "source": {
+        "path": "switzerland_train_movement_real_delays_aug25.mp4",
+        "size": 27370964,
+        "mtime": 1788081968
+      }
+    },
+    {
+      "id": "austria-rail-travel-2024-09-04",
+      "key": "./austria_rail_travel_2024-09-04:video",
+      "title": "Austria Rail Travel 2024 09 04",
+      "date": "2026-08-29",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/austria-rail-travel-2024-09-04-25ba56.mp4",
+      "poster": "/gallery/austria-rail-travel-2024-09-04-25ba56-poster.webp",
+      "preview": "/gallery/austria-rail-travel-2024-09-04-25ba56-loop.mp4",
+      "duration": 30.0,
+      "source": {
+        "path": "austria_rail_travel_2024-09-04_1080x1350.mp4",
+        "size": 9149502,
+        "mtime": 1788028121
+      }
+    },
+    {
+      "id": "germany-rail-travel-2026-09-05-zoomed-centered-daylight",
+      "key": "./germany_rail_travel_2026-09-05_zoomed_centered_daylight:image",
+      "title": "Germany Rail Travel 2026 09 05 Zoomed Centered Daylight",
+      "date": "2026-08-29",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/germany-rail-travel-2026-09-05-zoomed-centered-daylight-99649c.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "germany_rail_travel_2026-09-05_zoomed_centered_1080x1350_daylight.png",
+        "size": 354167,
+        "mtime": 1787994846
+      }
+    },
+    {
+      "id": "kazakhstan-lightning-2025",
+      "key": "./kazakhstan_lightning_2025:video",
+      "title": "Kazakhstan Lightning 2025",
+      "date": "2026-08-29",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/kazakhstan-lightning-2025-37cb65.mp4",
+      "poster": "/gallery/kazakhstan-lightning-2025-37cb65-poster.webp",
+      "preview": "/gallery/kazakhstan-lightning-2025-37cb65-loop.mp4",
+      "duration": 18.0,
+      "source": {
+        "path": "kazakhstan_lightning_2025.mp4",
+        "size": 1671156,
+        "mtime": 1788000792
+      }
+    },
+    {
+      "id": "coral-city-roads-almaty",
+      "key": "coral-city-roads/almaty:video",
+      "title": "Almaty",
+      "series": "Coral City Roads",
+      "date": "2026-07-17",
+      "kind": "video",
+      "width": 1080,
+      "height": 1920,
+      "src": "/gallery/coral-city-roads-almaty-514f50.mp4",
+      "poster": "/gallery/coral-city-roads-almaty-514f50-poster.webp",
+      "preview": "/gallery/coral-city-roads-almaty-514f50-loop.mp4",
+      "duration": 12.6,
+      "source": {
+        "path": "coral-city-roads/almaty.mp4",
+        "size": 2471416,
+        "mtime": 1784293126
+      }
+    },
+    {
+      "id": "2-dogs-vienna-map",
+      "key": "./2 dogs-vienna-map:image",
+      "title": "2 dogs-vienna-map",
+      "date": "2026-07-13",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/2-dogs-vienna-map-f856c4.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "2 dogs-vienna-map-v1.png",
+        "size": 2695842,
+        "mtime": 1783968666
+      }
+    },
+    {
+      "id": "metro-animation-vienna",
+      "key": "metro-animation/vienna:video",
+      "title": "Vienna",
+      "series": "Metro Animation",
+      "date": "2026-07-09",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/metro-animation-vienna-21f4b5.mp4",
+      "poster": "/gallery/metro-animation-vienna-21f4b5-poster.webp",
+      "preview": "/gallery/metro-animation-vienna-21f4b5-loop.mp4",
+      "duration": 6.4,
+      "source": {
+        "path": "metro-animation/Vienna.mp4",
+        "size": 1439171,
+        "mtime": 1783560781
+      }
+    },
+    {
+      "id": "metro-animation-stockholm",
+      "key": "metro-animation/stockholm:video",
+      "title": "Stockholm",
+      "series": "Metro Animation",
+      "date": "2026-07-07",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/metro-animation-stockholm-f6b2bd.mp4",
+      "poster": "/gallery/metro-animation-stockholm-f6b2bd-poster.webp",
+      "preview": "/gallery/metro-animation-stockholm-f6b2bd-loop.mp4",
+      "duration": 6.4,
+      "source": {
+        "path": "metro-animation/Stockholm.mp4",
+        "size": 1576865,
+        "mtime": 1783438935
+      }
+    },
+    {
+      "id": "metro-animation-prague",
+      "key": "metro-animation/prague:video",
+      "title": "Prague",
+      "series": "Metro Animation",
+      "date": "2026-06-30",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/metro-animation-prague-4fb244.mp4",
+      "poster": "/gallery/metro-animation-prague-4fb244-poster.webp",
+      "preview": "/gallery/metro-animation-prague-4fb244-loop.mp4",
+      "duration": 6.4,
+      "source": {
+        "path": "metro-animation/Prague.mp4",
+        "size": 703938,
+        "mtime": 1782826941
+      }
+    },
+    {
+      "id": "tropical-nights-in-europe",
+      "key": "./tropical nights in europe:image",
+      "title": "Tropical Nights in Europe",
+      "date": "2026-06-19",
+      "kind": "image",
+      "width": 717,
+      "height": 891,
+      "src": "/gallery/tropical-nights-in-europe-15ebda.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "Tropical Nights in Europe.png",
+        "size": 838340,
+        "mtime": 1781885358
+      }
+    },
+    {
+      "id": "alash-orda-story",
+      "key": "./alash orda story:image",
+      "title": "Alash Orda Story",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 1583,
+      "height": 723,
+      "src": "/gallery/alash-orda-story-2edb34.webp",
+      "variants": [
+        480,
+        960
+      ],
+      "source": {
+        "path": "Alash Orda Story.png",
+        "size": 604428,
+        "mtime": 1781206797
+      }
+    },
+    {
+      "id": "armenia-energy-profile",
+      "key": "./armenia energy profile:image",
+      "title": "Armenia Energy Profile",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 1560,
+      "height": 736,
+      "src": "/gallery/armenia-energy-profile-be7623.webp",
+      "variants": [
+        480,
+        960
+      ],
+      "source": {
+        "path": "Armenia Energy Profile.png",
+        "size": 1615228,
+        "mtime": 1781207351
+      }
+    },
+    {
+      "id": "austrian-income-by-districts",
+      "key": "./austrian income by districts:image",
+      "title": "Austrian Income by Districts",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 1511,
+      "height": 781,
+      "src": "/gallery/austrian-income-by-districts-0f2762.webp",
+      "variants": [
+        480,
+        960
+      ],
+      "source": {
+        "path": "Austrian Income by Districts.png",
+        "size": 253476,
+        "mtime": 1781207166
+      }
+    },
+    {
+      "id": "building-ages-of-astana",
+      "key": "./building ages of astana:image",
+      "title": "Building Ages of Astana",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 1906,
+      "height": 908,
+      "src": "/gallery/building-ages-of-astana-51bd58.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "Building Ages of Astana.png",
+        "size": 719222,
+        "mtime": 1781182385
+      }
+    },
+    {
+      "id": "earth-on-fire",
+      "key": "./earth on fire:image",
+      "title": "Earth on Fire",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 952,
+      "height": 691,
+      "src": "/gallery/earth-on-fire-cec4b4.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "Earth on Fire.png",
+        "size": 607521,
+        "mtime": 1781180833
+      }
+    },
+    {
+      "id": "figura",
+      "key": "./figura:image",
+      "title": "Figura",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 592,
+      "height": 895,
+      "src": "/gallery/figura-528d6c.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "Figura.png",
+        "size": 618669,
+        "mtime": 1781206866
+      }
+    },
+    {
+      "id": "historical-vienna",
+      "key": "./historical vienna:image",
+      "title": "Historical Vienna",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 1487,
+      "height": 836,
+      "src": "/gallery/historical-vienna-2a49c4.webp",
+      "variants": [
+        480,
+        960
+      ],
+      "source": {
+        "path": "Historical Vienna.png",
+        "size": 975094,
+        "mtime": 1781206999
+      }
+    },
+    {
+      "id": "notable-kazakhs",
+      "key": "./notable kazakhs:image",
+      "title": "Notable Kazakhs",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 1823,
+      "height": 796,
+      "src": "/gallery/notable-kazakhs-0c10c0.webp",
+      "variants": [
+        480,
+        960
+      ],
+      "source": {
+        "path": "Notable Kazakhs.png",
+        "size": 511914,
+        "mtime": 1781206628
+      }
+    },
+    {
+      "id": "tigranes-the-greatest",
+      "key": "./tigranes the greatest:image",
+      "title": "Tigranes the Greatest",
+      "date": "2026-06-11",
+      "kind": "image",
+      "width": 1919,
+      "height": 908,
+      "src": "/gallery/tigranes-the-greatest-fd145e.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "Tigranes the Greatest.png",
+        "size": 784647,
+        "mtime": 1781178686
+      }
+    },
+    {
+      "id": "world-cup-2026",
+      "key": "./world cup 2026:image",
+      "title": "World Cup 2026",
+      "date": "2026-04-11",
+      "kind": "image",
+      "width": 1920,
+      "height": 1080,
+      "src": "/gallery/world-cup-2026-04da96.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "World Cup 2026.png",
+        "size": 807295,
+        "mtime": 1775913223
+      }
+    },
+    {
+      "id": "europe-population-2023",
+      "key": "./europe population 2023:image",
+      "title": "Europe Population 2023",
+      "date": "2026-04-09",
+      "kind": "image",
+      "width": 2560,
+      "height": 1810,
+      "src": "/gallery/europe-population-2023-a7ec10.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "Europe Population 2023.png",
+        "size": 3610850,
+        "mtime": 1775732793
+      }
+    },
+    {
+      "id": "silk-road-through-centuries",
+      "key": "./silk road through centuries:image",
+      "title": "Silk Road Through Centuries",
+      "date": "2026-04-01",
+      "kind": "image",
+      "width": 2560,
+      "height": 1810,
+      "src": "/gallery/silk-road-through-centuries-a0ad05.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "Silk Road Through Centuries.png",
+        "size": 11909572,
+        "mtime": 1775056086
+      }
+    },
+    {
+      "id": "storm-boris-flooding",
+      "key": "./storm boris flooding:image",
+      "title": "Storm Boris Flooding",
+      "date": "2024-09-17",
+      "kind": "image",
+      "width": 1802,
+      "height": 1001,
+      "src": "/gallery/storm-boris-flooding-abcbe4.webp",
+      "variants": [
+        480,
+        960
+      ],
+      "source": {
+        "path": "Storm Boris Flooding.png",
+        "size": 4564734,
+        "mtime": 1726599424
+      }
+    },
+    {
+      "id": "world-nomad-games-2024",
+      "key": "./world nomad games 2024:image",
+      "title": "World Nomad Games 2024",
+      "date": "2024-09-15",
+      "kind": "image",
+      "width": 2560,
+      "height": 1867,
+      "src": "/gallery/world-nomad-games-2024-13f02b.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "World Nomad Games 2024.png",
+        "size": 1156514,
+        "mtime": 1726403185
+      }
+    },
+    {
+      "id": "duck-river",
+      "key": "./duck river:image",
+      "title": "Duck River",
+      "date": "2024-08-10",
+      "kind": "image",
+      "width": 2560,
+      "height": 1440,
+      "src": "/gallery/duck-river-a4668b.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "Duck River.png",
+        "size": 1402894,
+        "mtime": 1723282227
+      }
+    }
+  ]
+}

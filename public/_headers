@@ -2,6 +2,9 @@
 # Hashed build output never changes under the same name.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+# Gallery files carry a content stamp in their name (scripts/gallery.py).
+/gallery/*
+  Cache-Control: public, max-age=31536000, immutable
 
 # Media keeps its filename when re-exported, so a week, not forever.
 /atlas/*

@@ -11,6 +11,7 @@ const DRAWER_SOCIALS = socials.filter(
 
 export const NAV_LINKS = [
   { to: '/works', label: 'Works' },
+  { to: '/gallery', label: 'Gallery' },
   { to: '/stories', label: 'Stories' },
   { to: '/about', label: 'About' },
   { to: '/skills', label: 'Skills' },

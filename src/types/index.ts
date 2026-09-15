@@ -60,8 +60,32 @@ export interface GalleryImage {
   height?: number;
   /** High-res download URL (e.g. PNG when url is webp). Falls back to url if omitted. */
   downloadUrl?: string;
+  /** Still for a video entry, used for its thumbnail instead of loading the clip. */
+  poster?: string;
   caption: string;
   type: string;
+}
+
+/** One finished work on /gallery — an entry of src/data/gallery.json, written by scripts/gallery.py. */
+export interface GalleryItem {
+  id: string;
+  title: string;
+  /** The subfolder of assets-src/gallery/ the work sits in, if any. */
+  series?: string;
+  kind: 'image' | 'video';
+  /** ISO date; the gallery is sorted newest first. */
+  date: string;
+  width: number;
+  height: number;
+  /** Compressed WebP (image) or H.264 MP4 (video) under /gallery/. */
+  src: string;
+  /** Widths of the <src>-w<width>.webp copies; images only. */
+  variants?: number[];
+  /** Videos only: still frame, and the short silent loop played in the grid. */
+  poster?: string;
+  preview?: string;
+  duration?: number;
+  hidden?: boolean;
 }
 
 export interface VideoItem {

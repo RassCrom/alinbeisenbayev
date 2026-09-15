@@ -18,6 +18,7 @@ const STORIES_FILE = 'src/data/stories.json';
 const STATIC_ROUTES = [
   ['/', 1.0],
   ['/works', 0.9],
+  ['/gallery', 0.7],
   ['/stories', 0.8],
   ['/about', 0.8],
   ['/skills', 0.7],
