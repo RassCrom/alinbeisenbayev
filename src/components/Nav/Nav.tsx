@@ -5,9 +5,7 @@ import socialsData from '../../data/socials.json';
 import type { SocialsData } from '../../types';
 
 const { socials } = socialsData as SocialsData;
-const DRAWER_SOCIALS = socials.filter(
-  (s) => s.featured && s.platform !== 'CV' && s.platform !== 'GitHub',
-);
+const DRAWER_SOCIALS = socials.filter((s) => s.featured && s.platform !== 'CV');
 
 export const NAV_LINKS = [
   { to: '/works', label: 'Works' },
