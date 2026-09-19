@@ -411,6 +411,26 @@ export default function WorksMap({
         attributionControl: false,
       });
       mapRef.current = map;
+      // MapLibre has no Equal Earth (or any other world-in-a-rectangle
+      // projection); globe is the alternative to Web Mercator, and it blends
+      // back to Mercator on its own as you zoom into a city.
+      map.on('style.load', () => {
+        map?.setProjection({ type: 'globe' });
+        // Land is the style's background, which matches the page exactly; a
+        // touch lighter makes the sphere's outline readable.
+        map?.setPaintProperty('background', 'background-color', '#141f38');
+        // The basemap is near-black, so without a limb glow the sphere
+        // dissolves into the page background and reads as a floating scatter.
+        map?.setSky({
+          'sky-color': '#0d1320',
+          'horizon-color': '#1d3557',
+          'fog-color': '#101a2e',
+          'sky-horizon-blend': 0.8,
+          'horizon-fog-blend': 0.8,
+          'fog-ground-blend': 0.3,
+          'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 0.7, 5, 0.7, 7, 0],
+        });
+      });
       markersRef.current = [];
       polygonLayersRef.current = [];
       activeHubRef.current = null;

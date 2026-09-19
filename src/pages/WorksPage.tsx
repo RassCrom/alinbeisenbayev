@@ -13,12 +13,12 @@ const MapLegend = lazy(() => import('../components/WorksMap/MapLegend'));
 type ViewMode = 'grid' | 'map';
 type TypeFilter = 'all' | 'web' | 'image' | 'animation';
 
-function dateSortValue(date: string | null): number {
-  if (date === 'Present') return Number.POSITIVE_INFINITY;
-  if (!date) return Number.NEGATIVE_INFINITY;
-
-  const [year, month = '12'] = date.split('-');
-  return Number(year) * 12 + Number(month);
+/** Months since year 0, or null for anything that is not a real date
+ *  ("Present", "current", null) — the data uses several spellings of "ongoing". */
+function dateSortValue(date: string | null): number | null {
+  const match = date?.match(/^(\d{4})(?:-(\d{2}))?$/);
+  if (!match) return null;
+  return Number(match[1]) * 12 + Number(match[2] ?? 12);
 }
 
 function contextCoordinates(project: (typeof projects)[number]): [number, number] | null {
@@ -39,34 +39,24 @@ function compactCoordinates(lat: number, lng: number): string {
 }
 
 /**
- * Grid order, in three tiers:
- *
- *   1. finished before in-progress — pure newest-first opened the grid on three
- *      unfinished sketches, which is the worst available first impression;
- *   2. the curated `featuredOrder` run, so the strongest case studies lead here
- *      the same way they lead the landing page;
- *   3. recency, then title.
- *
- * Nothing is hidden — unfinished work still appears, just below the finished
- * work.
+ * Grid order is one timeline, newest first. A project sits at the date it was
+ * finished; one with no finish date yet (still in progress) sits at its start
+ * date instead, so unfinished work interleaves with finished work rather than
+ * sinking to the bottom. Keyed on the end date being a real date, not on
+ * `status`, because a few "complete" projects are still ongoing in the data.
  */
-function unfinishedRank(project: (typeof projects)[number]): number {
-  return project.status === 'in-progress' ? 1 : 0;
-}
-
-/** MAX_SAFE_INTEGER rather than Infinity: two uncurated projects must subtract
- *  to 0 so the comparison falls through to the date tiers. Infinity would give
- *  NaN, which only works here because NaN happens to be falsy. */
-function curatedRank(project: (typeof projects)[number]): number {
-  return project.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+function timelineDate(project: (typeof projects)[number]): number {
+  return (
+    dateSortValue(project.endDate) ??
+    dateSortValue(project.startDate) ??
+    Number.NEGATIVE_INFINITY
+  );
 }
 
 const sortedProjects = [...projects].sort(
   (a, b) =>
-    unfinishedRank(a) - unfinishedRank(b) ||
-    curatedRank(a) - curatedRank(b) ||
-    dateSortValue(b.startDate) - dateSortValue(a.startDate) ||
-    dateSortValue(b.endDate) - dateSortValue(a.endDate) ||
+    timelineDate(b) - timelineDate(a) ||
+    (dateSortValue(b.startDate) ?? 0) - (dateSortValue(a.startDate) ?? 0) ||
     a.title.localeCompare(b.title),
 );
 

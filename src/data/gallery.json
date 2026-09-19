@@ -2,6 +2,152 @@
   "_note": "Written by scripts/gallery.py. Edit title, series, date or add \"hidden\": true — those edits survive re-runs.",
   "items": [
     {
+      "id": "english-settlement-origin-names",
+      "key": "./english-settlement-origin-names:image",
+      "title": "English Settlement Origin Names",
+      "date": "2026-09-19",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/english-settlement-origin-names-ac2d21.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "english-settlement-origin-names.jpg",
+        "size": 662913,
+        "mtime": 1789790143
+      }
+    },
+    {
+      "id": "epl-2026-27-title-chances-prev-colour",
+      "key": "./epl-2026-27-title-chances-prev-colour:video",
+      "title": "Epl 2026 27 Title Chances Prev Colour",
+      "date": "2026-09-18",
+      "kind": "video",
+      "width": 1080,
+      "height": 1920,
+      "src": "/gallery/epl-2026-27-title-chances-prev-colour-cda80c.mp4",
+      "poster": "/gallery/epl-2026-27-title-chances-prev-colour-cda80c-poster.webp",
+      "preview": "/gallery/epl-2026-27-title-chances-prev-colour-cda80c-loop.mp4",
+      "duration": 26.0,
+      "source": {
+        "path": "epl-2026-27-title-chances-prev-colour.mp4",
+        "size": 31185177,
+        "mtime": 1789741170
+      }
+    },
+    {
+      "id": "uzbekistan-river-pulse-paper-60fps",
+      "key": "./uzbekistan_river_pulse_paper_60fps:video",
+      "title": "Uzbekistan River Pulse Paper 60fps",
+      "date": "2026-09-18",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/uzbekistan-river-pulse-paper-60fps-d3016b.mp4",
+      "poster": "/gallery/uzbekistan-river-pulse-paper-60fps-d3016b-poster.webp",
+      "preview": "/gallery/uzbekistan-river-pulse-paper-60fps-d3016b-loop.mp4",
+      "duration": 35.5,
+      "source": {
+        "path": "uzbekistan_river_pulse_paper_1080x1350_60fps.mp4",
+        "size": 16436835,
+        "mtime": 1789745137
+      }
+    },
+    {
+      "id": "beni-meander",
+      "key": "./beni_meander:video",
+      "title": "Beni Meander",
+      "date": "2026-09-17",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/beni-meander-c96f2d.mp4",
+      "poster": "/gallery/beni-meander-c96f2d-poster.webp",
+      "preview": "/gallery/beni-meander-c96f2d-loop.mp4",
+      "duration": 14.5,
+      "source": {
+        "path": "beni_meander_1080x1350.mp4",
+        "size": 1690353,
+        "mtime": 1789649705
+      }
+    },
+    {
+      "id": "iceland-fishing-fleet-3d",
+      "key": "./iceland-fishing-fleet-3d:video",
+      "title": "Iceland Fishing Fleet 3d",
+      "date": "2026-09-17",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/iceland-fishing-fleet-3d-f344a7.mp4",
+      "poster": "/gallery/iceland-fishing-fleet-3d-f344a7-poster.webp",
+      "preview": "/gallery/iceland-fishing-fleet-3d-f344a7-loop.mp4",
+      "duration": 15.0,
+      "source": {
+        "path": "iceland-fishing-fleet-3d-v3.mp4",
+        "size": 8134156,
+        "mtime": 1789653282
+      }
+    },
+    {
+      "id": "austria-population-mountains-worldpop-2025-sst",
+      "key": "./austria_population_mountains_worldpop_2025_sst:image",
+      "title": "Austria Population Mountains Worldpop 2025 Sst",
+      "date": "2026-09-16",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/austria-population-mountains-worldpop-2025-sst-aa8c5e.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "austria_population_mountains_worldpop_2025_sst_1080x1350.png",
+        "size": 572091,
+        "mtime": 1789583774
+      }
+    },
+    {
+      "id": "france-population-mountains-worldpop-2025-sst",
+      "key": "./france_population_mountains_worldpop_2025_sst:image",
+      "title": "France Population Mountains Worldpop 2025 Sst",
+      "date": "2026-09-16",
+      "kind": "image",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/france-population-mountains-worldpop-2025-sst-83358a.webp",
+      "variants": [
+        480
+      ],
+      "source": {
+        "path": "france_population_mountains_worldpop_2025_sst_1080x1350.png",
+        "size": 978428,
+        "mtime": 1789583765
+      }
+    },
+    {
+      "id": "kazakhstan-population-mountains-worldpop-2025-sst-3x",
+      "key": "./kazakhstan_population_mountains_worldpop_2025_sst_3x:image",
+      "title": "Kazakhstan Population Mountains Worldpop 2025 Sst 3x",
+      "date": "2026-09-16",
+      "kind": "image",
+      "width": 2048,
+      "height": 2560,
+      "src": "/gallery/kazakhstan-population-mountains-worldpop-2025-sst-3x-b3d51b.webp",
+      "variants": [
+        480,
+        960,
+        1600
+      ],
+      "source": {
+        "path": "kazakhstan_population_mountains_worldpop_2025_sst_3x.png",
+        "size": 1964070,
+        "mtime": 1789583703
+      }
+    },
+    {
       "id": "metro-animation-stock-tt-3",
       "key": "metro-animation/stock-tt-3:video",
       "title": "Stock Tt 3",
