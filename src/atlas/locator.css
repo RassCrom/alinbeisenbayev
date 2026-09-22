@@ -79,6 +79,13 @@
   text-transform: uppercase;
 }
 
+.island-locator__native {
+  font-family: 'Lora', Georgia, serif;
+  font-style: italic;
+  font-size: 11px;
+  color: rgba(235, 225, 201, 0.7);
+}
+
 .island-locator__tier {
   font-family: var(--font-mono, 'DM Mono', monospace);
   font-size: 10px;

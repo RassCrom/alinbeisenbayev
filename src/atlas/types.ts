@@ -17,9 +17,11 @@ export interface IslandConfig {
   /** Stable key; also the painting's file name under public/atlas/. */
   id: string;
   category: ProjectCategory;
-  /** The toponym as displayed. */
+  /** The name on the map: plain English from the category and the landform. */
   name: string;
-  /** What the toponym means, for the legend and the status doc. */
+  /** The native toponym, an invented compound from Kazakh roots; the legend and the island card show it. */
+  nativeName: string;
+  /** What the native name means. */
   gloss: string;
   biome: Biome;
   /** Multiplier on the √count radius, for hand tuning. 1 is neutral. */
@@ -36,6 +38,8 @@ export interface Island {
   id: string;
   category: ProjectCategory;
   name: string;
+  nativeName: string;
+  gloss: string;
   biome: Biome;
   /** World-space centre and radius of the island's circular footprint. */
   x: number;

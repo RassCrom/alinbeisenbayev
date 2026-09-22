@@ -34,6 +34,8 @@ export function placeIslands(
       id: config.id,
       category: config.category,
       name: config.name,
+      nativeName: config.nativeName,
+      gloss: config.gloss,
       biome: config.biome,
       x: 0.5,
       y: 0.5,

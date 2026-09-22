@@ -101,12 +101,19 @@ export default function AtlasFocus({ atlas, store, interaction, onOpen }: Props)
           />
           <div className="atlas-tooltip__body">
             <h3 className="atlas-tooltip__title">{project.title}</h3>
+            {(project.madeIn || year !== null) && (
+              <p className="atlas-tooltip__meta">
+                {project.madeIn ? `Made in ${project.madeIn}` : 'Made'}
+                {year !== null ? ` · ${year}` : ''}
+              </p>
+            )}
             <p className="atlas-tooltip__tagline">{project.tagline}</p>
             <div className="atlas-tooltip__pills">
               <span className="atlas-pill">{project.category}</span>
-              {year !== null && <span className="atlas-pill">{year}</span>}
               <span className="atlas-pill">{TYPE_LABEL[project.type] ?? project.type}</span>
-              <span className="atlas-pill">{TIER_LABEL[settlement.tier]}</span>
+              <span className="atlas-pill" title={`Size on the map: ${TIER_LABEL[settlement.tier].toLowerCase()}`}>
+                {TIER_LABEL[settlement.tier]}
+              </span>
               {award && (
                 <span className="atlas-pill atlas-pill--award" title={award}>
                   ★ award
@@ -114,7 +121,7 @@ export default function AtlasFocus({ atlas, store, interaction, onOpen }: Props)
               )}
               {project.status === 'in-progress' && <span className="atlas-pill">in progress</span>}
             </div>
-            <span className="atlas-tooltip__hint">Open the sheet →</span>
+            <span className="atlas-tooltip__hint">Open project →</span>
           </div>
         </div>
       )}

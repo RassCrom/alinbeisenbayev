@@ -3,7 +3,7 @@ import type { IslandConfig, Tier } from './types.ts';
 
 /*
  * Everything hand-authored about the archipelago lives here: which category
- * is which island, the invented toponyms, the tier names, and the rules that
+ * is which island, the island names, the tier names, and the rules that
  * draw sea lanes. The layout and score modules only read from this file.
  *
  * Value imports inside src/atlas/ carry a `.ts` extension so that
@@ -17,12 +17,28 @@ export const ATLAS_SEED = 20260906;
 
 export const TIERS: readonly Tier[] = ['fortress', 'walled-town', 'market-town', 'hamlet', 'ruin'];
 
+/*
+ * What a tier means to a visitor. The sprite keys stay the game words
+ * (fortress, walled town...) because the assets are named after them; the
+ * words a visitor reads say what the size stands for: how much of the
+ * project there is to see. "Ruin" was the sprite for work in progress and
+ * read as abandoned; the label now says what it is.
+ */
 export const TIER_LABEL: Record<Tier, string> = {
-  fortress: 'Fortress',
-  'walled-town': 'Walled town',
-  'market-town': 'Market town',
-  hamlet: 'Hamlet',
-  ruin: 'Ruin',
+  fortress: 'Landmark',
+  'walled-town': 'Major',
+  'market-town': 'Mid-size',
+  hamlet: 'Small',
+  ruin: 'In progress',
+};
+
+/** One line per tier for the legend and the explainer. */
+export const TIER_BLURB: Record<Tier, string> = {
+  fortress: 'the flagship works: featured, documented, with a full gallery',
+  'walled-town': 'substantial: process notes and a gallery',
+  'market-town': 'a finished piece with a few images',
+  hamlet: 'a quick or early piece',
+  ruin: 'still being built; it grows on the timeline as it finishes',
 };
 
 /**
@@ -38,9 +54,12 @@ export const TIER_FOOTPRINT: Record<Tier, number> = {
 };
 
 /*
- * Category to island. The toponyms are invented compounds from Kazakh roots,
- * glossed in `gloss`; the biome and bearing follow the composition of concept
- * 06, with the largest island in the middle and the rest around it.
+ * Category to island. Each island carries two names: the one on the map,
+ * plain English built from the category and the landform, so a first-time
+ * visitor reads "Print Ridge" and knows what stands there; and the native
+ * name, an invented compound from Kazakh roots with its gloss, kept for the
+ * legend and the island card as the personal layer of the chart. The `id`
+ * is the painting's file name under public/atlas/ and never changes.
  *
  * Typed as a Record over ProjectCategory on purpose: add a category to the
  * union in src/types and tsc refuses to build until it has an island. The
@@ -50,25 +69,45 @@ export const TIER_FOOTPRINT: Record<Tier, number> = {
 export const ISLAND_BY_CATEGORY: Record<ProjectCategory, Omit<IslandConfig, 'category'>> = {
   // The broad lowland that holds most of the settlements, like the centre
   // island of concept 06. Largest by count, so it anchors the composition.
-  'social media': { id: 'jailau', name: 'Jailau', gloss: 'summer pasture', biome: 'meadow', baseSize: 1, bearing: 0 },
+  'social media': { id: 'jailau', name: 'Social Meadows', nativeName: 'Jailau', gloss: 'summer pasture', biome: 'meadow', baseSize: 1, bearing: 0 },
   // The old monumental craft: snow peaks, and the capital on top.
-  print: { id: 'tasqyr', name: 'Tasqyr', gloss: 'stone ridge', biome: 'mountain', baseSize: 1, bearing: -55 },
+  print: { id: 'tasqyr', name: 'Print Ridge', nativeName: 'Tasqyr', gloss: 'stone ridge', biome: 'mountain', baseSize: 1, bearing: -55 },
   // A story is a path through the woods.
-  'storytelling map': { id: 'qaragai', name: 'Qaragai', gloss: 'pine', biome: 'conifer', baseSize: 1, bearing: 35 },
+  'storytelling map': { id: 'qaragai', name: 'Story Woods', nativeName: 'Qaragai', gloss: 'pine', biome: 'conifer', baseSize: 1, bearing: 35 },
   // Web maps face outward: harbours, lighthouses, cliffs.
-  'interactive map': { id: 'tikjar', name: 'Tikjar', gloss: 'steep cliff', biome: 'cliffs', baseSize: 1, bearing: 215 },
+  'interactive map': { id: 'tikjar', name: 'Interactive Cape', nativeName: 'Tikjar', gloss: 'steep cliff', biome: 'cliffs', baseSize: 1, bearing: 215 },
   // The playful desert island of concept 06.
-  game: { id: 'qumtobe', name: 'Qumtöbe', gloss: 'sand hill', biome: 'dune', baseSize: 1, bearing: 145 },
+  game: { id: 'qumtobe', name: 'Game Dunes', nativeName: 'Qumtöbe', gloss: 'sand hill', biome: 'dune', baseSize: 1, bearing: 145 },
   // The one analysis is about ignition points; it gets the volcano.
-  analysis: { id: 'ottas', name: 'Ottas', gloss: 'firestone', biome: 'volcanic', baseSize: 1, bearing: -10 },
+  analysis: { id: 'ottas', name: 'Analysis Rock', nativeName: 'Ottas', gloss: 'firestone', biome: 'volcanic', baseSize: 1, bearing: -10 },
   // An environment platform gets the marsh islet.
-  platform: { id: 'sazkol', name: 'Sazköl', gloss: 'marsh lake', biome: 'wetland', baseSize: 1, bearing: 265 },
+  platform: { id: 'sazkol', name: 'Platform Marsh', nativeName: 'Sazköl', gloss: 'marsh lake', biome: 'wetland', baseSize: 1, bearing: 265 },
 };
 
 /** The same islands as an ordered list; object key order is insertion order. */
 export const ISLANDS: readonly IslandConfig[] = (
   Object.entries(ISLAND_BY_CATEGORY) as [ProjectCategory, Omit<IslandConfig, 'category'>][]
 ).map(([category, spec]) => ({ ...spec, category }));
+
+/**
+ * The kind of work an island holds, in the visitor's words, with the
+ * count: "11 social media maps", "1 analysis". Used under the island name
+ * on the map and in the legend.
+ */
+const CATEGORY_NOUN: Record<ProjectCategory, { one: string; many: string }> = {
+  'social media': { one: 'social media map', many: 'social media maps' },
+  print: { one: 'printed map', many: 'printed maps' },
+  'storytelling map': { one: 'story map', many: 'story maps' },
+  'interactive map': { one: 'interactive map', many: 'interactive maps' },
+  game: { one: 'map game', many: 'map games' },
+  analysis: { one: 'analysis', many: 'analyses' },
+  platform: { one: 'platform', many: 'platforms' },
+};
+
+export function describeCategory(category: ProjectCategory, count: number): string {
+  const noun = CATEGORY_NOUN[category];
+  return `${count} ${count === 1 ? noun.one : noun.many}`;
+}
 
 export const LAYOUT = {
   /**

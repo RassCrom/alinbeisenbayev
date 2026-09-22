@@ -767,3 +767,129 @@ Verified in the browser pane: fitted view 10 labels and `is-far`, rail
 zoom brings the walled and market towns in, the legend drawer opens and
 closes, no console errors, `tsc` clean. Headless 1920 px renders of the
 fitted view and a hover at 2.2× are in this session's scratchpad.
+
+## Comprehension pass (2026-09-22)
+
+The map was legible only to someone who already knew the conceit: seven
+islands with invented names, five tiers named after game buildings, a hint
+that vanished after nine seconds, and every explanation behind a rail
+icon. This pass keeps the archipelago and says what it is.
+
+### Names (`config.ts`)
+
+- Islands carry two names. The one on the map is plain English from the
+  category and the landform: Social Meadows, Print Ridge, Story Woods,
+  Interactive Cape, Game Dunes, Analysis Rock, Platform Marsh. The native
+  name (Jailau, Tasqyr, Qaragai, Tikjar, Qumtöbe, Ottas, Sazköl) and its
+  gloss stay on `IslandConfig`/`Island` as `nativeName` and `gloss`, and
+  show in the legend, the island tooltip and the detail page's locator.
+  The ids, and so the asset files and masks, never changed.
+- Under each island name the label says what stands there in the
+  visitor's words, from `describeCategory`: "11 social media maps",
+  "1 analysis".
+- Tier labels say what the size stands for: Landmark, Major, Mid-size,
+  Small, In progress (`TIER_LABEL`), each with a line in `TIER_BLURB`.
+  The sprite keys and files keep the game words.
+- The chrome speaks plainly: Timeline (was Chronicle), List (was Sheet),
+  Tools (was Trade goods), "explored N of 29" (was surveyed), Show all
+  islands, Save as image, Open project.
+
+### Made in (`src/data/projects.ts`, `tools.ts`)
+
+`Project.madeIn` is derived from the city file a project sits in
+("long-beach.json" gives "Long Beach"); nothing is written in the JSON.
+`homePorts(projects)` turns it into the same shape as the trade goods, so
+the legend's "Made in" chips light the works made in each city, and the
+hover card says "Made in Vienna · 2025".
+
+### HUD (`AtlasHud.tsx`)
+
+- Top left: a title pill, "Atlas of works · 29 projects on 7 islands",
+  beside the timeline pill; a click opens the explainer.
+- The explainer ("How to read this map") is a drawer beside the rail: a
+  lead, five rows with a glyph each (islands, sizes, lanes, live weather
+  from Astana, fog), the controls in one line, and the way into the tour.
+  It opens by itself on a first visit and its closing is remembered
+  (`atlas:explained`, storage.ts); the old bottom hint is gone.
+- Find a work: a drawer with a search field over title, tagline,
+  category, keywords, tools, city and size, listing every work by island
+  with its sprite; a row flies to the settlement and shows its card.
+- The legend shows sizes with their blurbs and counts, the crown and
+  pennant, the islands with both names, then Made in and Tools chips.
+- The rail: zoom in, zoom out, show all, find, legend, help, tour, sound,
+  save, List, beta.
+- Bottom left, "explored N of 29" under the survey bar; the weather line
+  ends in "live from Astana".
+
+### Tour (`tour.ts`)
+
+`createTour(stops, hooks)` runs the featured works in `featuredOrder`:
+fly to the settlement (`visitSettlement`, 1.1 s to three times the fitted
+zoom, never zooming out), show its card through the interaction store,
+wait 4.6 s, move on; back, forward and stop from a bar at the bottom with
+a progress line; any gesture on the map ends it, the rail and the bar do
+not; the last stop fits the archipelago. Opening a project or using the
+finder ends it too.
+
+### Map
+
+- Fog of war is thinner (`FOG_FRAG` density 0.38 on land, was 0.6) so the
+  paintings read on the first visit; the reveal mechanic is unchanged.
+- Small sprites take the pointer within a 14 px half-size (`MIN_HIT_HALF`,
+  interaction.ts), and the front-first order is cached per atlas instead
+  of sorted on every pointer move.
+- The hover card stacks above an open drawer.
+- A one-time note when the last settlement is explored (`atlas:completed`).
+- `storage.ts` holds the remembered flags (flown, explained, completed).
+
+### Poster and data
+
+`scripts/bake-atlas-poster.py` re-run, so `public/atlas/poster.webp`
+carries the English names. `europe-ignition` had `status: "done"`, outside
+the union the dev check reports; it is `complete` now.
+
+### Verification and a capture script
+
+`scripts/atlas-shot.mjs <url> <out.png>` drives headless Edge over the
+DevTools protocol in real time: it waits for `data-atlas-status="ready"`
+and the end of the first-visit arrival, lets the fades settle, then
+captures. Edge's `--screenshot` flag could not do this reliably: with
+`--virtual-time-budget` its clock outran the image decode (a still of
+"Drawing the map…", or paintings uploaded black before they were decoded),
+and without it the frame loop never ran. `assets.ts` now awaits
+`image.decode()` before the upload for the same reason, which also spares
+the main thread a synchronous decode of seven 2048 px paintings.
+
+Dev hooks added for captures: `?atlas-drawer=legend|find|help` and
+`?atlas-tour=<n>` (starts the tour at that stop, any drawer closed).
+
+### Verified
+
+In the browser pane (Chromium, GPU): the fitted view with both names per
+island; the legend drawer (sizes with blurbs and counts, crown and
+pennant, islands with native names, Made in and Tools chips); the finder
+filtering to "21 of 29 works" on "vienna" and a row flying to Heat Stress
+in Vienna with its card and the drawer closed; the tour from the URL hook
+and from the rail (the legend closed, stop 1 with its card and lit lanes,
+the bar advancing to stops 2 and 3, the explored count rising); no console
+errors from the atlas. `tsc` clean; `vite build` clean in a worktree
+holding only this pass (the AtlasView chunk 105 kB, 37 kB gzip, from 89 kB);
+`node scripts/print-atlas.ts --check-chronicle` unchanged positions under
+the new names. Captures for the record were taken with
+`scripts/atlas-shot.mjs` at 1920 × 1080: first visit at night with the
+explainer, a hover with the card, the legend, the finder, the tour at its
+second stop.
+
+Not verified: touch and pinch on a device; the completion note (needs all
+29 explored); the export with the new panels open.
+
+### Open question for the owner
+
+The atlas still polls Open-Meteo for Astana's weather every fifteen
+minutes (stage 4), with a cached copy and a clock-and-season fallback when
+the API is unreachable. The footer work on 2026-09-22 dropped live
+readings from the site on principle; if that rule extends to the atlas,
+the fallback path (`fallbackWeather` in `weather/weather.ts`: clear sky,
+the month's normal temperature, the real sun for day and night) can become
+the only path with the fetch removed, and the explainer's "Live weather"
+row reworded.

@@ -97,13 +97,26 @@ export function textureSources(islandIds: readonly string[]): string[] {
   ];
 }
 
+/**
+ * Loaded and decoded: `decode()` settles once the pixels exist, so the
+ * upload that follows never stalls the main thread on a decode, and the
+ * first frame drawn straight after the load has the painting rather than
+ * an undecoded (black) texture. Browsers that refuse `decode()` fall back
+ * to the load event.
+ */
 export function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.decoding = 'async';
-    image.onload = () => resolve(image);
     image.onerror = () => reject(new Error(`could not load ${src}`));
     image.src = src;
+    image.decode().then(
+      () => resolve(image),
+      () => {
+        if (image.complete && image.naturalWidth > 0) resolve(image);
+        else image.onload = () => resolve(image);
+      },
+    );
   });
 }
 

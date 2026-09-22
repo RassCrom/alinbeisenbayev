@@ -64,6 +64,7 @@ export default function IslandLocator({ slug, size = 148 }: Props) {
       </div>
       <figcaption className="island-locator__caption">
         <span className="island-locator__name">{island.name}</span>
+        <span className="island-locator__native">{island.nativeName} · {island.gloss}</span>
         <span className="island-locator__tier">
           {TIER_LABEL[settlement.tier].toLowerCase()} · {island.category}
         </span>

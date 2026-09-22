@@ -145,13 +145,27 @@
   transform: translateY(-7px) scale(1.12);
 }
 
-/* Island names are the wayfinding anchors: wide-set, but not loud. */
+/* Island names are the wayfinding anchors: wide-set, but not loud. Under
+   each, in the visitor's words, what stands there: "11 social media maps". */
 .atlas-label--island {
   font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.34em;
   padding-left: 0.34em; /* balances the trailing letter-spacing */
   color: rgba(243, 234, 214, 0.86);
+}
+
+.atlas-label--island .atlas-label__inner {
+  gap: 3px;
+}
+
+.atlas-label__sub {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: lowercase;
+  color: rgba(var(--atlas-gold-rgb), 0.9);
 }
 
 .atlas-label--island:hover {
@@ -296,6 +310,15 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #f3ead6;
+}
+
+.atlas-tooltip__meta {
+  margin: 5px 0 0;
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(var(--atlas-gold-rgb), 0.9);
 }
 
 .atlas-tooltip__tagline {
@@ -681,6 +704,12 @@
   overflow-y: auto;
   transform: translateY(-50%);
   z-index: 3;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--atlas-gold-rgb), 0.35) transparent;
+}
+
+.atlas-drawer--wide {
+  width: 320px;
 }
 
 .atlas-drawer__close {
@@ -705,17 +734,54 @@
 }
 
 .atlas-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+}
+
+.atlas-tiers__row {
   display: grid;
-  grid-template-columns: 30px auto auto;
+  grid-template-columns: 30px 1fr auto;
   align-items: center;
   column-gap: 10px;
-  row-gap: 2px;
-  font-size: 11.5px;
 }
 
 .atlas-tiers img {
   width: 30px;
   height: 30px;
+  object-fit: contain;
+}
+
+.atlas-tiers__label {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+}
+
+.atlas-tiers__label small {
+  font-size: 10px;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-legend__marks {
+  display: flex;
+  gap: 14px;
+  margin-top: -2px;
+  font-size: 10.5px;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-legend__marks span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.atlas-legend__marks img {
+  width: 16px;
+  height: 16px;
   object-fit: contain;
 }
 
@@ -733,8 +799,9 @@
 
 .atlas-legend__row {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   column-gap: 10px;
+  row-gap: 1px;
   align-items: baseline;
   padding: 3px 4px;
   margin: 0 -4px;
@@ -760,13 +827,17 @@
   text-transform: uppercase;
 }
 
-.atlas-legend__category,
-.atlas-legend__count {
+.atlas-legend__category {
   color: var(--atlas-bone-dim);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
-.atlas-legend__count {
-  font-variant-numeric: tabular-nums;
+.atlas-legend__native {
+  grid-column: 1 / -1;
+  font-style: italic;
+  font-size: 10.5px;
+  color: rgba(235, 225, 201, 0.55);
 }
 
 .atlas-button {
@@ -793,29 +864,68 @@
   outline: none;
 }
 
-/* ---- First-visit hint ---- */
+/* ---- Title, top left ----
+   The chart's name and its one-line contents, as a pill beside the timeline;
+   a click opens the explainer. */
 
-.atlas-hint {
+.atlas-topbar {
   position: absolute;
-  bottom: 22px;
-  left: 50%;
-  padding: 6px 14px;
-  border: 1px solid rgba(var(--atlas-gold-rgb), 0.35);
-  border-radius: 999px;
-  background: var(--atlas-glass);
-  color: var(--atlas-bone-dim);
-  font-family: var(--font-mono, 'DM Mono', monospace);
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transform: translateX(-50%);
+  top: 16px;
+  left: 16px;
+  right: 72px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  z-index: 3;
   pointer-events: none;
-  transition: opacity 1100ms ease;
 }
 
-.atlas-hint.is-arriving {
-  opacity: 0;
+.atlas-topbar > * {
+  pointer-events: auto;
+}
+
+.atlas-topbar .atlas-hud {
+  position: relative;
+  top: auto;
+  left: auto;
+  bottom: auto;
+}
+
+.atlas-title {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 10px;
+  padding: 7px 14px 7px 12px;
+  font: inherit;
+  color: var(--atlas-bone);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.atlas-title:hover,
+.atlas-title:focus-visible,
+.atlas-title.is-on {
+  border-color: rgba(var(--atlas-gold-rgb), 0.7);
+  outline: none;
+}
+
+.atlas-title__text {
+  font-family: var(--atlas-serif);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #f2e9d3;
+}
+
+.atlas-explored {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
 }
 
 /* ---- Status overlays ---- */
@@ -844,17 +954,29 @@
 }
 
 @media (max-width: 900px) {
-  .atlas-hud__block--minimap,
-  .atlas-hint {
+  .atlas-hud__block--minimap {
+    display: none;
+  }
+  .atlas-topbar {
+    right: 16px;
+  }
+  .atlas-title__text {
     display: none;
   }
   .atlas-hud--left {
     width: auto;
     padding: 8px 10px;
   }
-  .atlas-drawer {
+  .atlas-drawer,
+  .atlas-drawer--wide {
     right: 60px;
-    width: min(240px, calc(100% - 90px));
+    width: min(320px, calc(100% - 80px));
+  }
+  .atlas-tour {
+    left: 12px;
+    right: 72px;
+    transform: none;
+    white-space: normal;
   }
 }
 
@@ -870,12 +992,22 @@
 
 /* ---- Stage 5: highlight rings, trade goods, the arrival ---- */
 
-/* Rings and the card share one layer; only the card takes the pointer. */
+/* Rings and the card share one layer; only the card takes the pointer. The
+   layer makes no stacking context of its own, so the card can sit above an
+   open drawer (a hover near the rail still shows it) while the rings stay
+   level with the labels. */
 .atlas-focus {
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+
+.atlas-ring {
   z-index: 2;
+}
+
+.atlas-focus .atlas-tooltip {
+  z-index: 4;
 }
 
 .atlas-focus .atlas-tooltip {
@@ -1182,4 +1314,347 @@
   background: rgba(0, 0, 0, 0.75);
   color: #ffe9a8;
   font: 600 14px/1.2 monospace;
+}
+
+/* ---- Finder ----
+   Every work by island, filtered as the visitor types; a row flies there. */
+
+.atlas-find {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.atlas-find__input {
+  padding: 6px 9px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.4);
+  border-radius: 2px;
+  background: rgba(7, 13, 24, 0.85);
+  color: var(--atlas-bone);
+  font-family: var(--atlas-serif);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.atlas-find__input::placeholder {
+  color: rgba(235, 225, 201, 0.45);
+}
+
+.atlas-find__input:focus-visible {
+  border-color: var(--atlas-gold);
+  outline: none;
+}
+
+.atlas-find__count {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-find__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: min(52vh, 460px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--atlas-gold-rgb), 0.35) transparent;
+}
+
+.atlas-find__group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.atlas-find__island {
+  margin: 4px 0 3px;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(var(--atlas-gold-rgb), 0.85);
+}
+
+.atlas-find__row {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  column-gap: 8px;
+  align-items: center;
+  padding: 3px 4px;
+  margin: 0 -4px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--atlas-bone);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.atlas-find__row:hover,
+.atlas-find__row:focus-visible {
+  background: rgba(var(--atlas-gold-rgb), 0.12);
+  outline: none;
+}
+
+.atlas-find__row img {
+  grid-row: 1 / 3;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.atlas-find__title {
+  font-size: 12px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.atlas-find__meta {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-find__empty {
+  padding: 8px 0;
+  font-size: 12px;
+  color: var(--atlas-bone-dim);
+}
+
+/* ---- Explainer ----
+   What the map is and how to read it: a lead, five rows with a glyph each,
+   the controls in one line, and the way into the tour. */
+
+.atlas-help {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 6px;
+}
+
+.atlas-help__lead {
+  margin: 0;
+  font-family: var(--atlas-serif);
+  font-size: 16px;
+  line-height: 1.25;
+  color: #f3ead6;
+}
+
+.atlas-help__text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-help__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(var(--atlas-gold-rgb), 0.22);
+}
+
+.atlas-help__row {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  column-gap: 10px;
+  align-items: start;
+}
+
+.atlas-help__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: rgba(var(--atlas-gold-rgb), 0.9);
+}
+
+.atlas-help__icon img,
+.atlas-help__icon svg {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.atlas-help__body {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-help__body strong {
+  font-weight: 600;
+  color: var(--atlas-bone);
+}
+
+.atlas-help__controls {
+  margin: 2px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(var(--atlas-gold-rgb), 0.22);
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 9.5px;
+  line-height: 1.6;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--atlas-bone-dim);
+}
+
+.atlas-help__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.atlas-help__actions .atlas-button {
+  align-self: auto;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.atlas-button--primary {
+  border-color: var(--atlas-gold);
+  background: rgba(var(--atlas-gold-rgb), 0.22);
+  color: #fff6e0;
+}
+
+.atlas-button--primary:hover,
+.atlas-button--primary:focus-visible {
+  background: rgba(var(--atlas-gold-rgb), 0.34);
+}
+
+/* ---- Tour bar and the one-time note, bottom centre ---- */
+
+.atlas-tour,
+.atlas-toast {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 9px 16px;
+  border: 1px solid rgba(var(--atlas-gold-rgb), 0.45);
+  border-radius: 999px;
+  background: var(--atlas-glass);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    0 12px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--atlas-bone);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  overflow: hidden;
+  cursor: default;
+}
+
+.atlas-tour {
+  max-width: calc(100% - 32px);
+}
+
+.atlas-tour__title {
+  font-family: var(--atlas-serif);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #f2e9d3;
+}
+
+.atlas-tour__buttons {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.atlas-tour__buttons button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--atlas-bone);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.atlas-tour__buttons button:hover,
+.atlas-tour__buttons button:focus-visible {
+  border-color: rgba(var(--atlas-gold-rgb), 0.6);
+  background: rgba(var(--atlas-gold-rgb), 0.14);
+  outline: none;
+}
+
+.atlas-tour__buttons button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Fills across the bar over one stop, so the pace is visible. */
+.atlas-tour__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--atlas-gold);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  animation: atlas-tour-fill linear forwards;
+}
+
+@keyframes atlas-tour-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.atlas-toast {
+  padding: 8px 18px;
+  font-family: var(--atlas-serif);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: #f2e9d3;
+  pointer-events: none;
+  animation: atlas-toast-in 600ms ease both;
+}
+
+@keyframes atlas-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-tour__progress,
+  .atlas-toast {
+    animation: none;
+    transform: translateX(-50%);
+  }
+  .atlas-tour__progress {
+    transform: none;
+    width: 0;
+  }
 }

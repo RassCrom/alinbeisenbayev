@@ -34,7 +34,7 @@ export default function AtlasPoster() {
           src="/atlas/poster.webp"
           width={POSTER_FRAME.width}
           height={POSTER_FRAME.height}
-          alt={`The atlas of works as of ${POSTER_FRAME.asOf}: an archipelago of ${atlas.islands.length} islands with a settlement per project.`}
+          alt={`The atlas of works as of ${POSTER_FRAME.asOf}: ${atlas.settlements.length} projects drawn as settlements on ${atlas.islands.length} islands, one island per kind of work.`}
         />
         <nav className="atlas-poster__hotspots" aria-label="Settlements">
           {atlas.settlements.map((settlement) => {
@@ -56,10 +56,10 @@ export default function AtlasPoster() {
         </nav>
       </div>
       <p className="atlas-poster__note">
-        This experimental chart needs WebGL, which this browser lacks, so it is shown as a still, as of {POSTER_FRAME.asOf}. Every settlement is a
-        link.{' '}
+        My works as an archipelago: one island per kind of work, one settlement per project, bigger the more there is to see. This browser has no
+        WebGL, so the chart is a still as of {POSTER_FRAME.asOf}; every settlement is a link.{' '}
         <button type="button" className="atlas-poster__switch" onClick={() => setViewMode('sheet')}>
-          Sheet view
+          List view
         </button>
       </p>
     </div>

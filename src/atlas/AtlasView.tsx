@@ -7,7 +7,7 @@ import { LifeSim, planAmbient } from './ambient.ts';
 import { createAmbientAudio } from './audio.ts';
 import { loadImages, textureSources } from './assets.ts';
 import AtlasFocus from './AtlasFocus';
-import AtlasHud from './AtlasHud';
+import AtlasHud, { type Drawer } from './AtlasHud';
 import AtlasLabels from './AtlasLabels';
 import AtlasLanes from './AtlasLanes';
 import {
@@ -40,7 +40,9 @@ import { exportChart } from './export.ts';
 import { createInteractionStore, hitTest } from './interaction.ts';
 import { FrameWatchdog, detectQuality, type Quality } from './quality.ts';
 import { sheetOrder } from './order.ts';
-import { tradeGoods } from './tools.ts';
+import { FLAG_KEYS, readFlag, writeFlag } from './storage.ts';
+import { homePorts, tradeGoods } from './tools.ts';
+import { createTour, type Tour } from './tour.ts';
 import type { Island } from './types.ts';
 import { defaultViewMode, setViewMode } from './viewMode.ts';
 import { WeatherSim, initialSnowCover, targetLook } from './weather/sim.ts';
@@ -69,9 +71,14 @@ import './atlas.css';
  *
  * A first visit arrives from above (stage 5): the camera starts far out
  * behind a veil of cloud and settles on the fitted archipelago while the
- * HUD fades in. Once is enough; a flag in localStorage remembers, and the
- * flight is skipped under reduced motion, on Back, and when the sheet is
- * the default view for this device.
+ * HUD fades in, with the explainer open beside the rail. Once is enough;
+ * flags in localStorage (storage.ts) remember both, and the flight is
+ * skipped under reduced motion, on Back, and when the sheet is the default
+ * view for this device.
+ *
+ * The tour (tour.ts) and the finder share one move, `visitSettlement`: fly
+ * to a settlement at a reading zoom and show its card through the
+ * interaction store, the same card a hover shows.
  */
 
 type Status = { kind: 'loading' } | { kind: 'ready' } | { kind: 'error'; message: string };
@@ -84,7 +91,6 @@ type Status = { kind: 'loading' } | { kind: 'ready' } | { kind: 'error'; message
 const MAX_DPR: Record<Quality, number> = { full: 1.5, lite: 1 };
 /** With nothing moving but the water, the loop drops to every other frame after this long. */
 const IDLE_AFTER_MS = 4000;
-const HINT_KEY = 'atlas:hinted';
 /** Fog clears this many footprints around a surveyed settlement. */
 const REVEAL_FOOTPRINTS = 5;
 /** Settlements within this many pixels of the edge get panned into view on keyboard focus. */
@@ -93,9 +99,11 @@ const FOCUS_MARGIN = 80;
 const FLY_MS = 3600;
 const FLY_START_ZOOM = 0.3;
 const FLY_HUD_AT = 0.62;
-const FLOWN_KEY = 'atlas:flown';
 /** A settlement's sprite cross-fades between tiers over this long. */
 const CROSSFADE_S = 0.45;
+/** The tour and the finder bring a settlement to the centre over this long, at this multiple of the fitted zoom. */
+const VISIT_MS = 1100;
+const VISIT_ZOOM = 3;
 
 interface Flight {
   from: Camera;
@@ -103,38 +111,6 @@ interface Flight {
   start: number;
   /** Dev only: freeze part-way so a headless render can capture the arrival. */
   hold: boolean;
-}
-
-function hasFlown(): boolean {
-  try {
-    return localStorage.getItem(FLOWN_KEY) === '1';
-  } catch {
-    return true;
-  }
-}
-
-function rememberFlown(): void {
-  try {
-    localStorage.setItem(FLOWN_KEY, '1');
-  } catch {
-    // Private mode: the visitor gets the flight again next time; no harm.
-  }
-}
-
-function wantsHint(): boolean {
-  try {
-    return localStorage.getItem(HINT_KEY) !== '1';
-  } catch {
-    return false;
-  }
-}
-
-function rememberHint(): void {
-  try {
-    localStorage.setItem(HINT_KEY, '1');
-  } catch {
-    // Nothing to do.
-  }
 }
 
 const easeInOutCubic = (t: number): number => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -158,6 +134,14 @@ export default function AtlasView() {
       tradeGoods(projects)
         .map((good) => ({ ...good, slugs: good.slugs.filter((slug) => bySlug.has(slug)) }))
         .filter((good) => good.slugs.length >= 2),
+    [bySlug],
+  );
+  // Where the works were made, in the same shape, for the legend's "Made in" chips.
+  const ports = useMemo(
+    () =>
+      homePorts(projects)
+        .map((port) => ({ ...port, slugs: port.slugs.filter((slug) => bySlug.has(slug)) }))
+        .filter((port) => port.slugs.length > 0),
     [bySlug],
   );
   // The chronicle (stage 6): a scrubbed month, the atlas as it stood then, and what the DOM layers show.
@@ -192,9 +176,19 @@ export default function AtlasView() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
   const [arriving, setArriving] = useState(false);
-  // A one-line hint on how to move, for the first visit; the first gesture or the timer clears it.
-  const [hint, setHint] = useState(() => wantsHint());
+  // The drawer beside the rail. The explainer opens by itself on a first visit; closing it once is remembered.
+  const [drawer, setDrawerState] = useState<Drawer>(() => (readFlag(FLAG_KEYS.explained) ? null : 'help'));
+  const drawerRef = useRef(drawer);
+  drawerRef.current = drawer;
+  const setDrawer = useCallback((next: Drawer) => {
+    if (drawerRef.current === 'help' && next !== 'help') writeFlag(FLAG_KEYS.explained);
+    setDrawerState(next);
+  }, []);
+  // A one-time note when the last settlement is explored.
+  const [toast, setToast] = useState<string | null>(null);
   const opening = useRef(false);
+  // The tour is created further down, after the moves it needs; opening a project must still be able to end it.
+  const tourRef = useRef<Tour | null>(null);
   // Stage 7: sound, quality and the export hook the frame loop fills in.
   const audio = useMemo(() => createAmbientAudio(), []);
   const [quality, setQuality] = useState<Quality>(() => detectQuality());
@@ -237,8 +231,10 @@ export default function AtlasView() {
    * render can capture: `?atlas-hover=<slug>` with that settlement active,
    * `?atlas-tool=<key>` with that trade good pinned, `?atlas-weather=<preset>`
    * under that weather, `?atlas-flyin[=hold]` mid-arrival, `?atlas-camera=x,y,zoom` at a camera,
-   * `?atlas-date=YYYY-MM` with the chronicle held at that month. All of it
-   * disappears from the production build with the DEV branch.
+   * `?atlas-date=YYYY-MM` with the chronicle held at that month,
+   * `?atlas-drawer=legend|find|help` with that drawer open, `?atlas-tour=<n>`
+   * with the tour started at that stop. All of it disappears from the
+   * production build with the DEV branch.
    */
   useEffect(() => {
     if (!import.meta.env.DEV) return;
@@ -255,6 +251,14 @@ export default function AtlasView() {
     const dateParam = params.get('atlas-date');
     const dateMonth = dateParam ? monthOfString(dateParam) : null;
     if (dateMonth !== null) chronicle.set({ month: Math.max(range.first, Math.min(range.last, dateMonth)), pinned: true });
+    // `?atlas-drawer=legend|find|help` opens a drawer; `?atlas-tour=<n>` starts the tour at that stop.
+    const drawerParam = params.get('atlas-drawer');
+    if (drawerParam === 'legend' || drawerParam === 'find' || drawerParam === 'help') setDrawerState(drawerParam);
+    const tourParam = params.get('atlas-tour');
+    if (tourParam !== null && status.kind === 'ready') {
+      setDrawerState(null);
+      tourRef.current?.start(Math.max(0, Number(tourParam) || 0));
+    }
     return () => {
       delete debugWindow.__atlas;
     };
@@ -280,6 +284,7 @@ export default function AtlasView() {
       const settlement = bySlug.get(slug);
       if (!settlement || opening.current) return;
       opening.current = true;
+      tourRef.current?.stop();
       markSurveyed(slug);
       const { camera, viewport } = store.get();
       saveCamera(camera);
@@ -391,11 +396,69 @@ export default function AtlasView() {
     void animator.to(fitBounds(atlas.bounds, store.get().viewport), 520);
   }, [animator, atlas.bounds, store]);
 
+  /** Bring a settlement to the centre at a reading zoom; resolves when the camera arrives. */
+  const visitSettlement = useCallback(
+    (slug: string): Promise<void> => {
+      const settlement = bySlug.get(slug);
+      if (!settlement) return Promise.resolve();
+      const { camera, viewport } = store.get();
+      const fit = fitBounds(atlas.bounds, viewport);
+      // Never zoom out to visit; a visitor already close in stays close, within reason.
+      const zoom = Math.max(fit.zoom * VISIT_ZOOM, Math.min(camera.zoom, fit.zoom * VISIT_ZOOM * 1.5));
+      return animator.to(clampCamera({ x: settlement.x, y: settlement.y, zoom }, viewport, atlas.bounds), VISIT_MS);
+    },
+    [animator, atlas.bounds, bySlug, store],
+  );
+
+  // The guided tour: the featured works in their curated order, each shown with its card.
+  const tour = useMemo(() => {
+    const stops = projects
+      .filter((project) => project.featured && project.featuredOrder !== undefined && bySlug.has(project.slug))
+      .sort((a, b) => (a.featuredOrder ?? 0) - (b.featuredOrder ?? 0))
+      .map((project) => project.slug);
+    return createTour(stops, {
+      travel: visitSettlement,
+      present: (slug) => {
+        interaction.set({ selected: slug, hovered: null, focused: null });
+        if (slug) markSurveyed(slug);
+      },
+      onEnd: (completed) => {
+        if (completed) fitAll();
+      },
+    });
+  }, [bySlug, fitAll, interaction, visitSettlement]);
+  tourRef.current = tour;
+  useEffect(() => () => tour.stop(), [tour]);
+
+  /** The finder's way in: fly to a settlement and show its card. */
+  const goTo = useCallback(
+    (slug: string) => {
+      tour.stop();
+      setDrawer(null);
+      interaction.set({ selected: slug, hovered: null, focused: null });
+      markSurveyed(slug);
+      void warmDetail();
+      void visitSettlement(slug);
+    },
+    [interaction, setDrawer, tour, visitSettlement, warmDetail],
+  );
+
+  /** Escape: clear what is lit, end the tour, close the drawer. */
+  const escape = useCallback(() => {
+    clearInteraction();
+    tour.stop();
+    setDrawer(null);
+  }, [clearInteraction, setDrawer, tour]);
+
+  // The last settlement explored: one note, once.
   useEffect(() => {
-    if (!hint) return;
-    const timer = window.setTimeout(() => setHint(false), 9000);
+    const total = atlas.settlements.length;
+    if (total === 0 || surveyedCount < total || readFlag(FLAG_KEYS.completed)) return;
+    writeFlag(FLAG_KEYS.completed);
+    setToast('Every settlement explored. Thank you for reading the whole map.');
+    const timer = window.setTimeout(() => setToast(null), 8000);
     return () => window.clearTimeout(timer);
-  }, [hint]);
+  }, [atlas, surveyedCount]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -424,7 +487,9 @@ export default function AtlasView() {
         !params.has('atlas-tool') &&
         !params.has('atlas-camera') &&
         !params.has('atlas-date') &&
-        !hasFlown());
+        !params.has('atlas-drawer') &&
+        !params.has('atlas-tour') &&
+        !readFlag(FLAG_KEYS.flown));
     let flight: Flight | null = null;
     const dpr = (): number => Math.min(window.devicePixelRatio || 1, MAX_DPR[qualityRef.current]);
     const watchdog = new FrameWatchdog();
@@ -458,7 +523,7 @@ export default function AtlasView() {
           camera = flight.from;
           frameState.veil = 1;
           setArriving(true);
-          rememberFlown();
+          writeFlag(FLAG_KEYS.flown);
         }
         sized = true;
       }
@@ -480,13 +545,11 @@ export default function AtlasView() {
     const touch = (): void => {
       lastActivity = performance.now();
     };
-    const onGesture = (): void => {
+    const onGesture = (event: Event): void => {
       endFlight();
       touch();
-      setHint((shown) => {
-        if (shown) rememberHint();
-        return false;
-      });
+      // A gesture on the map ends the tour; its own bar and the rail are how it is driven.
+      if (!(event.target instanceof Element && event.target.closest('.atlas-tour, .atlas-rail'))) tour.stop();
     };
     const unsubscribeActivity = [store.subscribe(touch), interaction.subscribe(touch), chronicle.subscribe(touch)];
 
@@ -711,7 +774,7 @@ export default function AtlasView() {
         detachControls = attachCameraControls(container, store, animator, {
           onHoverMove: hoverAt,
           onTap: tapAt,
-          onEscape: clearInteraction,
+          onEscape: escape,
         });
         setStatus({ kind: 'ready' });
         start();
@@ -743,7 +806,7 @@ export default function AtlasView() {
       renderer?.dispose();
       renderer = null;
     };
-  }, [animator, atlas, audio, chronicle, clearInteraction, hoverAt, interaction, navigationType, range, store, tapAt]);
+  }, [animator, atlas, audio, chronicle, escape, hoverAt, interaction, navigationType, range, store, tapAt, tour]);
 
   return (
     <div
@@ -751,7 +814,7 @@ export default function AtlasView() {
       className={`atlas-view${arriving ? ' is-arriving' : ''}`}
       data-atlas-status={status.kind}
       tabIndex={0}
-      aria-label="Atlas of works. Drag to pan, scroll to zoom, arrow keys to move; Tab reaches the settlements."
+      aria-label="Map of works: one island per kind of work, one settlement per project. Drag to pan, scroll to zoom, arrow keys to move; Tab reaches the projects."
     >
       <canvas ref={canvasRef} aria-hidden="true" />
       {showStats && <div ref={statsRef} className="atlas-stats" aria-hidden="true" />}
@@ -777,26 +840,31 @@ export default function AtlasView() {
             exporting={exporting}
             onExport={() => void exportView()}
             goods={goods}
+            ports={ports}
+            tour={tour}
+            drawer={drawer}
+            onDrawer={setDrawer}
             arriving={arriving}
             surveyedCount={surveyedCount}
             weather={shownWeather}
             weatherError={weatherError}
             preset={preset}
             onPreset={setPreset}
-            onSheetView={() => setViewMode('sheet')}
+            onListView={() => setViewMode('sheet')}
             onMinimapClick={flyTo}
             onZoom={zoomBy}
             onFit={fitAll}
             onIslandClick={fitIsland}
+            onGoTo={goTo}
           />
-          {hint && (
-            <div className={`atlas-hint${arriving ? ' is-arriving' : ''}`} role="note">
-              Drag to pan · scroll to zoom · point at a settlement, click to open its sheet
+          {toast && (
+            <div className="atlas-toast" role="status">
+              {toast}
             </div>
           )}
         </>
       )}
-      <nav className="atlas-sr-list" aria-label="Settlements in sheet order">
+      <nav className="atlas-sr-list" aria-label="Projects on the map, in list order">
         <ul>
           {sheet.map((project) => {
             const settlement = bySlug.get(project.slug);
@@ -829,7 +897,7 @@ export default function AtlasView() {
       </nav>
       {status.kind === 'loading' && (
         <div className="atlas-status" role="status">
-          Charting the archipelago…
+          Drawing the map…
         </div>
       )}
       {status.kind === 'error' && (
@@ -837,7 +905,7 @@ export default function AtlasView() {
           <p>The map could not start on this device.</p>
           <p style={{ opacity: 0.7 }}>{status.message}</p>
           <button type="button" className="atlas-button" onClick={() => setViewMode('sheet')}>
-            Sheet view
+            List view
           </button>
         </div>
       )}

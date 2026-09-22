@@ -12,9 +12,18 @@ const cityModules = import.meta.glob<{ default: ProjectsData }>('./projects/*.js
   eager: true,
 });
 
+/** "./projects/long-beach.json" -> "Long Beach": the city file's name, as a title. */
+function cityOf(path: string): string {
+  const file = path.split('/').pop()?.replace(/\.json$/, '') ?? '';
+  return file
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export const projects: Project[] = Object.keys(cityModules)
   .sort()
-  .flatMap((path) => cityModules[path].default.projects);
+  .flatMap((path) => cityModules[path].default.projects.map((project) => ({ ...project, madeIn: cityOf(path) })));
 
 /*
  * TypeScript can't police this data on its own: JSON string values widen to

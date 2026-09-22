@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { CROWN_SRC, PENNANT_SRC, SETTLEMENT_SPRITES, SETTLEMENT_SPRITE_SCALE } from './assets.ts';
 import { fitBounds, worldToScreen, type Camera, type ViewStore, type Viewport } from './camera.ts';
-import { TIERS } from './config.ts';
+import { TIERS, describeCategory } from './config.ts';
 import type { InteractionStore } from './interaction.ts';
 import { paintingHalfWidth } from './layout.ts';
 import type { Atlas, Island, Tier } from './types.ts';
@@ -204,10 +204,13 @@ export default function AtlasLabels({ atlas, store, interaction, onOpen, onIslan
           key={island.id}
           data-label={`island:${island.id}`}
           className="atlas-label atlas-label--island"
-          title={`${island.name}: ${island.category}, ${island.projectCount} works. Click to fit.`}
+          title={`${island.name}: ${describeCategory(island.category, island.projectCount)}. Known locally as ${island.nativeName}, "${island.gloss}". Click to zoom in.`}
           onClick={() => onIslandClick(island)}
         >
-          <div className="atlas-label__inner">{island.name}</div>
+          <div className="atlas-label__inner">
+            <span className="atlas-label__name">{island.name}</span>
+            <span className="atlas-label__sub">{describeCategory(island.category, island.projectCount)}</span>
+          </div>
         </div>
       ))}
       {atlas.settlements.map((settlement) => (

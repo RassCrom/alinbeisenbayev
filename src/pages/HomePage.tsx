@@ -30,7 +30,7 @@ function AtlasFallback() {
         textTransform: 'uppercase',
       }}
     >
-      Charting the archipelago…
+      Drawing the map…
     </div>
   );
 }

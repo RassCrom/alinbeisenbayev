@@ -5,7 +5,7 @@ import { hashString, mulberry32 } from './prng.ts';
 import type { Atlas, Settlement } from './types.ts';
 
 export type { Atlas, Biome, Bounds, Island, IslandConfig, Lane, LaneReason, Settlement, Tier } from './types.ts';
-export { ATLAS_SEED, ISLANDS, ISLAND_BY_CATEGORY, LANE_RULES, LAYOUT, TIERS, TIER_FOOTPRINT, TIER_LABEL } from './config.ts';
+export { ATLAS_SEED, ISLANDS, ISLAND_BY_CATEGORY, LANE_RULES, LAYOUT, TIERS, TIER_BLURB, TIER_FOOTPRINT, TIER_LABEL, describeCategory } from './config.ts';
 export { durationMonths, scoreTerms, sizeScore, tierFor, tierFromScore, SCORE_WEIGHTS, TIER_THRESHOLDS } from './score.ts';
 export { isLand, paintingHalfWidth } from './layout.ts';
 export { ISLAND_MASKS, MASK_SIZE } from './masks.ts';

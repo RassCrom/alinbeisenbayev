@@ -23,6 +23,10 @@ key would have left a visible halo.
 
 ## Islands (1:1, 2k, reference 06)
 
+Each island has the name shown on the map (plain English, since 2026-09-22)
+and its native name, an invented Kazakh compound; `src/atlas/config.ts` holds
+both. The file names follow the native names and never change.
+
 Shared frame, with the biome sentence swapped in:
 
 > Top-down view of one single fictional island, painted photoreal
@@ -39,13 +43,13 @@ Shared frame, with the biome sentence swapped in:
 
 | File | Island | Biome sentence |
 | --- | --- | --- |
-| `island-jailau.webp` | Jailau (social media) | Rolling green meadow island with soft grassy hills, hedgerows, small groves of broadleaf trees, a winding stream, wildflower patches and low sandy beaches |
-| `island-tasqyr.webp` | Tasqyr (print) | Rugged mountain island with a snow-capped central massif, grey rock ridges, scree slopes, alpine meadows and a few pines at the foot, steep rocky coast with a small pebble beach |
-| `island-qaragai.webp` | Qaragai (storytelling map) | Densely forested island of dark conifer pine and spruce woods with a few mossy clearings, a small dark lake, ferns, and a rocky northern shore |
-| `island-tikjar.webp` | Tikjar (interactive map) | Sea-cliff island with tall pale limestone cliffs all around, a windswept grassy clifftop plateau with heather and a few bent trees, one sheltered cove with a shingle beach, and sea stacks at the edge |
-| `island-qumtobe.webp` | Qumtöbe (game) | Desert island of golden sand dunes with wind ripples, a small dry oasis with a few palms and a tiny pool, dark rock outcrops on one side, and pale sandy shores |
-| `island-ottas.webp` | Ottas (analysis) | Small rugged volcanic islet with a black basalt cone, a red glowing crater and thin glowing lava cracks, dark ash slopes, and a few hardy trees near a black-sand shore |
-| `island-sazkol.webp` | Sazköl (platform) | Small marsh islet of reed beds, peat bog, shallow pools and meandering channels, mossy hummocks, a few wind-bent willows and muddy shores |
+| `island-jailau.webp` | Social Meadows, Jailau (social media) | Rolling green meadow island with soft grassy hills, hedgerows, small groves of broadleaf trees, a winding stream, wildflower patches and low sandy beaches |
+| `island-tasqyr.webp` | Print Ridge, Tasqyr (print) | Rugged mountain island with a snow-capped central massif, grey rock ridges, scree slopes, alpine meadows and a few pines at the foot, steep rocky coast with a small pebble beach |
+| `island-qaragai.webp` | Story Woods, Qaragai (storytelling map) | Densely forested island of dark conifer pine and spruce woods with a few mossy clearings, a small dark lake, ferns, and a rocky northern shore |
+| `island-tikjar.webp` | Interactive Cape, Tikjar (interactive map) | Sea-cliff island with tall pale limestone cliffs all around, a windswept grassy clifftop plateau with heather and a few bent trees, one sheltered cove with a shingle beach, and sea stacks at the edge |
+| `island-qumtobe.webp` | Game Dunes, Qumtöbe (game) | Desert island of golden sand dunes with wind ripples, a small dry oasis with a few palms and a tiny pool, dark rock outcrops on one side, and pale sandy shores |
+| `island-ottas.webp` | Analysis Rock, Ottas (analysis) | Small rugged volcanic islet with a black basalt cone, a red glowing crater and thin glowing lava cracks, dark ash slopes, and a few hardy trees near a black-sand shore |
+| `island-sazkol.webp` | Platform Marsh, Sazköl (platform) | Small marsh islet of reed beds, peat bog, shallow pools and meandering channels, mossy hummocks, a few wind-bent willows and muddy shores |
 
 ## Settlements (1:1, 1k, reference 07)
 

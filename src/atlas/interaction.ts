@@ -94,14 +94,32 @@ export function spriteRect(
 }
 
 /**
- * The settlement under a screen point, front-most first: sprites are drawn
- * back to front by y, so the one lowest on screen wins an overlap.
+ * A sprite smaller than this on screen (a hamlet at the fitted view is
+ * about eight pixels wide) still takes the pointer within this half-size,
+ * so the small works are not harder to reach than the large ones.
  */
+const MIN_HIT_HALF = 14;
+
+/** Front-most first: sprites are drawn back to front by y, so the one lowest on screen wins an overlap. */
+const frontFirst = new WeakMap<Atlas, Settlement[]>();
+function orderedFrontFirst(atlas: Atlas): Settlement[] {
+  let ordered = frontFirst.get(atlas);
+  if (!ordered) {
+    ordered = [...atlas.settlements].sort((a, b) => b.y - a.y);
+    frontFirst.set(atlas, ordered);
+  }
+  return ordered;
+}
+
+/** The settlement under a screen point, or null. */
 export function hitTest(atlas: Atlas, camera: Camera, viewport: Viewport, x: number, y: number): string | null {
-  const ordered = [...atlas.settlements].sort((a, b) => b.y - a.y);
-  for (const settlement of ordered) {
+  for (const settlement of orderedFrontFirst(atlas)) {
     const rect = spriteRect(settlement, camera, viewport);
-    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return settlement.slug;
+    const slackX = Math.max(0, MIN_HIT_HALF - (rect.right - rect.left) / 2);
+    const slackY = Math.max(0, MIN_HIT_HALF - (rect.bottom - rect.top) / 2);
+    if (x >= rect.left - slackX && x <= rect.right + slackX && y >= rect.top - slackY && y <= rect.bottom + slackY) {
+      return settlement.slug;
+    }
   }
   return null;
 }

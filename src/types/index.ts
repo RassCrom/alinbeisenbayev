@@ -158,6 +158,13 @@ export interface Project {
    * src/atlas/layout.ts place the settlement.
    */
   map?: { x?: number; y?: number };
+  /**
+   * The city the project was made in, derived by src/data/projects.ts from
+   * the name of the city file it sits in ("long-beach.json" gives "Long
+   * Beach"). Not written in the JSON; absent when the data is read another
+   * way, as scripts/print-atlas.ts does.
+   */
+  madeIn?: string;
 }
 
 export interface ProjectsData {

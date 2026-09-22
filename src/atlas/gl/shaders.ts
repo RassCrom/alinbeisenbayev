@@ -287,9 +287,11 @@ void main() {
   vec2 world = (frag - u_resolution * 0.5) / u_camera.z + u_camera.xy;
   float shelf = texture(u_shelf, vec2(world.x, 1.0 - world.y)).r;
 
-  // Fog lies on the land and the last of its shelf; the open sea keeps a thin haze.
-  float density = mix(0.08, 0.6, smoothstep(0.1, 0.5, shelf));
-  float wisps = 0.55 + 0.6 * fbm(world * 14.0 + vec2(u_time * 0.012, -u_time * 0.008));
+  // Fog lies on the land and the last of its shelf; the open sea keeps a thin
+  // haze. Kept thin enough for the paintings to read through it: the fog is
+  // an invitation to explore, not a lid on the first impression.
+  float density = mix(0.05, 0.38, smoothstep(0.1, 0.5, shelf));
+  float wisps = 0.5 + 0.7 * fbm(world * 14.0 + vec2(u_time * 0.012, -u_time * 0.008));
   float alpha = density * wisps * u_strength;
 
   float clear = 0.0;

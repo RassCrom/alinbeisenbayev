@@ -31,7 +31,7 @@ const KEY_ZOOM = 1.5;
 const DOUBLE_CLICK_ZOOM = 1.9;
 
 /** Elements that own their own pointer behaviour; gestures starting on them are left alone. */
-const OWN_POINTER = '.atlas-hud, .atlas-tooltip, .atlas-label, .atlas-sr-list, button, a';
+const OWN_POINTER = '.atlas-hud, .atlas-topbar, .atlas-tour, .atlas-toast, .atlas-tooltip, .atlas-label, .atlas-sr-list, button, a, input';
 
 export function attachCameraControls(
   container: HTMLElement,
