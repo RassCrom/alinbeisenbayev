@@ -5,7 +5,7 @@ import ImageGallery from '../components/ImageGallery/ImageGallery';
 import VideoGallery from '../components/VideoGallery/VideoGallery';
 import StackRow from '../components/StackRow/StackRow';
 import WorkCard from '../components/WorkCard/WorkCard';
-import { projects } from '../data/projects';
+import { allProjects, projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
 import NotFoundPage from './NotFoundPage';
 import SourceNote from '../components/SourceNote/SourceNote';
@@ -71,7 +71,7 @@ function Section({
 
 export default function WorkDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const project = projects.find((p) => p.slug === slug);
+  const project = allProjects.find((p) => p.slug === slug);
 
   // Before the not-found branch — hooks can't sit behind a conditional return.
   // NotFoundPage sets its own title/robots when it renders, so skip ours then.

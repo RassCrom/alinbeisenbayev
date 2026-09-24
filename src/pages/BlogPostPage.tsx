@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { articles } from '../content/blog';
-import { projects } from '../data/projects';
+import { allProjects } from '../data/projects';
 import { stories } from '../data/stories';
 import ChapterNav from '../components/ChapterNav/ChapterNav';
 import WorkCard from '../components/WorkCard/WorkCard';
@@ -58,7 +58,7 @@ export default function BlogPostPage() {
    * to "no card" rather than a broken link.
    */
   const relatedProject = frontmatter.workSlug
-    ? projects.find((p) => p.slug === frontmatter.workSlug)
+    ? allProjects.find((p) => p.slug === frontmatter.workSlug)
     : undefined;
   const relatedStory = frontmatter.storySlug
     ? stories.find((s) => s.slug === frontmatter.storySlug)

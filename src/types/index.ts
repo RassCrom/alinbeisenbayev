@@ -122,6 +122,8 @@ export interface Project {
   title: string;
   tagline: string;
   status: ProjectStatus;
+  /** Kept out of every listing (works, atlas, landing, skills); its page still opens by URL. */
+  hidden?: boolean;
   featured: boolean;
   /**
    * Running order for the landing page's featured strip — 1 first. Set on

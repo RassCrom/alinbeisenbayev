@@ -2,39 +2,75 @@
   "_note": "Written by scripts/gallery.py. Edit title, series, date or add \"hidden\": true — those edits survive re-runs.",
   "items": [
     {
-      "id": "english-settlement-origin-names",
-      "key": "./english-settlement-origin-names:image",
-      "title": "English Settlement Origin Names",
-      "date": "2026-09-19",
-      "kind": "image",
+      "id": "polo",
+      "key": "./polo:video",
+      "title": "Polo",
+      "date": "2026-09-24",
+      "kind": "video",
       "width": 1080,
       "height": 1350,
-      "src": "/gallery/english-settlement-origin-names-ac2d21.webp",
-      "variants": [
-        480
-      ],
+      "src": "/gallery/polo-3fd218.mp4",
+      "poster": "/gallery/polo-3fd218-poster.webp",
+      "preview": "/gallery/polo-3fd218-loop.mp4",
+      "duration": 40.0,
       "source": {
-        "path": "english-settlement-origin-names.jpg",
-        "size": 662913,
-        "mtime": 1789790143
+        "path": "polo_1080x1350.mp4",
+        "size": 19016266,
+        "mtime": 1790250052
       }
     },
     {
-      "id": "epl-2026-27-title-chances-prev-colour",
-      "key": "./epl-2026-27-title-chances-prev-colour:video",
-      "title": "Epl 2026 27 Title Chances Prev Colour",
-      "date": "2026-09-18",
+      "id": "oregon-fires-2024-vs-2026-portrait",
+      "key": "./oregon_fires_2024_vs_2026_portrait:video",
+      "title": "Oregon Fires 2024 vs 2026 Portrait",
+      "date": "2026-09-22",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/oregon-fires-2024-vs-2026-portrait-976790.mp4",
+      "poster": "/gallery/oregon-fires-2024-vs-2026-portrait-976790-poster.webp",
+      "preview": "/gallery/oregon-fires-2024-vs-2026-portrait-976790-loop.mp4",
+      "duration": 28.8,
+      "source": {
+        "path": "oregon_fires_2024_vs_2026_portrait_v2.mp4",
+        "size": 2687475,
+        "mtime": 1790067226
+      }
+    },
+    {
+      "id": "first-sea-trade-route-dark",
+      "key": "./first-sea-trade-route-dark:video",
+      "title": "First Sea Trade Route Dark",
+      "date": "2026-09-20",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/first-sea-trade-route-dark-227d1b.mp4",
+      "poster": "/gallery/first-sea-trade-route-dark-227d1b-poster.webp",
+      "preview": "/gallery/first-sea-trade-route-dark-227d1b-loop.mp4",
+      "duration": 181.8,
+      "source": {
+        "path": "first-sea-trade-route-dark-v2.mp4",
+        "size": 139345153,
+        "mtime": 1789891617
+      }
+    },
+    {
+      "id": "seriea-2026-27-title-chances",
+      "key": "./seriea-2026-27-title-chances:video",
+      "title": "Seriea 2026 27 Title Chances",
+      "date": "2026-09-20",
       "kind": "video",
       "width": 1080,
       "height": 1920,
-      "src": "/gallery/epl-2026-27-title-chances-prev-colour-cda80c.mp4",
-      "poster": "/gallery/epl-2026-27-title-chances-prev-colour-cda80c-poster.webp",
-      "preview": "/gallery/epl-2026-27-title-chances-prev-colour-cda80c-loop.mp4",
-      "duration": 26.0,
+      "src": "/gallery/seriea-2026-27-title-chances-ec3880.mp4",
+      "poster": "/gallery/seriea-2026-27-title-chances-ec3880-poster.webp",
+      "preview": "/gallery/seriea-2026-27-title-chances-ec3880-loop.mp4",
+      "duration": 32.0,
       "source": {
-        "path": "epl-2026-27-title-chances-prev-colour.mp4",
-        "size": 31185177,
-        "mtime": 1789741170
+        "path": "seriea-2026-27-title-chances.mp4",
+        "size": 9362420,
+        "mtime": 1789892611
       }
     },
     {
@@ -145,6 +181,42 @@
         "path": "kazakhstan_population_mountains_worldpop_2025_sst_3x.png",
         "size": 1964070,
         "mtime": 1789583703
+      }
+    },
+    {
+      "id": "vanishing-ranges",
+      "key": "./vanishing_ranges:video",
+      "title": "Vanishing Ranges",
+      "date": "2026-09-16",
+      "kind": "video",
+      "width": 1080,
+      "height": 1920,
+      "src": "/gallery/vanishing-ranges-b967ff.mp4",
+      "poster": "/gallery/vanishing-ranges-b967ff-poster.webp",
+      "preview": "/gallery/vanishing-ranges-b967ff-loop.mp4",
+      "duration": 29.2,
+      "source": {
+        "path": "vanishing_ranges.mp4",
+        "size": 4096788,
+        "mtime": 1789510216
+      }
+    },
+    {
+      "id": "warming-united-states-map",
+      "key": "./warming_united-states_map:video",
+      "title": "Warming United States Map",
+      "date": "2026-09-16",
+      "kind": "video",
+      "width": 1080,
+      "height": 1350,
+      "src": "/gallery/warming-united-states-map-02afae.mp4",
+      "poster": "/gallery/warming-united-states-map-02afae-poster.webp",
+      "preview": "/gallery/warming-united-states-map-02afae-loop.mp4",
+      "duration": 38.1,
+      "source": {
+        "path": "warming_united-states_map.mp4",
+        "size": 47560620,
+        "mtime": 1789565092
       }
     },
     {

@@ -21,9 +21,13 @@ function cityOf(path: string): string {
     .join(' ');
 }
 
-export const projects: Project[] = Object.keys(cityModules)
+/** Every project, hidden ones included — for lookups by slug, so a hidden project's own page still opens. */
+export const allProjects: Project[] = Object.keys(cityModules)
   .sort()
   .flatMap((path) => cityModules[path].default.projects.map((project) => ({ ...project, madeIn: cityOf(path) })));
+
+/** What the site lists: everything not marked `"hidden": true` in its city file. */
+export const projects: Project[] = allProjects.filter((project) => !project.hidden);
 
 /*
  * TypeScript can't police this data on its own: JSON string values widen to
