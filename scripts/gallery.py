@@ -71,6 +71,9 @@ WEBP_QUALITY = 82
 
 VIDEO_MAX = 1920
 VIDEO_CRF = 26
+# Cloudflare Pages rejects any single file over 25 MiB, which fails the whole deploy.
+# A video that comes out bigger than this at VIDEO_CRF is re-encoded at a bitrate that fits.
+VIDEO_MAX_BYTES = 24 * 1_048_576
 LOOP_MAX = 720
 LOOP_SECONDS = 6
 LOOP_CRF = 30
@@ -263,6 +266,13 @@ def process_video(work: Work, stem: str) -> dict:
     full = OUT / f"{stem}.mp4"
     run(["ffmpeg", "-y", "-v", "error", "-i", src, "-map", "0:v:0", "-map", "0:a:0?",
          "-vf", fit(VIDEO_MAX), *x264, "-crf", str(VIDEO_CRF), "-c:a", "aac", "-b:a", "96k", str(full)])
+
+    if full.stat().st_size > VIDEO_MAX_BYTES:
+        # Aim ~10% under the cap: single-pass ABR lands near, not exactly on, its target.
+        video_kbps = int(VIDEO_MAX_BYTES * 0.9 * 8 / duration / 1000) - 96
+        run(["ffmpeg", "-y", "-v", "error", "-i", src, "-map", "0:v:0", "-map", "0:a:0?",
+             "-vf", fit(VIDEO_MAX), *x264, "-b:v", f"{video_kbps}k", "-maxrate", f"{video_kbps}k",
+             "-bufsize", f"{video_kbps * 2}k", "-c:a", "aac", "-b:a", "96k", str(full)])
 
     # The hover loop and the poster start at the same frame, so the switch from
     # still to motion does not jump. Past the middle, where an animated map has
