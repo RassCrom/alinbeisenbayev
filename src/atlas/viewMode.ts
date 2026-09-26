@@ -3,10 +3,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 /*
  * Which face the home route shows: the atlas ("map") or the landing page
  * ("sheet"). The choice persists in localStorage. Without a stored choice
- * the default is the map, except where the map would be a poor first
- * impression: reduced motion, a narrow viewport, or no WebGL2, in which
- * case the sheet wins. No WebGL2 also overrides a stored "map", because the
- * atlas cannot draw without it.
+ * the sheet shows, on every device; the map is the visitor's opt-in.
  *
  * This is an external store for useSyncExternalStore, so its snapshot must
  * only change when a listener is notified: the current mode is cached and
@@ -49,12 +46,21 @@ function readStored(): ViewMode | null {
   }
 }
 
+/**
+ * Whether this device suits the map: WebGL2, no reduced motion, a wide
+ * enough viewport. No longer picks the default face; it decides whether
+ * the first-visit flight plays when the visitor switches to the map.
+ */
+export function mapSuitsDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (!atlasSupported()) return false;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+  return window.innerWidth >= NARROW_VIEWPORT;
+}
+
+/** A first visit always opens on the landing page; the map is opt-in. */
 export function defaultViewMode(): ViewMode {
-  if (typeof window === 'undefined') return 'sheet';
-  if (!atlasSupported()) return 'sheet';
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'sheet';
-  if (window.innerWidth < NARROW_VIEWPORT) return 'sheet';
-  return 'map';
+  return 'sheet';
 }
 
 /** Holds the choice for this visit when localStorage refuses to. */

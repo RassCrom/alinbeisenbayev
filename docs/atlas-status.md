@@ -479,8 +479,8 @@ the pin.
 ### Fly-in
 
 First visit only: `localStorage['atlas:flown'] = '1'` after the flight
-starts. Skipped under reduced motion, on Back (POP), when `defaultViewMode()`
-is not `map`, and whenever a dev URL hook asks for a specific state. The
+starts. Skipped under reduced motion, on Back (POP), when `mapSuitsDevice()`
+is false, and whenever a dev URL hook asks for a specific state. The
 camera starts at 0.3× the fit zoom, offset a little south-east, and eases
 (cubic in and out, zoom in log space) to the fit over 3.6 s while
 `FrameState.veil` runs from 1 to 0 through the sky pass (extra cloud and

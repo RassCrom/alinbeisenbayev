@@ -44,7 +44,7 @@ import { FLAG_KEYS, readFlag, writeFlag } from './storage.ts';
 import { homePorts, tradeGoods } from './tools.ts';
 import { createTour, type Tour } from './tour.ts';
 import type { Island } from './types.ts';
-import { defaultViewMode, setViewMode } from './viewMode.ts';
+import { mapSuitsDevice, setViewMode } from './viewMode.ts';
 import { WeatherSim, initialSnowCover, targetLook } from './weather/sim.ts';
 import {
   CONDITION_LABEL,
@@ -73,8 +73,8 @@ import './atlas.css';
  * behind a veil of cloud and settles on the fitted archipelago while the
  * HUD fades in, with the explainer open beside the rail. Once is enough;
  * flags in localStorage (storage.ts) remember both, and the flight is
- * skipped under reduced motion, on Back, and when the sheet is the default
- * view for this device.
+ * skipped under reduced motion, on Back, and on devices the map does not
+ * suit (mapSuitsDevice).
  *
  * The tour (tour.ts) and the finder share one move, `visitSettlement`: fly
  * to a settlement at a reading zoom and show its card through the
@@ -481,7 +481,7 @@ export default function AtlasView() {
       flyParam !== null ||
       (!reducedMotion &&
         navigationType !== 'POP' &&
-        defaultViewMode() === 'map' &&
+        mapSuitsDevice() &&
         !snapWeather &&
         !params.has('atlas-hover') &&
         !params.has('atlas-tool') &&
