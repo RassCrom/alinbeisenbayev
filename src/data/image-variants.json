@@ -46,6 +46,13 @@
     ],
     "og": "/og/projects-austria-income-image.jpg"
   },
+  "/images/projects/building-ages/madrid.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-building-ages-madrid.jpg"
+  },
   "/images/projects/chess-map/opening-desktop.webp": {
     "width": 350,
     "variants": [],
@@ -63,6 +70,14 @@
     "variants": [],
     "og": "/og/projects-earth-on-fire-dark.jpg"
   },
+  "/images/projects/election-maps/bulgaria-runoff-map.webp": {
+    "width": 2160,
+    "variants": [
+      640,
+      1280
+    ],
+    "og": "/og/projects-election-maps-bulgaria-runoff-map.jpg"
+  },
   "/images/projects/europe-ignition/cover.webp": {
     "width": 350,
     "variants": [],
@@ -72,6 +87,13 @@
     "width": 592,
     "variants": [],
     "og": "/og/projects-figura-preview.jpg"
+  },
+  "/images/projects/football-leagues/premier-league.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-football-leagues-premier-league.jpg"
   },
   "/images/projects/football-mapped/cover.webp": {
     "width": 1200,
@@ -119,6 +141,13 @@
     ],
     "og": "/og/projects-metro-animation-cover.jpg"
   },
+  "/images/projects/metro-animation/madrid.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-metro-animation-madrid.jpg"
+  },
   "/images/projects/mythical-animals/unstable-dragons-gameplay.webp": {
     "width": 3200,
     "variants": [
@@ -151,6 +180,13 @@
     ],
     "og": "/og/projects-pie-clock-year-clock-astana-classic.jpg"
   },
+  "/images/projects/population-peaks/world.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-population-peaks-world.jpg"
+  },
   "/images/projects/silk-road/preview.webp": {
     "width": 1317,
     "variants": [
@@ -166,6 +202,13 @@
     ],
     "og": "/og/projects-tigranes-the-greatest-peak.jpg"
   },
+  "/images/projects/train-movements/denmark.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/projects-train-movements-denmark.jpg"
+  },
   "/images/projects/tropical-night/preview.webp": {
     "width": 717,
     "variants": [],
@@ -177,5 +220,19 @@
       640
     ],
     "og": "/og/projects-who-comes-third-akmola-cover.jpg"
+  },
+  "/images/stories/asian-games-2026/medals-map.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/stories-asian-games-2026-medals-map.jpg"
+  },
+  "/images/stories/saint-lucia/cover.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/stories-saint-lucia-cover.jpg"
   }
 }

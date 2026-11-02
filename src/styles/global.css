@@ -1268,6 +1268,41 @@
   border: 1px solid var(--color-border-subtle);
 }
 
+.mdx-prose video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-elevated);
+}
+
+/* Stories embed their maps as figures. Most are 4:5 social posts, which at
+   full prose width run taller than the screen, so a portrait figure is
+   capped and centred instead. */
+.mdx-prose figure {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.mdx-prose figure.portrait {
+  max-width: min(100%, 34rem);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mdx-prose figure img {
+  height: auto;
+  margin: 0;
+}
+
+.mdx-prose figcaption {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
 .mdx-prose hr {
   border: none;
   border-top: 1px solid var(--color-border-subtle);

@@ -1321,7 +1321,7 @@
       "id": "metro-animation",
       "slug": "metro-animation",
       "title": "Metro Animation",
-      "tagline": "Metro networks morphing between true geography and schematic map",
+      "tagline": "Metro networks morphing between true geography and schematic map, how they grew, and how deep they run",
       "status": "in-progress",
       "featured": true,
       "featuredOrder": 6,
@@ -1339,12 +1339,33 @@
       "endDate": "current",
       "awards": [],
       "coverImage": "/images/projects/metro-animation/cover.webp",
-      "context": "",
-      "idea": "",
-      "design": "",
+      "context": "A social-media series that started with one question: how far does the diagram in the station bend the real city? It grew into three formats: the morph between geographic and schematic map, a timeline of how each network was built, and a chart of how deep its stations go.",
+      "idea": "Put the two maps riders already know on top of each other and let one turn into the other. The diagram is how people picture the network; the geographic version shows what Harry Beck's rules (straight lines, 45° angles, even spacing) leave out.",
+      "design": "Every line keeps its official colour and its stations stay in the same order on both maps, so each station has a partner to travel to during the morph. Timelines open lines and extensions on their real dates with a running year and station count. Depth reels rank every station by how far below the street its platform sits.",
       "inspiration": "",
-      "process": [],
-      "outcome": "Ongoing series; more networks in progress. (European capitals, then Asian capitals)",
+      "process": [
+        {
+          "step": 1,
+          "title": "Trace the schematic",
+          "description": "The official diagram is traced in Figma; the geographic lines and stations come from OpenStreetMap, cleaned and ordered in QGIS."
+        },
+        {
+          "step": 2,
+          "title": "Pair the stations",
+          "description": "Every station is matched across the two maps in the same order along each line, so the morph moves point to point instead of warping whole shapes."
+        },
+        {
+          "step": 3,
+          "title": "Animate",
+          "description": "D3.js interpolates between the two geometries in the browser, and the result is rendered frame by frame to MP4."
+        },
+        {
+          "step": 4,
+          "title": "Timelines and depth",
+          "description": "Opening dates and station depths come from Wikipedia and the operators' own records, and are credited in each reel's footer."
+        }
+      ],
+      "outcome": "Ongoing series. Morphs for Vienna, Prague, Stockholm, Madrid, Berlin, Budapest, São Paulo and Lausanne; growth timelines for Madrid, Prague, Budapest and Almaty; depth reels for Prague and Budapest. The Madrid morph also anchors a story on why metro maps look the way they do.",
       "stack": [
         "Figma",
         "D3.js",
@@ -1374,6 +1395,90 @@
           "caption": "Stockholm Tunnelbana - geographic vs schematic",
           "width": 1080,
           "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/madrid.mp4",
+          "poster": "/images/projects/metro-animation/madrid.webp",
+          "caption": "Madrid Metro - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/berlin.mp4",
+          "poster": "/images/projects/metro-animation/berlin.webp",
+          "caption": "Berlin U-Bahn - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/budapest.mp4",
+          "poster": "/images/projects/metro-animation/budapest.webp",
+          "caption": "Budapest Metro - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/sao-paulo.mp4",
+          "poster": "/images/projects/metro-animation/sao-paulo.webp",
+          "caption": "São Paulo Metro - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/lausanne.mp4",
+          "poster": "/images/projects/metro-animation/lausanne.webp",
+          "caption": "Lausanne metro, train and boat - geographic vs schematic",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/madrid-timeline.mp4",
+          "poster": "/images/projects/metro-animation/madrid-timeline.webp",
+          "caption": "Madrid Metro growth, 1919 to today",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/prague-timeline.mp4",
+          "poster": "/images/projects/metro-animation/prague-timeline.webp",
+          "caption": "Prague Metro growth",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/metro-animation/budapest-timeline.mp4",
+          "poster": "/images/projects/metro-animation/budapest-timeline.webp",
+          "caption": "Budapest Metro growth",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/metro-animation/almaty-timeline.mp4",
+          "poster": "/images/projects/metro-animation/almaty-timeline.webp",
+          "caption": "Almaty Metro growth, to Kalkaman station",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/metro-animation/prague-depth.mp4",
+          "poster": "/images/projects/metro-animation/prague-depth.webp",
+          "caption": "How deep is the Prague Metro? Náměstí Míru, 53 m",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/metro-animation/budapest-depth.mp4",
+          "poster": "/images/projects/metro-animation/budapest-depth.webp",
+          "caption": "How deep is the Budapest Metro? Széll Kálmán tér, 38.4 m",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/metro-animation/prague-depth-ranked.mp4",
+          "poster": "/images/projects/metro-animation/prague-depth-ranked.webp",
+          "caption": "Prague Metro, all 61 stations ranked by depth",
+          "width": 1080,
+          "height": 1920
         }
       ],
       "geography": {
@@ -1400,6 +1505,42 @@
             "lat": 59.3293,
             "lng": 18.0686,
             "label": "Stockholm Tunnelbana"
+          },
+          {
+            "connectionType": "point",
+            "lat": 40.4168,
+            "lng": -3.7038,
+            "label": "Madrid Metro"
+          },
+          {
+            "connectionType": "point",
+            "lat": 52.52,
+            "lng": 13.405,
+            "label": "Berlin U-Bahn"
+          },
+          {
+            "connectionType": "point",
+            "lat": 47.4979,
+            "lng": 19.0402,
+            "label": "Budapest Metro"
+          },
+          {
+            "connectionType": "point",
+            "lat": -23.5505,
+            "lng": -46.6333,
+            "label": "São Paulo Metro"
+          },
+          {
+            "connectionType": "point",
+            "lat": 46.5197,
+            "lng": 6.6323,
+            "label": "Lausanne Metro"
+          },
+          {
+            "connectionType": "point",
+            "lat": 43.222,
+            "lng": 76.8512,
+            "label": "Almaty Metro"
           }
         ]
       }
@@ -1631,6 +1772,900 @@
           "label": "Vienna, Austria"
         },
         "contexts": []
+      }
+    },
+    {
+      "id": "building-ages",
+      "slug": "building-ages",
+      "title": "Building Ages in 3D",
+      "tagline": "Cities rebuilt year by year: every building extruded to its height and coloured by the year it was finished",
+      "status": "in-progress",
+      "featured": false,
+      "type": "animation",
+      "category": "social media",
+      "keywords": [
+        "3D",
+        "buildings",
+        "construction year",
+        "urban growth",
+        "animation"
+      ],
+      "role": "solo",
+      "startDate": "2026-09",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/building-ages/madrid.webp",
+      "context": "A reel series, one city per post at 1080×1350 and 20 to 35 seconds long. Each city starts empty and fills in year by year until today's skyline stands, with a year counter and a histogram of buildings completed per year running underneath.",
+      "idea": "",
+      "design": "The camera is tilted and fixed, framed once so the whole city fits from the first frame to the last. Nothing zooms or pans, so the eye compares years instead of following the camera. The colour ramp runs from oldest to newest and changes per city: Madrid gets its flag reds, Astana a gold-on-brown steppe palette. Water, parks and main roads from OpenStreetMap stay muted under the buildings.",
+      "inspiration": "",
+      "process": [],
+      "outcome": "Ongoing series. More than twenty cities rendered so far, from Rome, Madrid and Paris to Hong Kong, São Paulo and Almaty; ten of them are shown here.",
+      "stack": [
+        "Python",
+        "GeoPandas",
+        "Shapely",
+        "NumPy",
+        "Pillow",
+        "ffmpeg"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [],
+      "videos": [
+        {
+          "url": "/videos/building-ages/rome.mp4",
+          "poster": "/images/projects/building-ages/rome.webp",
+          "caption": "Rome",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/madrid.mp4",
+          "poster": "/images/projects/building-ages/madrid.webp",
+          "caption": "Madrid",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/amsterdam.mp4",
+          "poster": "/images/projects/building-ages/amsterdam.webp",
+          "caption": "Amsterdam",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/zurich.mp4",
+          "poster": "/images/projects/building-ages/zurich.webp",
+          "caption": "Zürich",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/almaty.mp4",
+          "poster": "/images/projects/building-ages/almaty.webp",
+          "caption": "Almaty",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/astana.mp4",
+          "poster": "/images/projects/building-ages/astana.webp",
+          "caption": "Astana, Yesil district",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/building-ages/paris.mp4",
+          "poster": "/images/projects/building-ages/paris.webp",
+          "caption": "Paris",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/hong-kong.mp4",
+          "poster": "/images/projects/building-ages/hong-kong.webp",
+          "caption": "Hong Kong, Victoria Harbour",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/sao-paulo.mp4",
+          "poster": "/images/projects/building-ages/sao-paulo.webp",
+          "caption": "São Paulo",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/building-ages/manhattan.mp4",
+          "poster": "/images/projects/building-ages/manhattan.webp",
+          "caption": "Manhattan, with demolished buildings",
+          "width": 1080,
+          "height": 1350
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 41.9028,
+            "lng": 12.4964,
+            "label": "Rome, Italy"
+          },
+          {
+            "connectionType": "point",
+            "lat": 40.4168,
+            "lng": -3.7038,
+            "label": "Madrid, Spain"
+          },
+          {
+            "connectionType": "point",
+            "lat": 52.3676,
+            "lng": 4.9041,
+            "label": "Amsterdam, Netherlands"
+          },
+          {
+            "connectionType": "point",
+            "lat": 47.3769,
+            "lng": 8.5417,
+            "label": "Zürich, Switzerland"
+          },
+          {
+            "connectionType": "point",
+            "lat": 43.222,
+            "lng": 76.8512,
+            "label": "Almaty, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 51.1694,
+            "lng": 71.4704,
+            "label": "Astana, Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 48.8566,
+            "lng": 2.3522,
+            "label": "Paris, France"
+          },
+          {
+            "connectionType": "point",
+            "lat": 22.2855,
+            "lng": 114.1577,
+            "label": "Hong Kong"
+          },
+          {
+            "connectionType": "point",
+            "lat": -23.5505,
+            "lng": -46.6333,
+            "label": "São Paulo, Brazil"
+          },
+          {
+            "connectionType": "point",
+            "lat": 40.7831,
+            "lng": -73.9712,
+            "label": "Manhattan, New York"
+          }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "Municipal building registers",
+          "Census building age classes",
+          "OpenStreetMap"
+        ]
+      }
+    },
+    {
+      "id": "train-movements",
+      "slug": "train-movements",
+      "title": "Train Movements",
+      "tagline": "A whole day of a country's rail timetable replayed in under a minute, every train on its own track",
+      "status": "in-progress",
+      "featured": false,
+      "type": "animation",
+      "category": "social media",
+      "keywords": [
+        "rail",
+        "GTFS",
+        "public transport",
+        "timetable",
+        "animation"
+      ],
+      "role": "solo",
+      "startDate": "2026-09",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/train-movements/denmark.webp",
+      "context": "Reels that replay one day of scheduled trains across a country in 20 to 40 seconds: a clock, a count of trains running, a breakdown by type of service and a chart of traffic through the day.",
+      "idea": "",
+      "design": "Dark relief and land cover underneath, trains as small glowing dots coloured by service: high-speed, intercity, regional, night. The Switzerland version swaps service colours for observed delays. Seoul and Tokyo run side by side.",
+      "inspiration": "",
+      "process": [],
+      "outcome": "Ongoing series: Austria, Switzerland, the Netherlands, Belgium, Denmark, the United States and Seoul vs Tokyo so far, plus network-history reels for Japan and Central Asia (Austria, Greece and Turkey also rendered).",
+      "stack": [
+        "Python",
+        "NumPy",
+        "Pillow",
+        "ffmpeg"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [],
+      "videos": [
+        {
+          "url": "/videos/train-movements/denmark.mp4",
+          "poster": "/images/projects/train-movements/denmark.webp",
+          "caption": "Denmark, every scheduled train on 30 October 2026",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/train-movements/belgium.mp4",
+          "poster": "/images/projects/train-movements/belgium.webp",
+          "caption": "Belgium, published timetable for 15 October 2026",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/train-movements/switzerland.mp4",
+          "poster": "/images/projects/train-movements/switzerland.webp",
+          "caption": "Switzerland, observed SBB delays on 25 August 2026",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/train-movements/netherlands.mp4",
+          "poster": "/images/projects/train-movements/netherlands.webp",
+          "caption": "The Netherlands at night, 22 September 2026",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/train-movements/austria.mp4",
+          "poster": "/images/projects/train-movements/austria.webp",
+          "caption": "Austria, ÖBB timetable for 4 September 2024",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/train-movements/usa-amtrak.mp4",
+          "poster": "/images/projects/train-movements/usa-amtrak.webp",
+          "caption": "A day of Amtrak, 28 October 2026",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/train-movements/seoul-tokyo.mp4",
+          "poster": "/images/projects/train-movements/seoul-tokyo.webp",
+          "caption": "Seoul vs Tokyo, one weekday",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/train-movements/japan-rail-history.mp4",
+          "poster": "/images/projects/train-movements/japan-rail-history.webp",
+          "caption": "Japan's railways, 1872 to 2025",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/train-movements/central-asia-rail-history.mp4",
+          "poster": "/images/projects/train-movements/central-asia-rail-history.webp",
+          "caption": "Central Asia's railways, 1880 to 2025",
+          "width": 1080,
+          "height": 1350
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 56.0,
+            "lng": 10.0,
+            "label": "Denmark"
+          },
+          {
+            "connectionType": "point",
+            "lat": 50.64,
+            "lng": 4.67,
+            "label": "Belgium"
+          },
+          {
+            "connectionType": "point",
+            "lat": 46.8,
+            "lng": 8.2,
+            "label": "Switzerland"
+          },
+          {
+            "connectionType": "point",
+            "lat": 52.13,
+            "lng": 5.29,
+            "label": "Netherlands"
+          },
+          {
+            "connectionType": "point",
+            "lat": 47.5,
+            "lng": 14.55,
+            "label": "Austria"
+          },
+          {
+            "connectionType": "point",
+            "lat": 39.8,
+            "lng": -98.6,
+            "label": "United States"
+          },
+          {
+            "connectionType": "point",
+            "lat": 37.5665,
+            "lng": 126.978,
+            "label": "Seoul, South Korea"
+          },
+          {
+            "connectionType": "point",
+            "lat": 35.6762,
+            "lng": 139.6503,
+            "label": "Tokyo, Japan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 43.0,
+            "lng": 65.0,
+            "label": "Central Asia"
+          }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "National GTFS feeds (ÖBB, SBB, Amtrak and others)",
+          "OpenStreetMap",
+          "OpenHistoricalMap",
+          "Wikidata"
+        ]
+      }
+    },
+    {
+      "id": "election-maps",
+      "slug": "election-maps",
+      "title": "Election Maps",
+      "tagline": "Who won where: rapid results maps and charts for elections in Europe and the Americas",
+      "status": "in-progress",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "elections",
+        "politics",
+        "choropleth",
+        "rapid response",
+        "data journalism"
+      ],
+      "role": "solo",
+      "startDate": "2026-09",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/election-maps/bulgaria-runoff-map.webp",
+      "context": "A rapid-response series: for each election, a map of the leading party or candidate in every municipality, district or riding, plus a bar chart of the national result, published as 1080×1350 posts while the result is still news.",
+      "idea": "",
+      "design": "A navy ground with party colours taken from the results feed or Wikipedia's party-colour templates, never invented; parties without a documented colour get one neutral grey. Candidate photos come from the electoral authority or CC-licensed Wikimedia Commons portraits, checked to show the right person. Every source is named in the footer.",
+      "inspiration": "",
+      "process": [],
+      "outcome": "Bulgaria, Brazil, Bosnia and Herzegovina, Serbia, Quebec, Sweden, Berlin and Mecklenburg-Vorpommern so far. The Bulgarian run-off is also written up as a story on this site.",
+      "stack": [
+        "Python",
+        "GeoPandas",
+        "Shapely",
+        "Matplotlib"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/election-maps/bulgaria-runoff-map.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Bulgaria, presidential run-off, 1 November 2026",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/bulgaria-runoff-bars.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Bulgaria, national run-off result",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/bulgaria-runoff-abroad.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Bulgaria, the run-off vote abroad",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/brazil-runoff-map.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Brazil, presidential run-off, October 2026",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/brazil-runoff-bars.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Brazil, national run-off result",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/bosnia-presidency-map.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Bosnia and Herzegovina, presidency election",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/serbia-parliament-map.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Serbia, parliamentary election",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/quebec-map.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Quebec, provincial election by riding",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/sweden-winner.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Sweden, largest party by municipality",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/berlin-districts.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Berlin, state election by district",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/election-maps/mecklenburg-vorpommern.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Mecklenburg-Vorpommern, state election",
+          "type": "print"
+        }
+      ],
+      "videos": [],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 42.7339,
+            "lng": 25.4858,
+            "label": "Bulgaria"
+          },
+          {
+            "connectionType": "point",
+            "lat": -14.235,
+            "lng": -51.9253,
+            "label": "Brazil"
+          },
+          {
+            "connectionType": "point",
+            "lat": 43.9159,
+            "lng": 17.6791,
+            "label": "Bosnia and Herzegovina"
+          },
+          {
+            "connectionType": "point",
+            "lat": 44.0165,
+            "lng": 21.0059,
+            "label": "Serbia"
+          },
+          {
+            "connectionType": "point",
+            "lat": 52.9399,
+            "lng": -73.5491,
+            "label": "Quebec, Canada"
+          },
+          {
+            "connectionType": "point",
+            "lat": 60.1282,
+            "lng": 18.6435,
+            "label": "Sweden"
+          },
+          {
+            "connectionType": "point",
+            "lat": 52.52,
+            "lng": 13.405,
+            "label": "Berlin, Germany"
+          },
+          {
+            "connectionType": "point",
+            "lat": 53.6127,
+            "lng": 12.4296,
+            "label": "Mecklenburg-Vorpommern, Germany"
+          }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "National electoral commissions",
+          "Wikimedia Commons (portraits)",
+          "OpenStreetMap"
+        ]
+      }
+    },
+    {
+      "id": "population-peaks",
+      "slug": "population-peaks",
+      "title": "Population Peaks",
+      "tagline": "Population density drawn as glowing 3D mountains, from Saint Lucia to the whole world",
+      "status": "in-progress",
+      "featured": false,
+      "type": "static-map",
+      "category": "social media",
+      "keywords": [
+        "population",
+        "density",
+        "3D",
+        "WorldPop",
+        "Kontur"
+      ],
+      "role": "solo",
+      "startDate": "2026-09",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/population-peaks/world.webp",
+      "context": "A series of 1080×1350 maps where population density becomes height: the taller and brighter a peak, the more people live there. Countries, territories, whole continents, and two maps of animals.",
+      "idea": "On a flat density map every city looks like the same dark smudge. As terrain, a capital becomes a spike you can compare with the next city, and empty deserts, mountains and forests drop away to nothing.",
+      "design": "A near-black ground, a blue-to-gold-to-white ramp for density, and only a handful of labelled places, so the shape does the talking. The same look carries from an island of 179,000 people to the whole planet, and to polar bears in the Arctic and penguins in Antarctica.",
+      "inspiration": "",
+      "process": [
+        {
+          "step": 1,
+          "title": "Data",
+          "description": "WorldPop 2025 rasters or Kontur population hexagons, clipped to each country or continent."
+        },
+        {
+          "step": 2,
+          "title": "Heightmaps",
+          "description": "Population is smoothed into a heightmap and coloured by density in the same pass."
+        }
+      ],
+      "outcome": "",
+      "stack": [
+        "Python",
+        "NumPy",
+        "Numba",
+        "rasterio",
+        "GeoPandas"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [
+        {
+          "url": "/images/projects/population-peaks/world.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "The world",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/europe.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Europe",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/asia.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Asia",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/africa.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Africa",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/north-america.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "North America",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/south-america.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "South America",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/oceania.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Oceania",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/kazakhstan.webp",
+          "width": 2160,
+          "height": 2700,
+          "caption": "Kazakhstan",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/austria.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Austria",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/japan.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Japan",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/saint-lucia.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Saint Lucia",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/arctic-polar-bears.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Polar bears in the Arctic",
+          "type": "print"
+        },
+        {
+          "url": "/images/projects/population-peaks/antarctica-penguins.webp",
+          "width": 1080,
+          "height": 1350,
+          "caption": "Penguins in Antarctica",
+          "type": "print"
+        }
+      ],
+      "videos": [],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 20.0,
+            "lng": 0.0,
+            "label": "World"
+          },
+          {
+            "connectionType": "point",
+            "lat": 48.0196,
+            "lng": 66.9237,
+            "label": "Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 47.5162,
+            "lng": 14.5501,
+            "label": "Austria"
+          },
+          {
+            "connectionType": "point",
+            "lat": 36.2048,
+            "lng": 138.2529,
+            "label": "Japan"
+          },
+          {
+            "connectionType": "point",
+            "lat": 13.9094,
+            "lng": -60.9789,
+            "label": "Saint Lucia"
+          }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "WorldPop 2025",
+          "Kontur Population",
+          "National statistics offices"
+        ]
+      }
+    },
+    {
+      "id": "football-leagues",
+      "slug": "football-leagues",
+      "title": "Every Club on the Map",
+      "tagline": "Football leagues animated season by season: every club that ever played, region by region",
+      "status": "in-progress",
+      "featured": false,
+      "type": "animation",
+      "category": "social media",
+      "keywords": [
+        "football",
+        "sports",
+        "league history",
+        "2.5D",
+        "animation"
+      ],
+      "role": "solo",
+      "startDate": "2026-08",
+      "endDate": "Present",
+      "awards": [],
+      "coverImage": "/images/projects/football-leagues/premier-league.webp",
+      "context": "Animations of about 25 seconds at 60 fps that walk through a league's history one season at a time, from its founding to today.",
+      "idea": "",
+      "design": "Each region is a 2.5D prism. Its height is the number of clubs it has this season and its colour is the titles won so far. Clubs appear as crests only, and former clubs stay behind as faint dots. The champion pops in each season with a trail and a running titles chart, and crests and league logos change at their real redesign dates.",
+      "inspiration": "",
+      "process": [],
+      "outcome": "England, Germany, France, Poland, Kazakhstan, Brazil and Greece so far, plus the UEFA Europa League and two what-if leagues.",
+      "stack": [
+        "Python",
+        "Matplotlib",
+        "NumPy",
+        "Pillow"
+      ],
+      "liveUrl": null,
+      "codeUrl": null,
+      "gallery": [],
+      "videos": [
+        {
+          "url": "/videos/football-leagues/premier-league.mp4",
+          "poster": "/images/projects/football-leagues/premier-league.webp",
+          "caption": "English Premier League",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/football-leagues/bundesliga.mp4",
+          "poster": "/images/projects/football-leagues/bundesliga.webp",
+          "caption": "Bundesliga",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/football-leagues/ligue-1.mp4",
+          "poster": "/images/projects/football-leagues/ligue-1.webp",
+          "caption": "Ligue 1",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/football-leagues/kazakhstan-premier-league.mp4",
+          "poster": "/images/projects/football-leagues/kazakhstan-premier-league.webp",
+          "caption": "Kazakhstan Premier League",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/football-leagues/ekstraklasa.mp4",
+          "poster": "/images/projects/football-leagues/ekstraklasa.webp",
+          "caption": "Ekstraklasa",
+          "width": 1080,
+          "height": 1920
+        },
+        {
+          "url": "/videos/football-leagues/brasileirao.mp4",
+          "poster": "/images/projects/football-leagues/brasileirao.webp",
+          "caption": "Brasileirão",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/football-leagues/greek-super-league.mp4",
+          "poster": "/images/projects/football-leagues/greek-super-league.webp",
+          "caption": "Greek Super League",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/football-leagues/europa-league.mp4",
+          "poster": "/images/projects/football-leagues/europa-league.webp",
+          "caption": "UEFA Europa League, since the UEFA Cup",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/football-leagues/imperium-romanum.mp4",
+          "poster": "/images/projects/football-leagues/imperium-romanum.webp",
+          "caption": "Imperium Romanum: a league inside the Roman Empire's borders",
+          "width": 1080,
+          "height": 1350
+        },
+        {
+          "url": "/videos/football-leagues/kuk-league.mp4",
+          "poster": "/images/projects/football-leagues/kuk-league.webp",
+          "caption": "k.u.k. League: a league inside Austria-Hungary",
+          "width": 1080,
+          "height": 1350
+        }
+      ],
+      "geography": {
+        "origin": {
+          "lat": 48.2082,
+          "lng": 16.3738,
+          "label": "Vienna, Austria"
+        },
+        "contexts": [
+          {
+            "connectionType": "point",
+            "lat": 52.3555,
+            "lng": -1.1743,
+            "label": "England"
+          },
+          {
+            "connectionType": "point",
+            "lat": 51.1657,
+            "lng": 10.4515,
+            "label": "Germany"
+          },
+          {
+            "connectionType": "point",
+            "lat": 46.2276,
+            "lng": 2.2137,
+            "label": "France"
+          },
+          {
+            "connectionType": "point",
+            "lat": 51.9194,
+            "lng": 19.1451,
+            "label": "Poland"
+          },
+          {
+            "connectionType": "point",
+            "lat": 48.0196,
+            "lng": 66.9237,
+            "label": "Kazakhstan"
+          },
+          {
+            "connectionType": "point",
+            "lat": -14.235,
+            "lng": -51.9253,
+            "label": "Brazil"
+          },
+          {
+            "connectionType": "point",
+            "lat": 39.0742,
+            "lng": 21.8243,
+            "label": "Greece"
+          }
+        ]
+      },
+      "sourceNote": {
+        "sources": [
+          "Wikipedia (seasons, champions, crests)",
+          "OpenStreetMap"
+        ]
       }
     }
   ]

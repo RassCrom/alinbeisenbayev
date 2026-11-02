@@ -2,24 +2,6 @@
   "_note": "Written by scripts/gallery.py. Edit title, series, date or add \"hidden\": true — those edits survive re-runs.",
   "items": [
     {
-      "id": "polo",
-      "key": "./polo:video",
-      "title": "Polo",
-      "date": "2026-09-24",
-      "kind": "video",
-      "width": 1080,
-      "height": 1350,
-      "src": "/gallery/polo-3fd218.mp4",
-      "poster": "/gallery/polo-3fd218-poster.webp",
-      "preview": "/gallery/polo-3fd218-loop.mp4",
-      "duration": 40.0,
-      "source": {
-        "path": "polo_1080x1350.mp4",
-        "size": 19016266,
-        "mtime": 1790250052
-      }
-    },
-    {
       "id": "oregon-fires-2024-vs-2026-portrait",
       "key": "./oregon_fires_2024_vs_2026_portrait:video",
       "title": "Oregon Fires 2024 vs 2026 Portrait",
@@ -35,24 +17,6 @@
         "path": "oregon_fires_2024_vs_2026_portrait_v2.mp4",
         "size": 2687475,
         "mtime": 1790067226
-      }
-    },
-    {
-      "id": "first-sea-trade-route-dark",
-      "key": "./first-sea-trade-route-dark:video",
-      "title": "First Sea Trade Route Dark",
-      "date": "2026-09-20",
-      "kind": "video",
-      "width": 1080,
-      "height": 1350,
-      "src": "/gallery/first-sea-trade-route-dark-227d1b.mp4",
-      "poster": "/gallery/first-sea-trade-route-dark-227d1b-poster.webp",
-      "preview": "/gallery/first-sea-trade-route-dark-227d1b-loop.mp4",
-      "duration": 181.8,
-      "source": {
-        "path": "first-sea-trade-route-dark-v2.mp4",
-        "size": 139345153,
-        "mtime": 1789891617
       }
     },
     {
@@ -107,24 +71,6 @@
         "path": "beni_meander_1080x1350.mp4",
         "size": 1690353,
         "mtime": 1789649705
-      }
-    },
-    {
-      "id": "iceland-fishing-fleet-3d",
-      "key": "./iceland-fishing-fleet-3d:video",
-      "title": "Iceland Fishing Fleet 3d",
-      "date": "2026-09-17",
-      "kind": "video",
-      "width": 1080,
-      "height": 1350,
-      "src": "/gallery/iceland-fishing-fleet-3d-f344a7.mp4",
-      "poster": "/gallery/iceland-fishing-fleet-3d-f344a7-poster.webp",
-      "preview": "/gallery/iceland-fishing-fleet-3d-f344a7-loop.mp4",
-      "duration": 15.0,
-      "source": {
-        "path": "iceland-fishing-fleet-3d-v3.mp4",
-        "size": 8134156,
-        "mtime": 1789653282
       }
     },
     {
