@@ -5,8 +5,12 @@ export type Theme = 'dark' | 'light';
 const STORAGE_KEY = 'theme';
 
 function readStored(): Theme | null {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored === 'light' || stored === 'dark' ? stored : null;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === 'light' || stored === 'dark' ? stored : null;
+  } catch {
+    return null;
+  }
 }
 
 function systemTheme(): Theme {
@@ -34,6 +38,8 @@ export function useTheme() {
     if (readStored()) return;
     const mq = matchMedia('(prefers-color-scheme: light)');
     const onChange = () => {
+      // The user may have picked a theme since mount; that choice wins.
+      if (readStored()) return;
       const next = systemTheme();
       applyTheme(next);
       setTheme(next);
@@ -46,7 +52,11 @@ export function useTheme() {
     setTheme((current) => {
       const next: Theme = current === 'dark' ? 'light' : 'dark';
       applyTheme(next);
-      localStorage.setItem(STORAGE_KEY, next);
+      try {
+        localStorage.setItem(STORAGE_KEY, next);
+      } catch {
+        // Storage blocked (private mode): the theme still applies for this visit.
+      }
       return next;
     });
   }, []);

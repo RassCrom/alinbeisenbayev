@@ -5,6 +5,7 @@ import SearchFilter from '../components/SearchFilter/SearchFilter';
 import { useProjectFilter } from '../hooks/useProjectFilter';
 import { projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { projectYear } from '../utils/date';
 
 // MapLibre bundle loads only when the map view is opened
 const WorksMap = lazy(() => import('../components/WorksMap/WorksMap'));
@@ -227,20 +228,7 @@ export default function WorksPage() {
           filtered.length > 0 ? (
             <div className="grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
               {filtered.map((project) => (
-                <WorkCard
-                  key={project.id}
-                  id={project.id}
-                  slug={project.slug}
-                  title={project.title}
-                  year={project.endDate ? Number(project.endDate.slice(0, 4)) || null : null}
-                  category={project.category}
-                  tagline={project.tagline}
-                  coverImage={project.coverImage}
-                  award={project.awards[0]}
-                  featured={project.featured}
-                  status={project.status}
-                  type={project.type}
-                />
+                <WorkCard key={project.id} project={project} />
               ))}
             </div>
           ) : (
@@ -324,7 +312,7 @@ export default function WorksPage() {
                           {project.title}
                         </span>
                         <span className="ml-[var(--space-2)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
-                          {project.endDate?.slice(0, 4) ?? '—'}
+                          {projectYear(project.endDate) ?? (project.endDate ? 'now' : '—')}
                         </span>
                         {project.geography.contexts[0] && contextCoordinates(project) ? (
                           <span className="mt-1 block font-[family-name:var(--font-mono)] text-[9px] leading-relaxed tracking-[0.04em] text-[var(--color-text-muted)]">

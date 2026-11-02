@@ -107,7 +107,7 @@ function ArticleCard({ article }: { article: (typeof articles)[number] }) {
         />
       ) : (
         <div className="flex aspect-video w-full items-center justify-center bg-[var(--color-bg-elevated)]">
-          <span className="font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)] opacity-50">
+          <span className="font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
             {frontmatter.title}
           </span>
         </div>
@@ -182,7 +182,7 @@ export default function BlogPage() {
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search posts…"
         aria-label="Search posts"
-        className="mt-[var(--space-6)] w-full max-w-md rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-[var(--space-4)] py-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] text-[var(--color-text-primary)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)]"
+        className="mt-[var(--space-6)] w-full max-w-md rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-[var(--space-4)] py-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] text-[var(--color-text-primary)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus-visible:ring-2 focus-visible:ring-[rgba(var(--color-accent-rgb),0.4)]"
       />
 
       <div className="mt-[var(--space-4)] flex flex-wrap gap-[var(--space-2)]">

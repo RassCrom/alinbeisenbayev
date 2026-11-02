@@ -69,8 +69,13 @@ export function atlasDataProblems(projects: readonly Project[]): string[] {
  * The whole archipelago from the project list: islands, settlements and
  * lanes in the unit world. Pure and deterministic for a given `projects`,
  * `seed` and `asOf`; call it once and keep the result.
+ *
+ * Pass every project, hidden ones included: hidden projects stay off the
+ * map, but the data check needs them so that hiding a project named in a
+ * series does not read as a renamed slug.
  */
-export function buildAtlas(projects: readonly Project[], options: BuildOptions = {}): Atlas {
+export function buildAtlas(allProjects: readonly Project[], options: BuildOptions = {}): Atlas {
+  const projects = allProjects.filter((project) => !project.hidden);
   const asOf = options.asOf ?? currentMonth();
   const seed = options.seed ?? ATLAS_SEED;
   const rng = mulberry32(seed);
@@ -100,7 +105,7 @@ export function buildAtlas(projects: readonly Project[], options: BuildOptions =
 
   const islandOf = new Map(settlements.map((settlement) => [settlement.slug, settlement.islandId]));
   const lanes = buildLanes(projects, islandOf);
-  const warnings = [...atlasDataProblems(projects), ...placementWarnings, ...overlapWarnings(settlements)];
+  const warnings = [...atlasDataProblems(allProjects), ...placementWarnings, ...overlapWarnings(settlements)];
 
   if (import.meta.env?.DEV && warnings.length > 0) {
     console.error(`[atlas] ${warnings.length} problem(s):\n  ${warnings.join('\n  ')}`);

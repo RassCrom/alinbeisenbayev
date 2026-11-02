@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { projects } from '../data/projects';
+import { allProjects } from '../data/projects';
 import { islandSprite } from './assets.ts';
 import { TIER_LABEL } from './config.ts';
 import { buildAtlas } from './index.ts';
@@ -21,7 +21,7 @@ interface Props {
 
 let cached: Atlas | null = null;
 function atlas(): Atlas {
-  cached ??= buildAtlas(projects);
+  cached ??= buildAtlas(allProjects);
   return cached;
 }
 

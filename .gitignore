@@ -1,5 +1,6 @@
-# Personal job-application tracker (standalone, not part of the site)
+# Personal job-application tracker and application documents (not part of the site)
 job-tracker/
+applications_jobs/
 
 # Dependencies
 node_modules/

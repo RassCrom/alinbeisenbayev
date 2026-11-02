@@ -16,12 +16,11 @@ import { moonPhase } from './weather/sun.ts';
 import {
   CONDITION_LABEL,
   PRESET_LABEL,
-  compassPoint,
-  formatTemperature,
   type Condition,
   type WeatherPreset,
   type WeatherState,
 } from './weather/weather.ts';
+import { projectYear } from '../utils/date';
 
 /*
  * The HUD, kept out of the map's way. What stays on screen:
@@ -63,7 +62,6 @@ interface Props {
   arriving: boolean;
   surveyedCount: number;
   weather: WeatherState;
-  weatherError: string | null;
   preset: WeatherPreset | null;
   onPreset: (preset: WeatherPreset | null) => void;
   onListView: () => void;
@@ -101,7 +99,6 @@ export default function AtlasHud({
   arriving,
   surveyedCount,
   weather,
-  weatherError,
   preset,
   onPreset,
   onListView,
@@ -115,15 +112,6 @@ export default function AtlasHud({
   const toggle = (which: Exclude<Drawer, null>): void => onDrawer(drawer === which ? null : which);
   const close = (): void => onDrawer(null);
   const tourState = useSyncExternalStore(tour.subscribe, tour.get);
-
-  const sourceNote =
-    preset !== null
-      ? 'Preview weather; the live forecast is unchanged.'
-      : weather.source === 'live'
-        ? `Open-Meteo, ${new Date(weather.observedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-        : weather.source === 'cached'
-          ? 'Cached forecast; refreshing every fifteen minutes.'
-          : `No forecast reachable${weatherError ? ` (${weatherError})` : ''}; clear sky from the clock.`;
 
   const arrivingClass = arriving ? ' is-arriving' : '';
 
@@ -150,7 +138,7 @@ export default function AtlasHud({
       <div className={`atlas-hud atlas-hud--left${arrivingClass}`}>
         <div className="atlas-hud__row">
           <Compass />
-          <Weather weather={weather} preset={preset} onPreset={onPreset} sourceNote={sourceNote} />
+          <Weather weather={weather} preset={preset} onPreset={onPreset} />
         </div>
         <div className="atlas-hud__block atlas-hud__block--minimap">
           <Minimap atlas={atlas} store={store} onClick={onMinimapClick} />
@@ -496,7 +484,7 @@ function Find({ atlas, onGoTo, onClose }: { atlas: Atlas; onGoTo: (slug: string)
           <div key={island.id} className="atlas-find__group">
             <span className="atlas-find__island">{island.name}</span>
             {rows.map(({ settlement, project }) => {
-              const year = project.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
+              const year = projectYear(project.endDate);
               return (
                 <button
                   key={settlement.slug}
@@ -575,9 +563,9 @@ function Help({ atlas, surveyedCount, tour, onClose }: { atlas: Atlas; surveyedC
               <path d="M11 26l-1 3M16 26l-1 3M21 26l-1 3" />
             </svg>
           }
-          title="Live weather."
+          title="Sky and season."
         >
-          Sea, sky and season follow the real weather in Astana, where I was born. The timeline replays how the map grew.
+          Day and night follow the real sun over Astana, where I was born; the eye button previews other weather. The timeline replays how the map grew.
         </HelpRow>
         <HelpRow
           icon={
@@ -648,24 +636,26 @@ function TourBar({ tour, index, total, slug }: { tour: Tour; index: number; tota
   );
 }
 
-/** Temperature, condition and wind in one line; the preview picker behind a small button. */
+/** The sky the map shows, in one line; the preview picker behind a small button. */
 function Weather({
   weather,
   preset,
   onPreset,
-  sourceNote,
 }: {
   weather: WeatherState;
   preset: WeatherPreset | null;
   onPreset: (preset: WeatherPreset | null) => void;
-  sourceNote: string;
 }) {
   const [picking, setPicking] = useState(preset !== null);
+  const label = preset !== null ? PRESET_LABEL[preset] : `${CONDITION_LABEL[weather.condition]} ${weather.isDay ? 'day' : 'night'}`;
   return (
-    <div className="atlas-weather" title={`Live weather from Astana, where I was born. ${sourceNote}`}>
+    <div
+      className="atlas-weather"
+      title={preset !== null ? 'Previewing another weather.' : 'Day and night follow the real sun over Astana, where I was born.'}
+    >
       <div className="atlas-weather__line">
         <WeatherIcon condition={weather.condition} isDay={weather.isDay} />
-        <span className="atlas-weather__temperature">{formatTemperature(weather.temperature)}</span>
+        <span className="atlas-weather__label">{label}</span>
         <button
           type="button"
           className={`atlas-weather__toggle${preset !== null ? ' is-on' : ''}`}
@@ -680,17 +670,15 @@ function Weather({
           </svg>
         </button>
       </div>
-      <span className="atlas-weather__wind">
-        {CONDITION_LABEL[weather.condition]} · {compassPoint(weather.windDirection)} {Math.round(weather.windSpeed)} km/h · live from Astana
-      </span>
+      <span className="atlas-weather__wind">{preset !== null ? 'preview' : 'sun over Astana'}</span>
       {picking && (
         <select
           className="atlas-weather__preview"
-          value={preset ?? 'live'}
-          onChange={(event) => onPreset(event.target.value === 'live' ? null : (event.target.value as WeatherPreset))}
+          value={preset ?? 'clock'}
+          onChange={(event) => onPreset(event.target.value === 'clock' ? null : (event.target.value as WeatherPreset))}
           aria-label="Preview the map under another weather"
         >
-          <option value="live">Live Astana</option>
+          <option value="clock">Sky from the clock</option>
           {PRESETS.map((key) => (
             <option key={key} value={key}>
               {PRESET_LABEL[key]}

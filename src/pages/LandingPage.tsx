@@ -5,14 +5,13 @@ import StoryCard from '../components/StoryCard/StoryCard';
 import { stories } from '../data/stories';
 import { projects } from '../data/projects';
 import aboutData from '../data/about-story.json';
-import socialsData from '../data/socials.json';
-import type { AboutStoryData, SocialsData } from '../types';
+import { featuredSocials } from '../data/socials';
+import type { AboutStoryData } from '../types';
 import { formatCoordinates } from '../utils/coordinates';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useViewMode } from '../atlas/viewMode';
 
 const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
-const { socials } = socialsData as SocialsData;
 
 function HeroContourBackground() {
   return (
@@ -48,7 +47,6 @@ export default function LandingPage() {
     .slice(0, 6);
   // Newest three. `stories` is already sorted newest-first.
   const latestStories = stories.slice(0, 3);
-  const heroSocials = socials.filter((s) => s.featured && s.platform !== 'CV');
   const worksSectionRef = useRef<HTMLElement>(null);
   const originCoord = story[6]?.location;
 
@@ -103,7 +101,7 @@ export default function LandingPage() {
             </div>
           )}
           <div className="mt-[var(--space-2)] flex items-center gap-[var(--space-4)]">
-            {heroSocials.map((social) => (
+            {featuredSocials.map((social) => (
               <a
                 key={social.id}
                 href={social.url}
@@ -121,7 +119,7 @@ export default function LandingPage() {
           type="button"
           aria-label="Scroll to selected works"
           onClick={() => worksSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
-          className="absolute bottom-[var(--space-6)] left-1/2 flex h-11 w-11 -translate-x-1/2 animate-[bounce-soft_2s_ease-in-out_infinite] items-center justify-center text-[var(--color-accent-light)] transition-colors hover:text-[var(--color-text-primary)]"
+          className="absolute bottom-[var(--space-6)] left-1/2 flex h-11 w-11 -translate-x-1/2 animate-[bounce-soft_2s_ease-in-out_infinite] motion-hint items-center justify-center text-[var(--color-accent-light)] transition-colors hover:text-[var(--color-text-primary)]"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
@@ -153,17 +151,7 @@ export default function LandingPage() {
           {featured.map((project, index) => (
             <div key={project.id} className={index === 0 || index === featured.length - 1 ? 'md:col-span-2' : ''}>
               <WorkCard
-                id={project.id}
-                slug={project.slug}
-                title={project.title}
-                year={project.endDate ? Number(project.endDate.slice(0, 4)) || null : null}
-                category={project.category}
-                tagline={project.tagline}
-                coverImage={project.coverImage}
-                award={project.awards[0]}
-                featured={project.featured}
-                status={project.status}
-                type={project.type}
+                project={project}
                 index={index}
                 large={index === 0}
               />

@@ -20,8 +20,6 @@ export interface ImageGalleryProps {
    * the first image.
    */
   layout?: GalleryLayout;
-  /** Kept for backward compatibility — all images now support zoom/pan. */
-  zoomable?: boolean;
 }
 
 /** Column count for the masonry, chosen so no image sits alone in a row. */

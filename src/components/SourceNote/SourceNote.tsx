@@ -1,21 +1,13 @@
 import IslandLocator from '../../atlas/IslandLocator';
 import type { Project } from '../../types';
+import { formatMonth } from '../../utils/date';
 
 export interface SourceNoteProps {
   project: Project;
 }
 
 function formatPeriod(startDate: string | null, endDate: string | null): string | null {
-  const pretty = (value: string | null): string | null => {
-    if (!value) return null;
-    if (value === 'Present') return 'present';
-    const [year, month] = value.split('-');
-    if (!month) return year;
-    const date = new Date(Number(year), Number(month) - 1);
-    return Number.isNaN(date.getTime())
-      ? year
-      : date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
-  };
+  const pretty = (value: string | null): string | null => (value ? formatMonth(value, 'short') : null);
 
   const from = pretty(startDate);
   const to = pretty(endDate);

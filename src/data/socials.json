@@ -5,7 +5,7 @@
       "platform": "LinkedIn",
       "label": "Alikhan Beisenbayev",
       "url": "https://linkedin.com/in/karasu",
-      "description": "Data stories, maps, and life-style posts",
+      "description": "Data stories, maps and lifestyle posts",
       "followers": "1990",
       "follower_date": "(09.19.26)",
       "iconUrl": "/images/socials/linkedin.svg",
@@ -34,6 +34,33 @@
       "featured": true
     },
     {
+      "id": "bluesky-tulparmaps",
+      "platform": "Bluesky",
+      "label": "tulparmaps",
+      "url": "https://bsky.app/profile/tulparmaps.bsky.social",
+      "description": "Maps and data stories",
+      "iconUrl": "/images/socials/bluesky.svg",
+      "featured": false
+    },
+    {
+      "id": "telegram-tulparmaps",
+      "platform": "Telegram",
+      "label": "tulparmaps",
+      "url": "https://t.me/tulparmaps",
+      "description": "New maps and work in progress",
+      "iconUrl": "/images/socials/telegram.svg",
+      "featured": false
+    },
+    {
+      "id": "youtube-tulparmaps",
+      "platform": "YouTube",
+      "label": "tulparmaps",
+      "url": "https://www.youtube.com/@tulparmaps",
+      "description": "Map animations and videos",
+      "iconUrl": "/images/socials/youtube.svg",
+      "featured": false
+    },
+    {
       "id": "email",
       "platform": "Email",
       "label": "alikhan.beisenbay490@gmail.com",
@@ -49,7 +76,8 @@
       "url": "/files/Alikhan Beisenbayev CV 91626.pdf",
       "description": "Resume from 09.16.26",
       "iconUrl": "/images/socials/cv.svg",
-      "featured": true
+      "featured": true,
+      "hidden": true
     }
   ]
 }

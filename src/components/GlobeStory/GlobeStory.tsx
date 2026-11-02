@@ -59,7 +59,7 @@ function readPalette(element: HTMLElement): Palette {
     coast: rgba('--color-accent-light-rgb', 0.72, 'rgba(102, 145, 192, 0.72)'),
     arc: rgba('--color-accent-light-rgb', 0.5, 'rgba(102, 145, 192, 0.5)'),
     point: token('--color-accent-light', '#6691c0'),
-    active: token('--color-accent-gold', '#9e7f4a'),
+    active: token('--color-accent-gold', '#b08f58'),
     limb: rgba('--color-accent-rgb', 0.35, 'rgba(68, 114, 168, 0.35)'),
   };
 }
@@ -147,8 +147,15 @@ export default function GlobeStory({
     });
 
     let frame = 0;
+    // Off screen (scrolled past, or the tab hidden) the loop stops instead
+    // of redrawing coastlines nobody sees; it restarts when the globe returns.
+    let onScreen = true;
 
     const draw = (now: number) => {
+      if (!onScreen) {
+        frame = 0;
+        return;
+      }
       frame = requestAnimationFrame(draw);
       const view = viewport.current;
       const colours = palette.current;
@@ -244,11 +251,18 @@ export default function GlobeStory({
       markerPositions.current = visibleMarkers;
     };
 
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen && !frame) frame = requestAnimationFrame(draw);
+    });
+    visibilityObserver.observe(container);
+
     frame = requestAnimationFrame(draw);
     return () => {
       cancelAnimationFrame(frame);
       resizeObserver.disconnect();
       themeObserver.disconnect();
+      visibilityObserver.disconnect();
     };
   }, [points, activeStoryIndex]);
 

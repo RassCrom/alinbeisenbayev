@@ -1,8 +1,6 @@
-import socialsData from '../data/socials.json';
-import type { SocialsData, Social } from '../types';
+import { socials, isExternalSocial } from '../data/socials';
+import type { Social } from '../types';
 import { usePageMeta } from '../hooks/usePageMeta';
-
-const { socials } = socialsData as SocialsData;
 
 function actionLabel(social: Social): string {
   if (social.platform === 'CV') return 'Download ↓';
@@ -11,7 +9,7 @@ function actionLabel(social: Social): string {
 }
 
 export default function ConnectPage() {
-  usePageMeta('Connect', 'Open to job offers and collaboration. LinkedIn, GitHub, Instagram, TikTok, Telegram, email and CV.');
+  usePageMeta('Connect', 'Open to job offers and collaboration. LinkedIn, Instagram, TikTok, Bluesky, Telegram, YouTube and email.');
   return (
     <div className="mx-auto max-w-4xl px-[var(--space-6)] py-[var(--space-12)]">
       <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-3xl)] font-extrabold">
@@ -20,7 +18,7 @@ export default function ConnectPage() {
 
       <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2">
         {socials.map((social) => {
-          const isExternal = !social.url.startsWith('mailto:') && social.platform !== 'CV';
+          const isExternal = isExternalSocial(social);
           return (
             <div
               key={social.id}
@@ -37,8 +35,8 @@ export default function ConnectPage() {
               </div>
               <p className="flex-1 font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
                 {social.followers && (
-                  <span className="mb-[var(--space-2)] block font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] font-medium text-xs tracking-[0.08em] text-[var(--color-accent-light)]">
-                    Followers: {social.followers} <span className='text-[9px] text-[var(--color-text-muted)'>{social.follower_date}</span>
+                  <span className="mb-[var(--space-2)] block font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] font-medium tracking-[0.08em] text-[var(--color-accent-light)]">
+                    Followers: {social.followers} <span className="text-[10px] text-[var(--color-text-muted)]">{social.follower_date}</span>
                   </span>
                 )}
                 {social.description}

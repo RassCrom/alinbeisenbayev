@@ -118,7 +118,7 @@ export default function StoryDetailPage() {
         {Body ? (
           <>
             <div className="mt-[var(--space-8)]">
-              <ChapterNav containerRef={bodyRef} />
+              <ChapterNav key={slug} containerRef={bodyRef} />
             </div>
             <div ref={bodyRef} className="mdx-prose mt-[var(--space-8)]">
               <Body />

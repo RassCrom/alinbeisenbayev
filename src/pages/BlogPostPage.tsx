@@ -9,16 +9,10 @@ import StoryCard from '../components/StoryCard/StoryCard';
 import aboutData from '../data/about-story.json';
 import type { AboutStoryData } from '../types';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { formatDay } from '../utils/date';
 import NotFoundPage from './NotFoundPage';
 
 const { profile } = aboutData as unknown as AboutStoryData;
-
-function fmtDate(iso: string): string {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime())
-    ? iso
-    : d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -97,7 +91,7 @@ export default function BlogPostPage() {
         )}
         <p className="mt-[var(--space-3)] font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] text-[var(--color-text-muted)]">
           By {profile.name} ·{' '}
-          <time dateTime={frontmatter.date}>{fmtDate(frontmatter.date)}</time>
+          <time dateTime={frontmatter.date}>{formatDay(frontmatter.date)}</time>
           {minutes !== null && ` · ${minutes} min read`}
         </p>
       </header>
@@ -113,7 +107,7 @@ export default function BlogPostPage() {
       )}
 
       <div className="mt-[var(--space-8)]">
-        <ChapterNav containerRef={bodyRef} />
+        <ChapterNav key={slug} containerRef={bodyRef} />
       </div>
 
       <div ref={bodyRef} className="mdx-prose mt-[var(--space-8)]">
@@ -127,23 +121,7 @@ export default function BlogPostPage() {
           <div className="mt-[var(--space-6)] grid grid-cols-1 gap-[var(--space-6)] sm:grid-cols-2">
             {relatedStory && <StoryCard story={relatedStory} headingLevel="h3" />}
             {relatedProject && (
-              <WorkCard
-                id={relatedProject.id}
-                slug={relatedProject.slug}
-                title={relatedProject.title}
-                year={
-                  relatedProject.endDate
-                    ? Number(relatedProject.endDate.slice(0, 4)) || null
-                    : null
-                }
-                category={relatedProject.category}
-                tagline={relatedProject.tagline}
-                coverImage={relatedProject.coverImage}
-                award={relatedProject.awards[0]}
-                featured={relatedProject.featured}
-                status={relatedProject.status}
-                type={relatedProject.type}
-              />
+              <WorkCard project={relatedProject} />
             )}
           </div>
         </footer>

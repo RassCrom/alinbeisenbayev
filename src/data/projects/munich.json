@@ -93,6 +93,7 @@
     {
       "id": "ignition-point-analysis",
       "slug": "ignition-point-analysis",
+      "hidden": true,
       "title": "Dynamics of Ignition Points in Kazakhstan (2001-2024)",
       "tagline": "Full pipeline from NASA FIRMS data to interactive geospatial report on 24 years of wildfire patterns in Kazakhstan",
       "status": "complete",
@@ -169,6 +170,7 @@
     {
       "id": "maple",
       "slug": "maple",
+      "hidden": true,
       "title": "MapLe",
       "tagline": "Geography-based educational game for learning world geography through interactive map challenges",
       "status": "complete",
@@ -223,7 +225,7 @@
       "id": "who-comes-third-akmola",
       "slug": "who-comes-third-akmola",
       "title": "Who Comes Third in Akmola",
-      "tagline": "Award-winning printed map showing the most popular ethnicity in Akmola after kazakh and russians",
+      "tagline": "Award-winning printed map showing the most common ethnicity in Akmola after Kazakhs and Russians",
       "status": "complete",
       "featured": false,
       "type": "static-map",
@@ -283,8 +285,9 @@
     {
       "id": "challenge-1124",
       "slug": "challenge-1124",
+      "hidden": true,
       "title": "30-Day Map Challenge 2024",
-      "tagline": "Map-making for different topics for 30 days. (I survived only half way)",
+      "tagline": "Thirty days of maps on a different topic each day. (I made it halfway.)",
       "status": "complete",
       "featured": false,
       "type": "static-map",

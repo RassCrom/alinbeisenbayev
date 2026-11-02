@@ -29,8 +29,10 @@ export function atlasSupported(): boolean {
     return cachedSupport;
   }
   try {
-    const canvas = document.createElement('canvas');
-    cachedSupport = canvas.getContext('webgl2') !== null;
+    const gl = document.createElement('canvas').getContext('webgl2');
+    cachedSupport = gl !== null;
+    // Browsers cap live WebGL contexts; give the probe's back at once.
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
   } catch {
     cachedSupport = false;
   }

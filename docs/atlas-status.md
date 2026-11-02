@@ -883,13 +883,13 @@ second stop.
 Not verified: touch and pinch on a device; the completion note (needs all
 29 explored); the export with the new panels open.
 
-### Open question for the owner
+### Weather source (resolved 2026-10-22)
 
-The atlas still polls Open-Meteo for Astana's weather every fifteen
-minutes (stage 4), with a cached copy and a clock-and-season fallback when
-the API is unreachable. The footer work on 2026-09-22 dropped live
-readings from the site on principle; if that rule extends to the atlas,
-the fallback path (`fallbackWeather` in `weather/weather.ts`: clear sky,
-the month's normal temperature, the real sun for day and night) can become
-the only path with the fetch removed, and the explainer's "Live weather"
-row reworded.
+The Open-Meteo fetch is gone: the site takes no live data from third-party
+APIs. `useClockWeather` in `weather/weather.ts` is the only path: clear sky,
+the real sun over Astana for day and night, recomputed every minute. The
+month's normal temperature still steers ice and snow cover in the
+simulation but is never shown. The HUD shows the sky (for example "Clear
+night · sun over Astana") instead of a temperature and wind reading, the
+preview picker's first option is "Sky from the clock", and the explainer
+row is "Sky and season."

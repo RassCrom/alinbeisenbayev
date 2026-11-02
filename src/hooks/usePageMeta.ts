@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 const SITE_NAME = 'Alikhan Beisenbayev';
 /** Kept in sync with SITE_ORIGIN in scripts/prerender-routes.mjs. */
 const SITE_ORIGIN = 'https://alinbeisenbayev.com';
-const SITE_TITLE = `${SITE_NAME} — Cartographer & GIS Engineer`;
+const SITE_TITLE = `${SITE_NAME} — Cartographer & Data Storyteller`;
 
 /** Kept in sync with the <meta name="description"> fallback in index.html. */
 const SITE_DESCRIPTION =

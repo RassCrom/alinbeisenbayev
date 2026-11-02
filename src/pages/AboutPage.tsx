@@ -41,6 +41,7 @@ export default function AboutPage() {
     // overflow-x-clip (not hidden) kills any transient canvas overflow during
     // resize without creating a scroll container, which would break sticky
     <div className="relative overflow-x-clip lg:grid lg:grid-cols-[35%_65%]">
+      <h1 className="sr-only">About Alikhan Beisenbayev</h1>
       {/* Globe: full-width sticky background on mobile, right column on desktop */}
       <div
         className={`sticky top-16 z-[var(--z-base)] h-[55vh] w-full overflow-hidden transition-transform duration-1000 ease-out lg:order-2 lg:top-16 lg:h-[calc(100vh-4rem)] ${

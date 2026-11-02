@@ -462,11 +462,12 @@
   color: #bfe3ff;
 }
 
-.atlas-weather__temperature {
-  font-size: 19px;
+.atlas-weather__label {
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.1;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .atlas-weather__wind {
@@ -689,7 +690,7 @@
   font-size: 8.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-accent-gold, #c9a227);
+  color: var(--atlas-gold);
   opacity: 0.8;
 }
 

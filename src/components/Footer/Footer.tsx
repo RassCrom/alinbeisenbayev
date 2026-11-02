@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
-import socialsData from '../../data/socials.json';
+import { featuredSocials } from '../../data/socials';
 import { NAV_LINKS } from '../Nav/Nav';
 import aboutData from '../../data/about-story.json';
-import type { SocialsData, AboutStoryData } from '../../types';
+import type { AboutStoryData } from '../../types';
 
-const { socials } = socialsData as SocialsData;
 const { profile } = aboutData as AboutStoryData;
 
 /**
@@ -12,7 +11,6 @@ const { profile } = aboutData as AboutStoryData;
  * (socials) and a colophon.
  */
 export default function Footer() {
-  const featured = socials.filter((s) => s.featured && s.platform !== 'CV');
   const year = new Date().getFullYear();
 
   return (
@@ -50,7 +48,7 @@ export default function Footer() {
         <div>
           <p className="mono-label mb-[var(--space-3)] text-[var(--color-text-primary)]">Sources</p>
           <ul className="grid gap-[var(--space-2)]">
-            {featured.map((social) => (
+            {featuredSocials.map((social) => (
               <li key={social.id}>
                 <a
                   href={social.url}

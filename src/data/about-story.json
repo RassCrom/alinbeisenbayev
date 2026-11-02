@@ -7,7 +7,7 @@
       "English",
       "Russian"
     ],
-    "bio": "I realized that I like creativity relatively late, at the end of my bachelor's and only after I started first steps in this direction, making meaningful maps, writing stories, visualizing complex data, and raising awareness about climate, history and surrounding things. \n\n Today I have solid foundation in cartography, analyzing climate data, and creating engaging stories.",
+    "bio": "I realized I love creative work relatively late, at the end of my bachelor's, once I took my first steps in that direction: making meaningful maps, writing stories, visualizing complex data and raising awareness about climate, history and the world around me.\n\nToday I have a solid foundation in cartography, climate data analysis and engaging storytelling.",
     "photo": "/images/about/profile-photo.webp"
   },
   "story": [
@@ -16,7 +16,7 @@
       "type": "origin",
       "date": "2000",
       "title": "Born in Astana",
-      "description": "I grew up in Kazakhstan’s capital, a city where vast steppes raised a futuristic place, called Astana",
+      "description": "I grew up in Astana, Kazakhstan’s capital: a futuristic city raised out of the vast steppe.",
       "location": {
         "name": "Astana, Kazakhstan",
         "lat": 51.1694,

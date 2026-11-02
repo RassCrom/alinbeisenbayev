@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import skillsData from '../data/skills.json';
 import { projects } from '../data/projects';
 import type { SkillsData, SkillLevel, Project } from '../types';
@@ -18,7 +18,7 @@ const { categories, skills } = skillsData as SkillsData;
  * why intermediate moved from ○ to ◐ to make room for beginner at ○.
  */
 const LEVEL_COLOR: Record<SkillLevel, string> = {
-  expert: 'var(--color-accent)',
+  expert: 'var(--color-accent-gold)',
   advanced: 'var(--color-accent-light)',
   intermediate: 'var(--color-text-secondary)',
   beginner: 'var(--color-text-muted)',
@@ -58,7 +58,6 @@ function stackMatches(stackItem: string, skillName: string): boolean {
 }
 
 const PRIMARY_PROJECT_FOR_SKILL: Record<string, string> = {
-  storytelling: 'heat-stress-vienna',
   mapbox: 'armenia-energy',
   qgis: 'asharshylyq',
   mapmaking: 'tropical-night',
@@ -77,7 +76,6 @@ interface HoverPreview {
 
 export default function SkillsPage() {
   usePageMeta('Skills', 'Cartography, GIS, remote sensing, web mapping and data visualisation — each skill linked to the work that used it.');
-  const navigate = useNavigate();
   const [preview, setPreview] = useState<HoverPreview | null>(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
 
@@ -156,45 +154,11 @@ export default function SkillsPage() {
               <div className="legend-panel__body">
                 {items.map((skill) => {
                   const related = relatedBySkill.get(skill.id);
-                  const interactive = Boolean(related);
                   const sym      = LEVEL_SYMBOL[skill.level]      ?? '◌';
                   const symColor = LEVEL_SYMBOL_COLOR[skill.level] ?? 'var(--color-text-muted)';
                   const lvlColor = LEVEL_COLOR[skill.level as SkillLevel] ?? 'var(--color-text-muted)';
-                  return (
-                    <div
-                      key={skill.id}
-                      role={interactive ? 'link' : undefined}
-                      tabIndex={interactive ? 0 : undefined}
-                      onClick={
-                        interactive
-                          ? () => navigate(`/works?q=${encodeURIComponent(related!.term)}`)
-                          : undefined
-                      }
-                      onKeyDown={
-                        interactive
-                          ? (e) => {
-                              if (e.key === 'Enter') {
-                                navigate(`/works?q=${encodeURIComponent(related!.term)}`);
-                              }
-                            }
-                          : undefined
-                      }
-                      onMouseEnter={
-                        interactive
-                          ? () =>
-                              setPreview({
-                                skillId: skill.id,
-                                project: related!.projects[0],
-                                moreCount: related!.projects.length - 1,
-                              })
-                          : undefined
-                      }
-                      onMouseMove={
-                        interactive ? (e) => setCursor({ x: e.clientX, y: e.clientY }) : undefined
-                      }
-                      onMouseLeave={interactive ? () => setPreview(null) : undefined}
-                      className={`legend-row${interactive ? ' legend-row--interactive' : ''}`}
-                    >
+                  const row = (
+                    <>
                       <span className="legend-row__symbol" style={{ color: symColor }}>
                         {sym}
                       </span>
@@ -202,7 +166,32 @@ export default function SkillsPage() {
                       <span className="legend-row__level" style={{ color: lvlColor }}>
                         {skill.level}
                       </span>
-                    </div>
+                    </>
+                  );
+                  if (!related) {
+                    return (
+                      <div key={skill.id} className="legend-row">
+                        {row}
+                      </div>
+                    );
+                  }
+                  return (
+                    <Link
+                      key={skill.id}
+                      to={`/works?q=${encodeURIComponent(related.term)}`}
+                      onMouseEnter={() =>
+                        setPreview({
+                          skillId: skill.id,
+                          project: related.projects[0],
+                          moreCount: related.projects.length - 1,
+                        })
+                      }
+                      onMouseMove={(e) => setCursor({ x: e.clientX, y: e.clientY })}
+                      onMouseLeave={() => setPreview(null)}
+                      className="legend-row legend-row--interactive"
+                    >
+                      {row}
+                    </Link>
                   );
                 })}
               </div>

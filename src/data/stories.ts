@@ -1,5 +1,5 @@
 import storiesData from './stories.json';
-import { projects } from './projects';
+import { allProjects } from './projects';
 import type { StoriesData, Story, StoryFormat } from '../types';
 
 /**
@@ -37,7 +37,7 @@ if (import.meta.env.DEV) {
     if (!STORY_FORMATS.includes(story.format)) {
       found.push(`${story.slug}: format = ${JSON.stringify(story.format)}`);
     }
-    if (story.workSlug && !projects.some((p) => p.slug === story.workSlug)) {
+    if (story.workSlug && !allProjects.some((p) => p.slug === story.workSlug)) {
       found.push(`${story.slug}: workSlug = ${JSON.stringify(story.workSlug)} matches no project`);
     }
     return found;

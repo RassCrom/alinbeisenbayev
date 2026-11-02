@@ -302,6 +302,8 @@ export interface Social {
   follower_date?: string;
   iconUrl: string;
   featured: boolean;
+  /** Kept in the data but left off the Connect page. */
+  hidden?: boolean;
 }
 
 export interface SocialsData {

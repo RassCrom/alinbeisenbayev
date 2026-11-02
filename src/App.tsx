@@ -44,10 +44,13 @@ function PageFallback() {
 export default function App() {
   return (
     <>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <ScrollManager />
       <CustomCursor />
       <Nav />
-      <main className="min-h-screen pt-16">
+      <main id="main" tabIndex={-1} className="min-h-screen pt-16 outline-none">
         <Suspense fallback={<PageFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />

@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { solarPosition, sunTimes } from './sun.ts';
 
 /*
- * The weather the map lives under: Astana's, from the Open-Meteo forecast
- * API. Fetched at most every fifteen minutes, cached in localStorage with a
- * timestamp, and replaced by a clock-based fallback (clear sky, seasonal
- * temperature, day or night from the sun) when the fetch fails or the cache
- * is over an hour old. Presets exist so the HUD can preview any weather;
- * a preset never persists.
+ * The weather the map lives under. There is no forecast behind it: the site
+ * takes no live data from third-party APIs. The default is a clear sky with
+ * day and night from the real sun over Astana; the month's normal
+ * temperature only steers the simulation (ice, snow cover) and is never
+ * shown as a reading. Presets let the HUD preview any weather; a preset
+ * never persists.
  */
 
 export type Condition =
@@ -20,7 +20,7 @@ export type Condition =
   | 'snow'
   | 'thunderstorm';
 
-export type WeatherSource = 'live' | 'cached' | 'fallback' | 'preset';
+export type WeatherSource = 'clock' | 'preset';
 
 export interface WeatherState {
   source: WeatherSource;
@@ -108,91 +108,17 @@ export function conditionFromCode(code: number): { condition: Condition; intensi
   }
 }
 
-/* ---- Fetch and cache ---------------------------------------------------- */
-
-export const WEATHER_KEY = 'atlas:weather';
-export const POLL_MS = 15 * 60 * 1000;
-/** Beyond this the cache is stale and the fallback takes over. */
-const STALE_MS = 60 * 60 * 1000;
-
-const ENDPOINT =
-  'https://api.open-meteo.com/v1/forecast?latitude=51.17&longitude=71.43' +
-  '&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,cloud_cover,is_day' +
-  '&daily=sunrise,sunset&timezone=auto&forecast_days=1&wind_speed_unit=kmh';
-
-interface OpenMeteoResponse {
-  utc_offset_seconds: number;
-  current: {
-    time: string;
-    temperature_2m: number;
-    weather_code: number;
-    wind_speed_10m: number;
-    wind_direction_10m: number;
-    cloud_cover: number;
-    is_day: number;
-  };
-  daily: { sunrise: string[]; sunset: string[] };
-}
-
-/** Open-Meteo returns local ISO times without an offset; the offset comes separately. */
-function localIsoToEpoch(iso: string | undefined, offsetSeconds: number): number | null {
-  if (!iso) return null;
-  const parsed = Date.parse(`${iso}Z`);
-  return Number.isFinite(parsed) ? parsed - offsetSeconds * 1000 : null;
-}
-
-export async function fetchAstanaWeather(signal?: AbortSignal): Promise<WeatherState> {
-  const response = await fetch(ENDPOINT, { signal });
-  if (!response.ok) throw new Error(`Open-Meteo answered ${response.status}`);
-  const data = (await response.json()) as OpenMeteoResponse;
-  const { condition, intensity } = conditionFromCode(data.current.weather_code);
-  return {
-    source: 'live',
-    observedAt: Date.now(),
-    code: data.current.weather_code,
-    condition,
-    intensity,
-    temperature: data.current.temperature_2m,
-    windSpeed: data.current.wind_speed_10m,
-    windDirection: data.current.wind_direction_10m,
-    cloudCover: Math.min(1, Math.max(0, data.current.cloud_cover / 100)),
-    isDay: data.current.is_day === 1,
-    sunrise: localIsoToEpoch(data.daily.sunrise[0], data.utc_offset_seconds),
-    sunset: localIsoToEpoch(data.daily.sunset[0], data.utc_offset_seconds),
-  };
-}
-
-export function readCachedWeather(now = Date.now()): WeatherState | null {
-  try {
-    const raw = localStorage.getItem(WEATHER_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as WeatherState;
-    if (typeof parsed.observedAt !== 'number' || now - parsed.observedAt > STALE_MS) return null;
-    return { ...parsed, source: 'cached' };
-  } catch {
-    return null;
-  }
-}
-
-function writeCachedWeather(state: WeatherState): void {
-  try {
-    localStorage.setItem(WEATHER_KEY, JSON.stringify(state));
-  } catch {
-    // Private mode or a full store: the state still holds in memory.
-  }
-}
-
-/* ---- Fallback and presets ------------------------------------------------ */
+/* ---- Clock sky and presets ----------------------------------------------- */
 
 /** Astana's monthly normals, °C, January first. */
 const NORMAL_TEMPERATURE = [-14, -13, -6, 6, 14, 19, 21, 19, 13, 4, -6, -12];
 
 /** Clear sky, seasonal temperature, day or night from the sun. */
-export function fallbackWeather(now = Date.now()): WeatherState {
+export function clockWeather(now = Date.now()): WeatherState {
   const date = new Date(now);
   const times = sunTimes(date);
   return {
-    source: 'fallback',
+    source: 'clock',
     observedAt: now,
     code: 0,
     condition: 'clear',
@@ -232,7 +158,7 @@ export const PRESET_LABEL: Record<WeatherPreset, string> = {
 
 export function presetWeather(preset: WeatherPreset, now = Date.now()): WeatherState {
   const base: WeatherState = {
-    ...fallbackWeather(now),
+    ...clockWeather(now),
     source: 'preset',
     isDay: true,
   };
@@ -262,72 +188,17 @@ export function presetWeather(preset: WeatherPreset, now = Date.now()): WeatherS
 
 /* ---- Hook ---------------------------------------------------------------- */
 
-export interface WeatherHandle {
-  /** The live, cached or fallback state; never a preset. */
-  weather: WeatherState;
-  /** Set when the last fetch failed; the state is then cached or fallback. */
-  error: string | null;
-  refresh: () => void;
-}
+/** How often the clock sky is recomputed, so day turns to night on time. */
+const CLOCK_MS = 60 * 1000;
 
-/**
- * The current Astana weather for React, polling every fifteen minutes and
- * again when the tab comes back after the cache went stale.
- */
-export function useWeather(): WeatherHandle {
-  const [weather, setWeather] = useState<WeatherState>(() => readCachedWeather() ?? fallbackWeather());
-  const [error, setError] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
-  const refresh = useCallback(() => setTick((value) => value + 1), []);
+/** The clock sky for React, recomputed every minute. */
+export function useClockWeather(): WeatherState {
+  const [weather, setWeather] = useState<WeatherState>(() => clockWeather());
 
   useEffect(() => {
-    const controller = new AbortController();
-    let timer = 0;
+    const timer = window.setInterval(() => setWeather(clockWeather()), CLOCK_MS);
+    return () => window.clearInterval(timer);
+  }, []);
 
-    const load = async (): Promise<void> => {
-      const cached = readCachedWeather();
-      if (cached && Date.now() - cached.observedAt < POLL_MS) {
-        setWeather(cached);
-        return;
-      }
-      try {
-        const live = await fetchAstanaWeather(controller.signal);
-        writeCachedWeather(live);
-        setWeather(live);
-        setError(null);
-      } catch (cause) {
-        if (controller.signal.aborted) return;
-        setError(cause instanceof Error ? cause.message : String(cause));
-        setWeather(cached ?? fallbackWeather());
-      }
-    };
-
-    const onVisibility = (): void => {
-      if (!document.hidden) void load();
-    };
-
-    void load();
-    timer = window.setInterval(() => void load(), POLL_MS);
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      controller.abort();
-      window.clearInterval(timer);
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, [tick]);
-
-  return { weather, error, refresh };
-}
-
-/* ---- Small formatters for the HUD ------------------------------------------ */
-
-const COMPASS = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-
-export function compassPoint(degrees: number): string {
-  return COMPASS[Math.round((((degrees % 360) + 360) % 360) / 22.5) % 16];
-}
-
-export function formatTemperature(celsius: number): string {
-  const rounded = Math.round(celsius);
-  return `${rounded < 0 ? '−' : ''}${Math.abs(rounded)}°C`;
+  return weather;
 }

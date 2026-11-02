@@ -5,6 +5,7 @@ import { TIER_LABEL } from './config.ts';
 import { spriteRect, type InteractionStore } from './interaction.ts';
 import type { Atlas } from './types.ts';
 import { coverSrcSet } from '../utils/images';
+import { projectYear } from '../utils/date';
 
 /*
  * What follows the highlighted settlements: a gold ring on the ground under
@@ -72,7 +73,7 @@ export default function AtlasFocus({ atlas, store, interaction, onOpen }: Props)
     });
   }, [bySlug, highlights, settlement, store]);
 
-  const year = project?.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
+  const year = projectYear(project?.endDate ?? null);
   const award = project?.awards[0];
 
   return (

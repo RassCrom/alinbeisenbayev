@@ -3,19 +3,11 @@ import { flushSync } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { storyForWork } from '../../data/stories';
 import { COVER_SIZES, coverSrcSet } from '../../utils/images';
+import { projectYear } from '../../utils/date';
+import type { Project } from '../../types';
 
 export interface WorkCardProps {
-  id: string;
-  slug: string;
-  title: string;
-  year: number | null;
-  category: string;
-  tagline: string;
-  coverImage: string;
-  award?: string;
-  featured?: boolean;
-  status?: string;
-  type: string;
+  project: Project;
   /** Plate number rendered before the category tag (landing grid) */
   index?: number;
   /** Bento showcase variant: wider image, larger title */
@@ -24,17 +16,10 @@ export interface WorkCardProps {
 
 const MAX_TILT_DEG = 5;
 
-export default function WorkCard({
-  slug,
-  title,
-  year,
-  tagline,
-  coverImage,
-  award,
-  status,
-  index,
-  large = false,
-}: WorkCardProps) {
+export default function WorkCard({ project, index, large = false }: WorkCardProps) {
+  const { slug, title, tagline, coverImage, status } = project;
+  const year = projectYear(project.endDate);
+  const award = project.awards[0];
   // Looked up here rather than passed in: three call sites render this card,
   // and a badge that one of them forgot to wire would be worse than none.
   const story = storyForWork(slug);

@@ -15,14 +15,17 @@
      than ~#7d8aa6 clears WCAG AA (4.5:1) for normal text, and muted carries
      real body copy — captions, coordinates, taglines, meta. muted was #566280
      (3.05:1, a clear fail); secondary moved up with it so the three steps stay
-     visually distinct instead of collapsing into each other. */
+     visually distinct instead of collapsing into each other. #7d8aa6 then
+     measured 4.11:1 on --color-bg-overlay (cards, popovers), so muted moved
+     to #8a97b2 (4.85:1 there). Gold moved from #9e7f4a (3.79:1) for the
+     same reason. */
   --color-text-secondary: #9aa8c2;
-  --color-text-muted:     #7d8aa6;
+  --color-text-muted:     #8a97b2;
 
   /* Accent */
   --color-accent:         #4472a8;
   --color-accent-light:   #6691c0;
-  --color-accent-gold:    #9e7f4a;
+  --color-accent-gold:    #b08f58;
   --color-accent-glow:    rgba(68, 114, 168, 0.12);
 
   /* RGB triplets for one-off rgba() uses (translucent "glass" chrome,
@@ -34,7 +37,7 @@
   --color-surface-rgb:      18, 26, 45;     /* = --color-bg-surface */
   --color-accent-rgb:       68, 114, 168;   /* = --color-accent */
   --color-accent-light-rgb: 102, 145, 192;  /* = --color-accent-light */
-  --color-accent-gold-rgb:  158, 127, 74;   /* = --color-accent-gold */
+  --color-accent-gold-rgb:  176, 143, 88;   /* = --color-accent-gold */
 
   /* Gradients */
   --gradient-hero:    linear-gradient(160deg, #0d1320 0%, #121d33 60%, #0f1928 100%);

@@ -14,6 +14,7 @@ import { storyForWork } from '../data/stories';
 import { articles } from '../content/blog';
 import { markSurveyed } from '../atlas/fog';
 import { COVER_SIZES, coverSrcSet } from '../utils/images';
+import { projectYear } from '../utils/date';
 
 /* ---- Scroll-reveal hook ---- */
 function useSectionReveal() {
@@ -99,7 +100,7 @@ export default function WorkDetailPage() {
   // side (frontmatter.workSlug) so a post can attach itself to a project
   // without touching the project data.
   const methodNotes = articles.filter((a) => a.frontmatter.workSlug === project.slug);
-  const year = project.endDate ? Number(project.endDate.slice(0, 4)) || null : null;
+  const year = projectYear(project.endDate);
   const award = project.awards[0];
 
   /*
@@ -308,7 +309,7 @@ export default function WorkDetailPage() {
         ) : (
           <div className="mx-auto max-w-6xl px-[var(--space-6)]">
             <Section eyebrow="Visuals" heading="Gallery">
-              <ImageGallery images={project.gallery} zoomable={project.type === 'static-map'} />
+              <ImageGallery images={project.gallery} />
             </Section>
           </div>
         ))}
@@ -365,20 +366,7 @@ export default function WorkDetailPage() {
             </div>
             <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] sm:grid-cols-2">
               {suggestions.map((p) => (
-                <WorkCard
-                  key={p.id}
-                  id={p.id}
-                  slug={p.slug}
-                  title={p.title}
-                  year={p.endDate ? Number(p.endDate.slice(0, 4)) || null : null}
-                  category={p.category}
-                  tagline={p.tagline}
-                  coverImage={p.coverImage}
-                  award={p.awards[0]}
-                  featured={p.featured}
-                  status={p.status}
-                  type={p.type}
-                />
+                <WorkCard key={p.id} project={p} />
               ))}
             </div>
           </div>

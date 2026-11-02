@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { projects } from '../data/projects';
+import { allProjects, projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { TIER_LABEL } from './config.ts';
 import { buildAtlas } from './index.ts';
@@ -17,7 +17,7 @@ import './poster.css';
 
 export default function AtlasPoster() {
   usePageMeta();
-  const atlas = useMemo(() => buildAtlas(projects), []);
+  const atlas = useMemo(() => buildAtlas(allProjects), []);
   const spanX = POSTER_FRAME.maxX - POSTER_FRAME.minX;
   const spanY = POSTER_FRAME.maxY - POSTER_FRAME.minY;
   const at = (x: number, y: number): { left: string; top: string } => ({

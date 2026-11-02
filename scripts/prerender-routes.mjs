@@ -56,7 +56,7 @@ const SECTIONS = [
   { path: '/about', title: 'About', description: 'From Astana to Munich, Vienna and Dresden — the route through geodesy, GIS and cartography, told on a globe.', priority: '0.8' },
   { path: '/skills', title: 'Skills', description: 'Cartography, GIS, remote sensing, web mapping and data visualisation — each skill linked to the work that used it.', priority: '0.7' },
   { path: '/blog', title: 'Blog', description: 'Notes, tutorials and map breakdowns on cartography, QGIS and geospatial storytelling.', priority: '0.7' },
-  { path: '/connect', title: 'Connect', description: 'Open to job offers and collaboration. LinkedIn, GitHub, Instagram, TikTok, Telegram, email and CV.', priority: '0.6' },
+  { path: '/connect', title: 'Connect', description: 'Open to job offers and collaboration. LinkedIn, Instagram, TikTok, Bluesky, Telegram, YouTube and email.', priority: '0.6' },
 ];
 
 function routes() {
@@ -72,6 +72,9 @@ function routes() {
         imageAlt: project.title,
         type: 'article',
         priority: project.featured ? '0.8' : '0.6',
+        // Hidden projects keep their page (old links still open) but drop
+        // out of the sitemap, like they drop out of every listing.
+        inSitemap: !project.hidden,
       });
     }
   }
@@ -150,14 +153,15 @@ for (const route of all) {
   writeFileSync(file, render(template, route));
 }
 
+const listed = all.filter((r) => r.inSitemap !== false);
 const sitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
   `  <url><loc>${SITE_ORIGIN}/</loc><priority>1.0</priority></url>`,
-  ...all.map((r) => `  <url><loc>${SITE_ORIGIN}${r.path}</loc><priority>${r.priority}</priority></url>`),
+  ...listed.map((r) => `  <url><loc>${SITE_ORIGIN}${r.path}</loc><priority>${r.priority}</priority></url>`),
   '</urlset>',
   '',
 ].join('\n');
 writeFileSync(join(DIST, 'sitemap.xml'), sitemap);
 
-console.log(`prerendered ${all.length} route heads and sitemap.xml (${all.length + 1} URLs)`);
+console.log(`prerendered ${all.length} route heads and sitemap.xml (${listed.length + 1} URLs)`);

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useNavigationType } from 'react-router-dom';
-import { projects } from '../data/projects';
+import { allProjects, projects } from '../data/projects';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { LifeSim, planAmbient } from './ambient.ts';
 import { createAmbientAudio } from './audio.ts';
@@ -50,7 +50,7 @@ import {
   CONDITION_LABEL,
   PRESET_LABEL,
   presetWeather,
-  useWeather,
+  useClockWeather,
   type WeatherPreset,
   type WeatherState,
 } from './weather/weather.ts';
@@ -119,7 +119,7 @@ export default function AtlasView() {
   usePageMeta();
   const navigate = useNavigate();
   const navigationType = useNavigationType();
-  const atlas = useMemo(() => buildAtlas(projects), []);
+  const atlas = useMemo(() => buildAtlas(allProjects), []);
   const store = useMemo(
     () => createViewStore({ camera: { x: 0.5, y: 0.5, zoom: 800 }, viewport: { width: 1, height: 1 } }),
     [],
@@ -161,12 +161,12 @@ export default function AtlasView() {
     () => atlas.settlements.filter((s) => surveyed.has(s.slug)).length,
     [atlas, surveyed],
   );
-  const { weather: liveWeather, error: weatherError } = useWeather();
+  const clockSky = useClockWeather();
   const [preset, setPreset] = useState<WeatherPreset | null>(null);
-  // The state the map shows: a preview preset if one is chosen, else the live forecast.
+  // The state the map shows: a preview preset if one is chosen, else the clock sky.
   const shownWeather: WeatherState = useMemo(
-    () => (preset ? presetWeather(preset) : liveWeather),
-    [liveWeather, preset],
+    () => (preset ? presetWeather(preset) : clockSky),
+    [clockSky, preset],
   );
   const weatherRef = useRef(shownWeather);
   weatherRef.current = shownWeather;
@@ -215,7 +215,7 @@ export default function AtlasView() {
         glCanvas: canvas,
         container,
         render: renderNow,
-        caption: `Atlas of works · ${when} · Astana ${CONDITION_LABEL[shownWeather.condition].toLowerCase()}, ${Math.round(shownWeather.temperature)}°C`,
+        caption: `Atlas of works · ${when} · ${CONDITION_LABEL[shownWeather.condition].toLowerCase()} sky`,
         fileName: `atlas-${day}-${condition}.png`,
       });
     } catch (error) {
@@ -847,7 +847,6 @@ export default function AtlasView() {
             arriving={arriving}
             surveyedCount={surveyedCount}
             weather={shownWeather}
-            weatherError={weatherError}
             preset={preset}
             onPreset={setPreset}
             onListView={() => setViewMode('sheet')}

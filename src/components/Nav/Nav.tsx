@@ -1,11 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTheme } from '../../hooks/useTheme';
-import socialsData from '../../data/socials.json';
-import type { SocialsData } from '../../types';
-
-const { socials } = socialsData as SocialsData;
-const DRAWER_SOCIALS = socials.filter((s) => s.featured && s.platform !== 'CV');
+import { featuredSocials, isExternalSocial } from '../../data/socials';
 
 export const NAV_LINKS = [
   { to: '/works', label: 'Works' },
@@ -22,9 +18,29 @@ export default function Nav() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
 
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
+
+  // Open: focus moves into the drawer and Escape closes it. Close: focus
+  // goes back to the hamburger, unless a route change already moved it.
+  useEffect(() => {
+    if (!open) return;
+    closeRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      if (document.activeElement === document.body || closeRef.current?.contains(document.activeElement)) {
+        toggleRef.current?.focus();
+      }
+    };
+  }, [open]);
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `mono-label transition-colors hover:text-[var(--color-text-primary)] ${
@@ -48,7 +64,7 @@ export default function Nav() {
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-            className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-full)] border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent-light)]"
+            className="relative flex h-7 w-7 items-center justify-center rounded-[var(--radius-full)] before:absolute before:-inset-2 before:content-[''] border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent-light)]"
           >
             {theme === 'dark' ? (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -74,9 +90,11 @@ export default function Nav() {
 
         {/* Mobile hamburger */}
         <button
+          ref={toggleRef}
           type="button"
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}
+          aria-controls="nav-drawer"
           onClick={() => setOpen((v) => !v)}
           className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
         >
@@ -94,13 +112,21 @@ export default function Nav() {
     </header>
 
       {/* Mobile slide-in drawer (sibling of header: backdrop-filter on the
-          header would otherwise become the containing block for fixed children) */}
+          header would otherwise become the containing block for fixed children).
+          Closed, it is `invisible` as well as off-screen, so its links leave
+          the tab order; visibility is in the transition so it hides only
+          after the slide-out ends. */}
       <div
-        className={`fixed inset-y-0 right-0 z-[var(--z-modal)] flex w-64 transform flex-col border-l border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-elevated)] transition-transform duration-300 md:hidden ${
-          open ? 'translate-x-0' : 'translate-x-full'
+        id="nav-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        className={`fixed inset-y-0 right-0 z-[var(--z-modal)] flex w-64 transform flex-col border-l border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-elevated)] transition-[transform,visibility] duration-300 md:hidden ${
+          open ? 'visible translate-x-0' : 'invisible translate-x-full'
         }`}
       >
         <button
+          ref={closeRef}
           type="button"
           aria-label="Close menu"
           onClick={() => setOpen(false)}
@@ -118,11 +144,11 @@ export default function Nav() {
         {/* Social links pinned to the drawer bottom */}
         <div className="mt-auto border-t border-[var(--color-border-subtle)] px-[var(--space-6)] py-[var(--space-6)]">
           <div className="flex items-center justify-between gap-[var(--space-2)]">
-            {DRAWER_SOCIALS.map((social) => (
+            {featuredSocials.map((social) => (
               <a
                 key={social.id}
                 href={social.url}
-                target={social.url.startsWith('mailto:') ? undefined : '_blank'}
+                target={isExternalSocial(social) ? '_blank' : undefined}
                 rel="noreferrer"
                 aria-label={social.platform}
                 title={social.platform}

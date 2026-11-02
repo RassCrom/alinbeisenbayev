@@ -29,7 +29,7 @@ export default function SearchFilter({
         onChange={(e) => onSearch(e.target.value)}
         placeholder="Search works…"
         aria-label="Search works"
-        className="w-full max-w-md rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-[var(--space-4)] py-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] text-[var(--color-text-primary)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)]"
+        className="w-full max-w-md rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] px-[var(--space-4)] py-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] text-[var(--color-text-primary)] outline-none transition-colors placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus-visible:ring-2 focus-visible:ring-[rgba(var(--color-accent-rgb),0.4)]"
       />
       <div className="flex flex-wrap items-center gap-1.5">
         {shown.map((keyword) => (

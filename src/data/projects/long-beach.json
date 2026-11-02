@@ -3,8 +3,9 @@
     {
       "id": "old-map-collection",
       "slug": "old-map-collection",
+      "hidden": true,
       "title": "Heap of random old maps",
-      "tagline": "Old collection of maps designed at the begginning of my journey.",
+      "tagline": "Old collection of maps designed at the beginning of my journey.",
       "status": "complete",
       "featured": false,
       "type": "static-map",
