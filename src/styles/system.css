@@ -809,3 +809,148 @@
     transition: none;
   }
 }
+
+@layer components {
+  /* ---- Works index ---- */
+  .works {
+    padding-top: var(--s-7);
+  }
+
+  .works__title {
+    margin-bottom: var(--s-6);
+  }
+
+  /* One row that scrolls sideways on a phone rather than stacking six chips. */
+  .works__filters {
+    display: flex;
+    gap: var(--s-2);
+    margin-inline: calc(var(--gutter) * -1);
+    padding: var(--s-1) var(--gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .works__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .works__tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-top: var(--s-3);
+  }
+
+  .works__view {
+    display: flex;
+    gap: var(--s-2);
+  }
+
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    flex: 1 1 220px;
+    max-width: 360px;
+    height: 44px;
+    padding: 0 var(--s-4);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    color: var(--text-3);
+    transition: box-shadow var(--t-hover) var(--ease);
+  }
+
+  .search-field:focus-within {
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .search-field input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font: inherit;
+    font-size: var(--fs-small);
+  }
+
+  .search-field input::placeholder {
+    color: var(--text-3);
+  }
+
+  .search-field input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .works__grid {
+    display: grid;
+    align-items: start;
+    gap: var(--s-6);
+    margin-top: var(--s-7);
+  }
+
+  .works__column {
+    display: grid;
+    gap: var(--s-7);
+    min-width: 0;
+  }
+
+  /* New cards fade up as they arrive; cards already there do not replay. */
+  .works__cell {
+    animation: card-in var(--t-enter) var(--ease) both;
+  }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .works__sentinel {
+    height: 1px;
+  }
+
+  .works__empty {
+    display: grid;
+    justify-items: start;
+    gap: var(--s-3);
+    margin-top: var(--s-8);
+    color: var(--text-2);
+  }
+
+  .works__map {
+    margin-top: var(--s-7);
+  }
+
+  .works__map-skeleton {
+    height: 520px;
+    border-radius: var(--r-outer);
+  }
+
+  @media (min-width: 768px) {
+    .works {
+      padding-top: var(--s-8);
+    }
+
+    .works__filters {
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+
+    .works__grid {
+      gap: var(--s-6);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .works__cell {
+    animation: none;
+  }
+
+  .search-field {
+    transition: none;
+  }
+}

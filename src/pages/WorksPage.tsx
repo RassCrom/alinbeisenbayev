@@ -1,363 +1,192 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Button from '../components/Button/Button';
+import FilterChip from '../components/FilterChip/FilterChip';
+import Icon from '../components/Icon/Icon';
+import Lightbox from '../components/ImageGallery/Lightbox';
+import PieceCard from '../components/PieceCard/PieceCard';
+import Skeleton from '../components/Skeleton/Skeleton';
 import WorkCard from '../components/WorkCard/WorkCard';
-import SearchFilter from '../components/SearchFilter/SearchFilter';
-import { useProjectFilter } from '../hooks/useProjectFilter';
+import { OFFERS, type OfferSlug } from '../data/offers';
 import { projects } from '../data/projects';
+import { distribute, filterEntries, parseOffer, workEntries, type WorkEntry } from '../data/works';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { projectYear } from '../utils/date';
+import type { GalleryImage, GalleryItem } from '../types';
 
-// MapLibre bundle loads only when the map view is opened
-const WorksMap = lazy(() => import('../components/WorksMap/WorksMap'));
-const MapLegend = lazy(() => import('../components/WorksMap/MapLegend'));
+// MapLibre is about 1 MB of script. It loads when the map is chosen, not before.
+const WorksMapView = lazy(() => import('./works/WorksMapView'));
 
-type ViewMode = 'grid' | 'map';
-type TypeFilter = 'all' | 'web' | 'image' | 'animation';
+/** Cards added per step. Enough to fill a tall screen at three columns. */
+const BATCH = 18;
 
-/** Months since year 0, or null for anything that is not a real date
- *  ("Present", "current", null) — the data uses several spellings of "ongoing". */
-function dateSortValue(date: string | null): number | null {
-  const match = date?.match(/^(\d{4})(?:-(\d{2}))?$/);
-  if (!match) return null;
-  return Number(match[1]) * 12 + Number(match[2] ?? 12);
+const COLUMN_QUERIES = ['(min-width: 1024px)', '(min-width: 640px)'] as const;
+
+/** One column on a phone, two on a tablet, three from 1024 px. */
+function useColumns(): number {
+  const read = () =>
+    window.matchMedia(COLUMN_QUERIES[0]).matches ? 3 : window.matchMedia(COLUMN_QUERIES[1]).matches ? 2 : 1;
+  const [columns, setColumns] = useState(read);
+  useEffect(() => {
+    const lists = COLUMN_QUERIES.map((query) => window.matchMedia(query));
+    const onChange = () => setColumns(read());
+    lists.forEach((list) => list.addEventListener('change', onChange));
+    return () => lists.forEach((list) => list.removeEventListener('change', onChange));
+  }, []);
+  return columns;
 }
 
-function contextCoordinates(project: (typeof projects)[number]): [number, number] | null {
-  const context = project.geography.contexts[0];
-  if (!context) return null;
-  if (context.connectionType === 'polygon') {
-    return context.centroidLat !== undefined && context.centroidLng !== undefined
-      ? [context.centroidLat, context.centroidLng]
-      : null;
-  }
-  return context.lat !== undefined && context.lng !== undefined
-    ? [context.lat, context.lng]
-    : null;
-}
+const toSlide = (item: GalleryItem): GalleryImage => ({
+  url: item.src,
+  caption: item.title,
+  type: item.kind,
+  width: item.width,
+  height: item.height,
+  poster: item.poster,
+});
 
-function compactCoordinates(lat: number, lng: number): string {
-  return `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? 'N' : 'S'} · ${Math.abs(lng).toFixed(2)}°${lng >= 0 ? 'E' : 'W'}`;
-}
+const pieceItems = (entries: WorkEntry[]): GalleryItem[] =>
+  entries.flatMap((entry) => (entry.kind === 'piece' ? [entry.item] : []));
 
-/**
- * Grid order is one timeline, newest first. A project sits at the date it was
- * finished; one with no finish date yet (still in progress) sits at its start
- * date instead, so unfinished work interleaves with finished work rather than
- * sinking to the bottom. Keyed on the end date being a real date, not on
- * `status`, because a few "complete" projects are still ongoing in the data.
- */
-function timelineDate(project: (typeof projects)[number]): number {
-  return (
-    dateSortValue(project.endDate) ??
-    dateSortValue(project.startDate) ??
-    Number.NEGATIVE_INFINITY
-  );
-}
-
-const sortedProjects = [...projects].sort(
-  (a, b) =>
-    timelineDate(b) - timelineDate(a) ||
-    (dateSortValue(b.startDate) ?? 0) - (dateSortValue(a.startDate) ?? 0) ||
-    a.title.localeCompare(b.title),
-);
-
-const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'web', label: 'Web' },
-  { key: 'image', label: 'Map' },
-  { key: 'animation', label: 'Animation' },
-];
-
-const TYPE_FILTER_COUNTS: Record<TypeFilter, number> = {
-  all: sortedProjects.length,
-  web: sortedProjects.filter((project) => project.type !== 'static-map' && project.type !== 'animation').length,
-  image: sortedProjects.filter((project) => project.type === 'static-map').length,
-  animation: sortedProjects.filter((project) => project.type === 'animation').length,
-};
+const ALL_PIECES = pieceItems(workEntries);
 
 export default function WorksPage() {
-  usePageMeta('Works', 'Selected cartography, geospatial and interactive map projects — filterable by keyword, and mapped by where each was made and what it maps.');
-  // Keep the map view shareable without discarding an existing search query.
-  const [searchParams, setSearchParams] = useSearchParams();
-  const view: ViewMode = searchParams.get('view') === 'map' ? 'map' : 'grid';
-  const [mapExpanded, setMapExpanded] = useState(false);
-  /** Project hovered in the sidebar or on the map; both light up together. */
-  const [linkedId, setLinkedId] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  usePageMeta(
+    'Work',
+    'Custom maps, spatial analysis, data visualization, data journalism and remote sensing work by Alikhan Beisenbayev.',
+  );
 
-  const typeFiltered = useMemo(() => {
-    if (typeFilter === 'web') return sortedProjects.filter((p) => p.type !== 'static-map' && p.type !== 'animation');
-    if (typeFilter === 'image') return sortedProjects.filter((p) => p.type === 'static-map');
-    if (typeFilter === 'animation') return sortedProjects.filter((p) => p.type === 'animation');
-    return sortedProjects;
-  }, [typeFilter]);
+  // Every filter lives in the address, so a filtered view can be shared and
+  // Back returns to it.
+  const [params, setParams] = useSearchParams();
+  const offer = parseOffer(params.get('offer'));
+  const query = params.get('q') ?? '';
+  const view = params.get('view') === 'map' ? 'map' : 'grid';
+  const openId = params.get('item');
 
-  const { search, setSearch, selected, toggleKeyword, keywords, filtered } =
-    useProjectFilter(typeFiltered, searchParams.get('q') ?? '');
-
-  const visibleIds = useMemo(() => filtered.map((p) => p.id), [filtered]);
-  /** Highest per-city project count — the top of the graduated symbol scale. */
-  const busiestHub = useMemo(() => {
-    const counts = new Map<string, number>();
-    sortedProjects.forEach((project) => {
-      const label = project.geography.origin?.label;
-      if (label) counts.set(label, (counts.get(label) ?? 0) + 1);
-    });
-    return Math.max(1, ...counts.values());
-  }, []);
-  const geographyStats = useMemo(() => {
-    const creationCities = new Set(
-      filtered.map((project) => project.geography.origin?.label).filter(Boolean),
-    );
-    const mappedPlaces = new Set(
-      filtered.flatMap((project) =>
-        project.geography.contexts.map((context) => {
-          const coordinates = context.connectionType === 'polygon'
-            ? [context.centroidLat, context.centroidLng]
-            : [context.lat, context.lng];
-          return coordinates.every((value) => value !== undefined)
-            ? `${coordinates[0]}:${coordinates[1]}`
-            : context.label;
-        }),
-      ),
-    );
-    return { creationCities: creationCities.size, mappedPlaces: mappedPlaces.size };
-  }, [filtered]);
-
-  // Fullscreen map: Esc closes, body scroll locked while open
-  useEffect(() => {
-    if (!mapExpanded) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMapExpanded(false);
-    };
-    window.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
-    };
-  }, [mapExpanded]);
-
-  const switchView = (mode: ViewMode) => {
-    const nextParams = new URLSearchParams(searchParams);
-    if (mode === 'map') nextParams.set('view', 'map');
-    else nextParams.delete('view');
-    setSearchParams(nextParams, { replace: true });
-    if (mode === 'grid') setMapExpanded(false);
+  const update = (changes: Record<string, string | null>) => {
+    const next = new URLSearchParams(params);
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null || value === '') next.delete(key);
+      else next.set(key, value);
+    }
+    setParams(next, { replace: true });
   };
 
-  const toggleClass = (active: boolean) =>
-    `flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] ${
-      active
-        ? 'border-[var(--color-accent)] bg-[var(--color-accent-glow)] text-[var(--color-accent-light)]'
-        : 'border-[var(--color-border-default)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'
-    }`;
+  const visible = useMemo(() => filterEntries(workEntries, offer, query), [offer, query]);
+
+  // Cards arrive in batches as the end of the grid nears. A new filter starts over.
+  const [shown, setShown] = useState(BATCH);
+  useEffect(() => setShown(BATCH), [offer, query]);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const more = view === 'grid' && shown < visible.length;
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!more || !sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) setShown((count) => count + BATCH);
+      },
+      { rootMargin: '800px 0px' },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [more, shown]);
+
+  const columns = useColumns();
+  const grid = useMemo(() => distribute(visible.slice(0, shown), columns), [visible, shown, columns]);
+
+  // The lightbox steps through the pieces on screen; a piece opened by
+  // address that the filters have hidden steps through all of them instead.
+  const visiblePieces = useMemo(() => pieceItems(visible), [visible]);
+  const slidesFrom = visiblePieces.some((item) => item.id === openId) ? visiblePieces : ALL_PIECES;
+  const openIndex = openId ? slidesFrom.findIndex((item) => item.id === openId) : -1;
+  const slides = useMemo(() => slidesFrom.map(toSlide), [slidesFrom]);
+
+  const visibleProjects = useMemo(
+    () => visible.flatMap((entry) => (entry.kind === 'project' ? [entry.project] : [])),
+    [visible],
+  );
+
+  const chooseOffer = (slug: OfferSlug | null) => update({ offer: slug });
 
   return (
-    <div className="mx-auto max-w-6xl px-[var(--space-6)] py-[var(--space-12)]">
-      <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-3xl)] font-extrabold">
-        Works
-      </h1>
+    <div className="works wrap">
+      <h1 className="t-display works__title">Work</h1>
 
-      {/* Type filter tabs */}
-      {!mapExpanded && (
-        <div className="mt-[var(--space-6)] flex gap-[var(--space-6)] border-b border-[var(--color-border-subtle)]">
-          {TYPE_FILTERS.map(({ key, label }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setTypeFilter(key)}
-              className={`-mb-px flex min-h-11 items-center border-b-2 border-transparent px-0 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.12em] uppercase transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] ${
-                typeFilter === key
-                  ? 'border-[var(--color-accent)] text-[var(--color-text-primary)]'
-                  : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'
-              }`}
-            >
-              {label} ({TYPE_FILTER_COUNTS[key]})
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Controls row (hidden while the fullscreen map shows its own sidebar) */}
-      {!mapExpanded && (
-        <div className="mt-[var(--space-4)] py-[var(--space-2)]">
-          <div className="flex flex-col gap-[var(--space-4)] sm:flex-row sm:items-start sm:justify-between">
-            <SearchFilter
-              keywords={keywords}
-              search={search}
-              selected={selected}
-              onSearch={setSearch}
-              onFilter={toggleKeyword}
-            />
-            <div className="flex shrink-0 gap-[var(--space-2)]">
-              <button
-                type="button"
-                aria-label="Grid view"
-                aria-pressed={view === 'grid'}
-                onClick={() => switchView('grid')}
-                className={toggleClass(view === 'grid')}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7" rx="1" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" />
-                  <rect x="14" y="14" width="7" height="7" rx="1" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                aria-label="Map view"
-                aria-pressed={view === 'map'}
-                onClick={() => switchView('map')}
-                className={toggleClass(view === 'map')}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
-                  <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
-                  <path d="M9 4v14" />
-                  <path d="M15 6v14" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="mt-[var(--space-8)]">
-        {view === 'grid' ? (
-          filtered.length > 0 ? (
-            <div className="grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((project) => (
-                <WorkCard key={project.id} project={project} />
-              ))}
-            </div>
-          ) : (
-            <p className="py-[var(--space-16)] text-center text-[var(--color-text-muted)]">
-              No works match the current filters.
-            </p>
-          )
-        ) : (
-          <div
-            className={
-              mapExpanded
-                ? 'fixed inset-0 z-[var(--z-modal)] flex flex-col bg-[var(--color-bg-base)] md:flex-row'
-                : ''
-            }
-          >
-            {/* Search & filter sidebar — fullscreen mode only */}
-            {!mapExpanded && (
-              <div className="mb-[var(--space-4)] flex flex-col gap-[var(--space-4)] rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] px-[var(--space-4)] py-[var(--space-3)] sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] font-semibold text-[var(--color-text-primary)]">
-                    Where the work was made, and what each project maps
-                  </p>
-                  {/* The blue/gold split used to be explained in prose. A key
-                      is where a map puts that, and the graduated hub symbols
-                      need one regardless. */}
-                  <div className="mt-[var(--space-3)]">
-                    <Suspense fallback={null}>
-                      <MapLegend busiestHub={busiestHub} />
-                    </Suspense>
-                  </div>
-                </div>
-                <p className="shrink-0 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.08em] text-[var(--color-text-secondary)] uppercase">
-                  {geographyStats.creationCities} hubs · {geographyStats.mappedPlaces} places
-                </p>
-              </div>
-            )}
-
-            {mapExpanded && (
-              <aside
-                key="sidebar"
-                className="max-h-[45%] shrink-0 overflow-y-auto border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] p-[var(--space-6)] md:h-full md:max-h-none md:w-80 md:border-b-0 md:border-r"
-              >
-                <h2 className="font-[family-name:var(--font-heading)] text-[length:var(--text-lg)] font-bold">
-                  Project map
-                </h2>
-                <p className="mt-1 text-[length:var(--text-xs)] leading-relaxed text-[var(--color-text-muted)]">
-                  Filter the portfolio, then explore where each work was created and the places it maps.
-                </p>
-                <div className="mt-[var(--space-4)]">
-                  <Suspense fallback={null}>
-                    <MapLegend busiestHub={busiestHub} />
-                  </Suspense>
-                </div>
-                <p className="mono-label mt-[var(--space-6)]">Search &amp; Filters</p>
-                <div className="mt-[var(--space-4)]">
-                  <SearchFilter
-                    keywords={keywords}
-                    search={search}
-                    selected={selected}
-                    onSearch={setSearch}
-                    onFilter={toggleKeyword}
-                  />
-                </div>
-                <p className="mono-label mt-[var(--space-6)]">
-                  {filtered.length} {filtered.length === 1 ? 'work' : 'works'} shown
-                </p>
-                <ul className="mt-[var(--space-3)] flex flex-col gap-[var(--space-1)]">
-                  {filtered.map((project) => (
-                    <li key={project.id}>
-                      <Link
-                        to={`/works/${project.slug}`}
-                        onMouseEnter={() => setLinkedId(project.id)}
-                        onMouseLeave={() => setLinkedId(null)}
-                        onFocus={() => setLinkedId(project.id)}
-                        onBlur={() => setLinkedId(null)}
-                        className={`map-list-row block min-h-11 rounded-[var(--radius-sm)] border border-transparent px-[var(--space-2)] py-[var(--space-2)] transition-colors hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] ${
-                          linkedId === project.id ? 'is-linked' : ''
-                        }`}
-                      >
-                        <span className="font-[family-name:var(--font-heading)] text-[length:var(--text-sm)] font-semibold">
-                          {project.title}
-                        </span>
-                        <span className="ml-[var(--space-2)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
-                          {projectYear(project.endDate) ?? (project.endDate ? 'now' : '—')}
-                        </span>
-                        {project.geography.contexts[0] && contextCoordinates(project) ? (
-                          <span className="mt-1 block font-[family-name:var(--font-mono)] text-[9px] leading-relaxed tracking-[0.04em] text-[var(--color-text-muted)]">
-                            Maps {project.geography.contexts[0].label}
-                            {project.geography.contexts.length > 1
-                              ? ` +${project.geography.contexts.length - 1}`
-                              : ''}
-                            {' · '}
-                            {compactCoordinates(
-                              contextCoordinates(project)![0],
-                              contextCoordinates(project)![1],
-                            )}
-                          </span>
-                        ) : project.geography.origin ? (
-                          <span className="mt-1 block font-[family-name:var(--font-mono)] text-[9px] leading-relaxed tracking-[0.04em] text-[var(--color-text-muted)]">
-                            Created in {project.geography.origin.label}
-                          </span>
-                        ) : null}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </aside>
-            )}
-            <div key="map" className={mapExpanded ? 'relative min-h-0 flex-1' : ''}>
-              <Suspense
-                fallback={
-                  <div className="flex h-[420px] items-center justify-center md:h-[600px]">
-                    <span className="mono-label">Loading map…</span>
-                  </div>
-                }
-              >
-                <WorksMap
-                  projects={sortedProjects}
-                  visibleIds={visibleIds}
-                  expanded={mapExpanded}
-                  onToggleExpand={() => setMapExpanded((v) => !v)}
-                  linkedId={linkedId}
-                  onLinkedChange={setLinkedId}
-                />
-              </Suspense>
-            </div>
-          </div>
-        )}
+      <div className="works__filters" role="group" aria-label="Filter by offer">
+        <FilterChip pressed={offer === null} onClick={() => chooseOffer(null)}>
+          All
+        </FilterChip>
+        {OFFERS.map((item) => (
+          <FilterChip key={item.slug} pressed={offer === item.slug} onClick={() => chooseOffer(item.slug)}>
+            {item.label}
+          </FilterChip>
+        ))}
       </div>
+
+      <div className="works__tools">
+        <label className="search-field">
+          <Icon name="search" />
+          <input
+            type="search"
+            aria-label="Search works"
+            placeholder="Search"
+            value={query}
+            onChange={(event) => update({ q: event.target.value })}
+          />
+        </label>
+        <div className="works__view" role="group" aria-label="View">
+          <FilterChip pressed={view === 'grid'} onClick={() => update({ view: null })}>
+            Grid
+          </FilterChip>
+          <FilterChip pressed={view === 'map'} onClick={() => update({ view: 'map' })}>
+            Map
+          </FilterChip>
+        </div>
+      </div>
+
+      {visible.length === 0 ? (
+        <div className="works__empty">
+          <p>No works match.</p>
+          <Button variant="quiet" icon="arrow-right" onClick={() => update({ offer: null, q: null })}>
+            Clear filters
+          </Button>
+        </div>
+      ) : view === 'map' ? (
+        <div className="works__map">
+          <Suspense fallback={<Skeleton className="works__map-skeleton" />}>
+            <WorksMapView all={projects} visible={visibleProjects} />
+          </Suspense>
+        </div>
+      ) : (
+        <>
+          <div className="works__grid" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+            {grid.map((column, index) => (
+              <div key={index} className="works__column">
+                {column.map((entry) => (
+                  <div key={entry.id} className="works__cell">
+                    {entry.kind === 'project' ? (
+                      <WorkCard project={entry.project} />
+                    ) : (
+                      <PieceCard item={entry.item} onOpen={(item) => update({ item: item.id })} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          {more && <div ref={sentinelRef} className="works__sentinel" aria-hidden="true" />}
+        </>
+      )}
+
+      {openIndex >= 0 && (
+        <Lightbox
+          images={slides}
+          index={openIndex}
+          onIndexChange={(index) => update({ item: slidesFrom[index].id })}
+          onClose={() => update({ item: null })}
+        />
+      )}
     </div>
   );
 }

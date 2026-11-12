@@ -19,10 +19,10 @@ it('has none of the old map-margin labels', () => {
   for (const gone of ['Legend', 'Sources', 'Cartographer', 'Edition', 'Role']) expect(queryByText(gone)).toBeNull();
 });
 
-it('keeps Gallery and Blog reachable until they are folded in', () => {
-  const { getByRole } = render(<Footer />, { wrapper });
-  expect(getByRole('link', { name: 'Gallery' }).getAttribute('href')).toBe('/gallery');
+it('keeps Blog reachable until it is folded into the journal', () => {
+  const { getByRole, queryByRole } = render(<Footer />, { wrapper });
   expect(getByRole('link', { name: 'Blog' }).getAttribute('href')).toBe('/blog');
+  expect(queryByRole('link', { name: 'Gallery' })).toBeNull();
 });
 
 it('opens outside profiles in a new tab', () => {

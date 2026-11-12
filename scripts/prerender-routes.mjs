@@ -50,8 +50,7 @@ function frontmatter(source) {
 }
 
 const SECTIONS = [
-  { path: '/works', title: 'Works', description: 'Selected cartography, geospatial and interactive map projects — filterable by keyword, and mapped by where each was made and what it maps.', priority: '0.9' },
-  { path: '/gallery', title: 'Gallery', description: 'Finished maps, posters and map animations — the visuals on their own, without the case studies.', priority: '0.7' },
+  { path: '/works', title: 'Work', description: 'Custom maps, spatial analysis, data visualization, data journalism and remote sensing work by Alikhan Beisenbayev.', priority: '0.9' },
   { path: '/stories', title: 'Stories', description: 'Scroll-driven map narratives, reports and map essays on history, climate and Central Asia.', priority: '0.8' },
   { path: '/about', title: 'About', description: 'From Astana to Munich, Vienna and Dresden — the route through geodesy, GIS and cartography, told on a globe.', priority: '0.8' },
   { path: '/blog', title: 'Blog', description: 'Notes, tutorials and map breakdowns on cartography, QGIS and geospatial storytelling.', priority: '0.7' },

@@ -2,12 +2,9 @@ import { Link } from 'react-router-dom';
 import { NAV_LINKS } from '../Nav/Nav';
 import { featuredSocials } from '../../data/socials';
 
-// INTERIM: remove in plans 2 and 3, when the gallery joins the works index
-// and the blog joins the journal. Until then these pages have no other door.
-const INTERIM_LINKS = [
-  { to: '/gallery', label: 'Gallery' },
-  { to: '/blog', label: 'Blog' },
-] as const;
+// INTERIM: remove in plan 3, when the blog joins the journal. Until then it
+// has no other door.
+const INTERIM_LINKS = [{ to: '/blog', label: 'Blog' }] as const;
 
 /**
  * The footer shell. The field-cartographer illustration sits above this in

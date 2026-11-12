@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
-  "redirects": [{ "source": "/skills", "destination": "/about", "permanent": true }],
+  "redirects": [
+    { "source": "/skills", "destination": "/about", "permanent": true },
+    { "source": "/gallery", "destination": "/works", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

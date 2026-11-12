@@ -12,7 +12,6 @@ import NotFoundPage from './pages/NotFoundPage';
 const HomePage = lazy(() => import('./pages/HomePage'));
 const WorksPage = lazy(() => import('./pages/WorksPage'));
 const WorkDetailPage = lazy(() => import('./pages/WorkDetailPage'));
-const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const StoriesPage = lazy(() => import('./pages/StoriesPage'));
 const StoryDetailPage = lazy(() => import('./pages/StoryDetailPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
@@ -49,7 +48,7 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/works" element={<WorksPage />} />
             <Route path="/works/:slug" element={<WorkDetailPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/gallery" element={<Navigate to="/works" replace />} />
             <Route path="/stories" element={<StoriesPage />} />
             <Route path="/stories/:slug" element={<StoryDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
