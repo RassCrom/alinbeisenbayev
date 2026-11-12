@@ -3,7 +3,6 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { useViewMode } from './atlas/viewMode';
 import Nav from './components/Nav/Nav';
 import Footer from './components/Footer/Footer';
-import CustomCursor from './components/CustomCursor/CustomCursor';
 import ScrollManager from './components/ScrollManager/ScrollManager';
 // Not lazy: this is the fallback route, so it must not depend on a chunk fetch
 // that could itself fail. It is small.
@@ -51,7 +50,6 @@ export default function App() {
         Skip to content
       </a>
       <ScrollManager />
-      <CustomCursor />
       <Nav />
       <main id="main" tabIndex={-1} className="min-h-screen pt-16 outline-none">
         <Suspense fallback={<PageFallback />}>
