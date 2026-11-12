@@ -1121,3 +1121,67 @@
     padding-top: var(--s-4);
   }
 }
+
+@layer components {
+  /* ---- Journal index ---- */
+  .journal {
+    padding-top: var(--s-7);
+  }
+
+  .journal__title {
+    margin-bottom: var(--s-6);
+  }
+
+  .journal__lead {
+    margin-top: var(--s-7);
+  }
+
+  .journal__rest {
+    margin-top: var(--s-8);
+  }
+
+  .journal__empty {
+    margin-top: var(--s-8);
+    color: var(--text-2);
+  }
+
+  .journal-card__summary {
+    max-width: 34em;
+    color: var(--text-2);
+  }
+
+  .journal-card--lead .journal-card__text {
+    gap: var(--s-3);
+    padding-top: var(--s-5);
+  }
+
+  @media (min-width: 640px) {
+    .journal-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .journal {
+      padding-top: var(--s-8);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .journal-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Cover beside the text: the lead reads as a feature, not a wide card. */
+    .journal-card--lead {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      align-items: center;
+      gap: var(--s-7);
+    }
+
+    .journal-card--lead .journal-card__text {
+      padding: 0;
+    }
+  }
+}

@@ -5,6 +5,11 @@ interface Chapter {
   text: string;
 }
 
+/**
+ * The chapters of a long entry, read from its own `h2[id]` headings, with the
+ * one being read marked. Shown only when there are at least two: a list of
+ * one chapter is a label, not navigation.
+ */
 export default function ChapterNav({ containerRef }: { containerRef: RefObject<HTMLElement> }) {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -14,7 +19,7 @@ export default function ChapterNav({ containerRef }: { containerRef: RefObject<H
     if (!container) return;
 
     const headings = Array.from(container.querySelectorAll<HTMLElement>('h2[id]'));
-    setChapters(headings.map((h) => ({ id: h.id, text: h.textContent ?? '' })));
+    setChapters(headings.map((heading) => ({ id: heading.id, text: heading.textContent ?? '' })));
     if (headings.length === 0) return;
 
     const observer = new IntersectionObserver(
@@ -25,28 +30,25 @@ export default function ChapterNav({ containerRef }: { containerRef: RefObject<H
       },
       { rootMargin: '-96px 0px -70% 0px', threshold: 0 },
     );
-    headings.forEach((h) => observer.observe(h));
+    headings.forEach((heading) => observer.observe(heading));
     return () => observer.disconnect();
   }, [containerRef]);
 
   if (chapters.length < 2) return null;
 
   return (
-    <nav
-      aria-label="Chapters"
-      className="rounded-[var(--radius-md)] border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] px-[var(--space-6)] py-[var(--space-5)]"
-    >
-      <p className="mono-label">On this page</p>
-      <ol className="mt-[var(--space-3)] flex flex-col gap-[var(--space-2)]">
-        {chapters.map((chapter, i) => (
+    <nav aria-labelledby="chapter-nav-title" className="chapter-nav">
+      <p id="chapter-nav-title" className="t-meta">
+        On this page
+      </p>
+      <ol>
+        {chapters.map((chapter) => (
           <li key={chapter.id}>
             <a
               href={`#${chapter.id}`}
-              className={`flex gap-[var(--space-3)] font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] transition-colors hover:text-[var(--color-accent-light)] ${
-                activeId === chapter.id ? 'text-[var(--color-accent-light)]' : 'text-[var(--color-text-secondary)]'
-              }`}
+              className="chapter-nav__link focus-ring"
+              aria-current={activeId === chapter.id ? 'location' : undefined}
             >
-              <span className="text-[var(--color-text-muted)]">{String(i + 1).padStart(2, '0')}</span>
               {chapter.text}
             </a>
           </li>

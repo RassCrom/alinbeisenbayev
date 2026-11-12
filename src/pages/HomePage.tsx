@@ -8,8 +8,8 @@ import { CTA } from '../components/Nav/Nav';
 import WorkCard from '../components/WorkCard/WorkCard';
 import { featuredWorks } from '../data/featured';
 import { OFFERS, offerHref } from '../data/offers';
+import { journalEntries } from '../data/journal';
 import { projects } from '../data/projects';
-import { stories } from '../data/stories';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { prefersReducedMotion } from '../utils/motion';
 
@@ -24,8 +24,8 @@ export default function HomePage() {
   const [lead, ...others] = featured;
   // Two to a row under the lead; an odd one out would sit alone on its row.
   const rest = others.slice(0, others.length - (others.length % 2));
-  // `stories` is already newest first.
-  const latest = stories.slice(0, JOURNAL_ENTRIES);
+  // Already newest first.
+  const latest = journalEntries.slice(0, JOURNAL_ENTRIES);
 
   const worksRef = useRef<HTMLElement>(null);
   const scrollToWorks = () =>
@@ -92,14 +92,14 @@ export default function HomePage() {
             </Button>
           </div>
           <div className="journal-grid">
-            {latest.map((story) => (
-              // Plan 3 moves these to /journal/<slug>.
+            {latest.map((entry) => (
               <JournalCard
-                key={story.id}
-                title={story.title}
-                href={`/stories/${story.slug}`}
-                cover={story.coverImage}
-                kind="Story"
+                key={entry.slug}
+                title={entry.title}
+                href={entry.href}
+                cover={entry.cover}
+                kind={entry.kind}
+                date={entry.date}
               />
             ))}
           </div>

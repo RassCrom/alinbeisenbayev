@@ -33,6 +33,9 @@ export const REDESIGNED: string[] = [
   'src/pages/WorkDetailPage.tsx',
   'src/components/StoryCallout/StoryCallout.tsx',
   'src/components/SourceNote/SourceNote.tsx',
+  'src/data/journal.ts',
+  'src/content/notes-meta.ts',
+  'src/pages/JournalPage.tsx',
 ];
 
 const BANNED: RegExp[] = [
