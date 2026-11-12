@@ -1,4 +1,3 @@
-import IslandLocator from '../../atlas/IslandLocator';
 import type { Project } from '../../types';
 import { formatMonth } from '../../utils/date';
 
@@ -18,14 +17,14 @@ function formatPeriod(startDate: string | null, endDate: string | null): string 
 }
 
 /**
- * The block of marginalia a printed sheet carries: who compiled it, from what,
- * in what projection, covering where.
+ * The marginalia a printed map carries: when it was compiled, where, covering
+ * what, in what projection, from which sources.
  *
- * Most of it is derived from fields the project already has — period, role,
- * software, extent — so every project gets a note whether or not anyone has
- * filled in `sourceNote`. Projection, datum and data sources appear only when
- * they have been recorded, because inventing them would be worse than leaving
- * them out.
+ * Period, place and extent are derived from fields the project already has.
+ * Projection, datum and data sources appear only when they have been
+ * recorded, because inventing them would be worse than leaving them out.
+ * Role and tools are not repeated here; the facts at the top of the page
+ * already state them.
  */
 export default function SourceNote({ project }: SourceNoteProps) {
   const { geography, sourceNote } = project;
@@ -34,48 +33,28 @@ export default function SourceNote({ project }: SourceNoteProps) {
 
   const entries: [string, string][] = [];
   if (period) entries.push(['Compiled', period]);
-  if (project.role) entries.push(['Author', project.role === 'solo' ? 'Sole author' : 'Team']);
   if (geography.origin?.label) entries.push(['Drawn in', geography.origin.label]);
   if (extent.length > 0) entries.push(['Extent', extent.join('; ')]);
   if (sourceNote?.projection) entries.push(['Projection', sourceNote.projection]);
   if (sourceNote?.datum) entries.push(['Datum', sourceNote.datum]);
-  if (project.stack.length > 0) entries.push(['Software', project.stack.join(', ')]);
   if (sourceNote?.sources?.length) entries.push(['Sources', sourceNote.sources.join('; ')]);
 
   if (entries.length === 0) return null;
 
   return (
-    <aside
-      id="source-note"
-      aria-label="Source note"
-      className="mt-[var(--space-16)] border-t border-[var(--color-border-default)] pt-[var(--space-6)]"
-    >
-      <p className="mono-label">Source note</p>
-
-      <div className="mt-[var(--space-4)] flex flex-col gap-[var(--space-6)] sm:flex-row sm:items-start sm:gap-[var(--space-8)]">
-        <dl className="grid flex-1 grid-cols-1 gap-x-[var(--space-8)] gap-y-[var(--space-3)] sm:grid-cols-2">
-          {entries.map(([term, value]) => (
-            <div key={term}>
-              <dt className="mono-label">{term}</dt>
-              <dd className="mt-[2px] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] leading-relaxed text-[var(--color-text-secondary)]">
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        {/* The locator: the island this work sits on, with its settlement pinned. */}
-        <figure className="flex shrink-0 flex-col items-center gap-[var(--space-2)]">
-          <IslandLocator slug={project.slug} size={148} />
-          <figcaption className="mono-label text-center">Locator</figcaption>
-        </figure>
-      </div>
-
-      {sourceNote?.note && (
-        <p className="mt-[var(--space-4)] max-w-prose font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-muted)]">
-          {sourceNote.note}
-        </p>
-      )}
+    <aside id="source-note" aria-labelledby="source-note-heading" className="source-note">
+      <h2 id="source-note-heading" className="t-h3">
+        Source note
+      </h2>
+      <dl className="facts">
+        {entries.map(([term, value]) => (
+          <div key={term}>
+            <dt>{term}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+      {sourceNote?.note && <p className="t-meta">{sourceNote.note}</p>}
     </aside>
   );
 }

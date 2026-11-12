@@ -27,3 +27,9 @@ it('only the primary variant carries the accent fill class', () => {
   expect(quiet.container.querySelector('a')!.className).not.toContain('button--primary');
   expect(quiet.container.querySelector('svg')).not.toBeNull();
 });
+
+it('opens an outside link in a new tab when asked', () => {
+  const { getByRole } = render(<Button href="https://example.com" external>Out</Button>, { wrapper });
+  expect(getByRole('link').getAttribute('target')).toBe('_blank');
+  expect(getByRole('link').getAttribute('rel')).toBe('noreferrer');
+});

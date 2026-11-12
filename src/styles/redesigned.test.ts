@@ -30,6 +30,9 @@ export const REDESIGNED: string[] = [
   'src/components/PieceCard/PieceCard.tsx',
   'src/components/FilterChip/FilterChip.tsx',
   'src/pages/WorksPage.tsx',
+  'src/pages/WorkDetailPage.tsx',
+  'src/components/StoryCallout/StoryCallout.tsx',
+  'src/components/SourceNote/SourceNote.tsx',
 ];
 
 const BANNED: RegExp[] = [

@@ -10,6 +10,8 @@ export interface ButtonProps {
   /** A router link when `to` is set, an anchor when `href` is, otherwise a button. */
   to?: string;
   href?: string;
+  /** With `href`: the link leaves the site, so it opens in a new tab. */
+  external?: boolean;
   type?: 'button' | 'submit';
   /** Trailing icon. */
   icon?: IconName;
@@ -22,6 +24,7 @@ export default function Button({
   size = 'md',
   to,
   href,
+  external = false,
   type = 'button',
   icon,
   onClick,
@@ -44,7 +47,14 @@ export default function Button({
   }
   if (href !== undefined) {
     return (
-      <a href={href} className={className} data-icon={icon} onClick={onClick}>
+      <a
+        href={href}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noreferrer' : undefined}
+        className={className}
+        data-icon={icon}
+        onClick={onClick}
+      >
         {content}
       </a>
     );

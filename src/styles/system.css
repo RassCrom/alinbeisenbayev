@@ -954,3 +954,170 @@
     transition: none;
   }
 }
+
+@layer components {
+  /* ---- Work page ---- */
+  .work-page {
+    padding-top: var(--s-6);
+  }
+
+  .work-page__head {
+    display: grid;
+    gap: var(--s-5);
+    margin-top: var(--s-7);
+  }
+
+  .work-page__cover + .work-page__head {
+    margin-top: var(--s-7);
+  }
+
+  .work-page__head h1 {
+    max-width: 18em;
+    overflow-wrap: anywhere;
+  }
+
+  .work-page__lede {
+    max-width: 34em;
+    font-size: clamp(1.125rem, 1.45vw, 1.25rem);
+    line-height: 1.45;
+    color: var(--text-2);
+  }
+
+  /* Facts are text, not badges: a term and its value, side by side. */
+  .facts {
+    display: grid;
+    gap: var(--s-3) var(--s-7);
+    max-width: 68ch;
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+  }
+
+  .facts dt {
+    font-size: var(--fs-min);
+    color: var(--text-3);
+  }
+
+  .facts dd {
+    font-size: var(--fs-small);
+    color: var(--text);
+  }
+
+  .work-page__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-6);
+  }
+
+  /* Reading column: body text never runs wider than about 68 characters. */
+  .work-page__text > * {
+    max-width: 68ch;
+  }
+
+  .work-page__media {
+    margin-top: var(--s-8);
+  }
+
+  .work-section {
+    margin-top: var(--s-8);
+  }
+
+  .work-section > h2 {
+    margin-bottom: var(--s-5);
+  }
+
+  .work-section p {
+    color: var(--text-2);
+    white-space: pre-line;
+  }
+
+  .work-section p + p {
+    margin-top: var(--s-4);
+  }
+
+  /* Numbered by the list itself; no drawn markers. */
+  .process {
+    display: grid;
+    gap: var(--s-7);
+    padding-left: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  .process li {
+    display: grid;
+    gap: var(--s-3);
+    counter-increment: step;
+  }
+
+  .process li::before {
+    content: counter(step);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .process .frame {
+    margin-top: var(--s-2);
+  }
+
+  .work-page__notes {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .work-page__notes .t-meta {
+    margin-top: var(--s-1);
+  }
+
+  .work-grid--flush {
+    margin-top: 0;
+  }
+
+  @media (min-width: 768px) {
+    .work-page {
+      padding-top: var(--s-7);
+    }
+
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .work-section {
+      margin-top: var(--s-9);
+    }
+
+    .work-page__media {
+      margin-top: var(--s-9);
+    }
+  }
+}
+
+@layer components {
+  /* ---- Story callout: the published piece a work is about ---- */
+  .story-callout {
+    display: grid;
+    justify-items: start;
+    gap: var(--s-2);
+    margin-top: var(--s-7);
+    padding: var(--s-5);
+    border-radius: var(--r-outer);
+    background: var(--surface);
+  }
+
+  .story-callout__dek {
+    color: var(--text-2);
+  }
+}
+
+@layer components {
+  /* ---- Source note: a map's marginalia ---- */
+  .source-note {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: var(--s-9);
+  }
+
+  .source-note .facts {
+    padding-top: var(--s-4);
+  }
+}

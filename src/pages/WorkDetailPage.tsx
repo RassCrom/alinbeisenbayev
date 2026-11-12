@@ -1,70 +1,45 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import ProcessStep from '../components/ProcessStep/ProcessStep';
+import Button from '../components/Button/Button';
+import ContactBand from '../components/ContactBand/ContactBand';
+import Frame from '../components/Frame/Frame';
 import ImageGallery from '../components/ImageGallery/ImageGallery';
-import VideoGallery from '../components/VideoGallery/VideoGallery';
-import StackRow from '../components/StackRow/StackRow';
-import WorkCard from '../components/WorkCard/WorkCard';
-import { allProjects, projects } from '../data/projects';
-import { usePageMeta } from '../hooks/usePageMeta';
-import NotFoundPage from './NotFoundPage';
 import SourceNote from '../components/SourceNote/SourceNote';
 import StoryCallout from '../components/StoryCallout/StoryCallout';
-import { storyForWork } from '../data/stories';
+import VideoGallery from '../components/VideoGallery/VideoGallery';
+import WorkCard from '../components/WorkCard/WorkCard';
 import { articles } from '../content/blog';
-import { markSurveyed } from '../atlas/fog';
-import { COVER_SIZES, coverSrcSet } from '../utils/images';
+import { allProjects, projects } from '../data/projects';
+import { storyForWork } from '../data/stories';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { projectYear } from '../utils/date';
+import { COVER_SIZES } from '../utils/images';
+import type { ProcessStepData, Project } from '../types';
+import NotFoundPage from './NotFoundPage';
 
-/* ---- Scroll-reveal hook ---- */
-function useSectionReveal() {
-  const ref = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('is-visible');
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return ref;
+/** Steps with something written in them. The data has carried empty placeholders. */
+function writtenSteps(project: Project): ProcessStepData[] {
+  return project.process.filter((step) => step.title?.trim() || step.description?.trim());
 }
 
-/* ---- Section wrapper with eyebrow label + accent bar + reveal ---- */
-function Section({
-  eyebrow,
-  heading,
-  children,
-  delay = 0,
-}: {
-  eyebrow: string;
-  heading: string;
-  children: React.ReactNode;
-  delay?: number;
-}) {
-  const ref = useSectionReveal() as React.RefObject<HTMLElement>;
+/**
+ * Two shapes of work page.
+ *
+ * `full` is a case study told in sections, and a work earns it only with a
+ * beginning, a middle and an end: context, at least one process step, and an
+ * outcome. Anything less gets `short`, which leads with the work itself and
+ * says what there is to say in a few paragraphs. A thin entry laid out as a
+ * case study reads as an abandoned one.
+ */
+export function layoutFor(project: Project): 'full' | 'short' {
+  return project.context && project.outcome && writtenSteps(project).length > 0 ? 'full' : 'short';
+}
 
+function Section({ heading, children }: { heading: string; children: ReactNode }) {
   return (
-    <section
-      ref={ref as React.RefObject<HTMLElement>}
-      className="section-reveal mt-[var(--space-16)]"
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      <div className="section-heading-wrap mb-[var(--space-4)]">
-        <span className="section-eyebrow">{eyebrow}</span>
-        <h2 className="heading-section">{heading}</h2>
-      </div>
+    <section className="work-section">
+      <h2 className="t-h2">{heading}</h2>
       {children}
     </section>
   );
@@ -74,276 +49,205 @@ export default function WorkDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const project = allProjects.find((p) => p.slug === slug);
 
-  // Before the not-found branch — hooks can't sit behind a conditional return.
-  // NotFoundPage sets its own title/robots when it renders, so skip ours then.
+  // Before the not-found branch: hooks can't sit behind a conditional return.
+  // NotFoundPage sets its own title and robots tag, so skip ours then.
   usePageMeta(project?.title, project?.tagline, { enabled: Boolean(project) });
 
-  // Reading a sheet surveys its settlement on the atlas, however you got here.
+  // A hash link lands on its section once the lazy page has mounted; the
+  // router does not do this itself.
   useEffect(() => {
-    if (project) markSurveyed(project.slug);
-    // A hash link lands on its section once the lazy page has mounted; the router does not do this itself.
     const anchor = window.location.hash.slice(1);
     if (anchor) document.getElementById(anchor)?.scrollIntoView({ block: 'start' });
   }, [project]);
 
-  // An unknown slug is a miss like any other — same sheet, same noindex.
   if (!project) return <NotFoundPage />;
 
-  /*
-   * The published piece this case study is about, if there is one. It takes
-   * over from the 'View Live' button below: on every project that has a story,
-   * liveUrl pointed at exactly the same URL, so the two would have been one
-   * destination described twice.
-   */
+  const full = layoutFor(project) === 'full';
+  const steps = writtenSteps(project);
+  const hasGallery = (project.gallery?.length ?? 0) > 0;
+  const hasVideos = (project.videos?.length ?? 0) > 0;
+  const hasMedia = hasGallery || hasVideos;
+
+  // The published piece this work is about, if there is one. It stands in for
+  // "View live": for every work with a story, both went to the same address.
   const story = storyForWork(project.slug);
-  // Articles that walk through this project's method, declared on the article
-  // side (frontmatter.workSlug) so a post can attach itself to a project
-  // without touching the project data.
-  const methodNotes = articles.filter((a) => a.frontmatter.workSlug === project.slug);
+  const methodNotes = articles.filter((article) => article.frontmatter.workSlug === project.slug);
   const year = projectYear(project.endDate);
-  const award = project.awards[0];
 
-  /*
-   * Two shapes of detail page.
-   *
-   * A written case study earns the tall cover hero and the Context → Outcome
-   * run. A project with only pictures does not: the cover image is also
-   * gallery[0] on every one of them, so the hero showed the same image the
-   * gallery was about to show again, and the work itself ended up below a
-   * screen of chrome. Those pages lead with the pictures instead.
-   *
-   * The switch is "is there anything written here", not a per-project flag, so
-   * a project promotes itself the moment its case study is filled in.
-   */
-  const hasNarrative =
-    Boolean(
-      project.context || project.idea || project.design || project.inspiration || project.outcome,
-    ) || project.process.some((step) => step.title?.trim() || step.description?.trim());
-  /** A step with neither a title nor a description has nothing to show. */
-  const processSteps = project.process.filter(
-    (step) => step.title?.trim() || step.description?.trim(),
-  );
+  const facts: [string, string][] = [];
+  if (project.role) facts.push(['Role', project.role]);
+  if (year) facts.push(['Year', String(year)]);
+  if (project.stack?.length) facts.push(['Tools', project.stack.join(', ')]);
+  if (project.awards?.length) facts.push(['Award', project.awards.join('; ')]);
 
-  const mediaCount = (project.gallery?.length ?? 0) + (project.videos?.length ?? 0);
-  const galleryLed = !hasNarrative && mediaCount > 0;
+  // Everything written about a short work, in the order it was asked for.
+  const shortText = [
+    project.context,
+    project.idea,
+    project.design,
+    project.inspiration,
+    ...steps.map((step) => [step.title, step.description].filter(Boolean).join('. ')),
+    project.outcome,
+  ].filter((text): text is string => Boolean(text?.trim()));
 
-  // Two other projects with real images, featured first
+  // Two other works with real covers, featured first.
   const suggestions = projects
     .filter((p) => p.slug !== project.slug && !p.coverImage.includes('placeholder'))
     .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0))
     .slice(0, 2);
 
+  const cover = (
+    <div className="work-page__cover wrap">
+      <Frame
+        src={project.coverImage}
+        // The title is the page's heading.
+        alt=""
+        width={1600}
+        height={900}
+        ratio="16 / 9"
+        sizes={COVER_SIZES.hero}
+        priority
+        // Pairs with the same name on the card, so arriving from a grid
+        // grows the card's cover into this one.
+        viewTransitionName={`cover-${project.slug}`}
+      />
+    </div>
+  );
+
   return (
-    <article>
-      {/* Cover hero — case studies only. On a gallery-led page the cover is
-          also gallery[0], so this would show the same image twice. */}
-      {!galleryLed && (
-      <header className="relative h-[45vh] overflow-hidden md:h-[60vh]">
-        <img
-          src={project.coverImage}
-          srcSet={coverSrcSet(project.coverImage)}
-          sizes={COVER_SIZES.hero}
-          alt={project.title}
-          width={1200}
-          height={630}
-          // React 18 does not map camelCase fetchPriority onto the DOM attribute
-          // (React 19 does), so it was dropped and the hint never applied.
-          {...{ fetchpriority: 'high' }}
-          decoding="async"
-          // Pairs with the same name on the WorkCard cover, so arriving from
-          // the grid morphs the thumbnail into this hero.
-          style={{ viewTransitionName: `cover-${project.slug}` }}
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0" style={{ background: 'var(--gradient-overlay)' }} />
-        <div className="absolute inset-x-0 bottom-0 mx-auto max-w-6xl px-[var(--space-6)] pb-[var(--space-8)]">
-          {award && (
-            <span className="mb-[var(--space-3)] inline-block rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-3)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-gold)]">
-              ★ {award}
-            </span>
-          )}
-          <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-3xl)] font-extrabold md:text-[length:var(--text-4xl)]">
-            {project.title}
-          </h1>
-        </div>
+    <article className="work-page">
+      {/* A full work opens on its cover. A short one opens on its title and
+          goes straight to the media, where the cover usually is already. */}
+      {full && cover}
+
+      <header className="work-page__head wrap">
+        <h1 className="t-display">{project.title}</h1>
+        {project.tagline && <p className="work-page__lede">{project.tagline}</p>}
+
+        {facts.length > 0 && (
+          <dl className="facts">
+            {facts.map(([term, value]) => (
+              <div key={term}>
+                <dt>{term}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        {((project.liveUrl && project.type === 'website' && !story) || project.codeUrl) && (
+          <div className="work-page__links">
+            {project.liveUrl && project.type === 'website' && !story && (
+              <Button variant="quiet" href={project.liveUrl} external icon="arrow-up-right">
+                View live
+              </Button>
+            )}
+            {project.codeUrl && (
+              <Button variant="quiet" href={project.codeUrl} external icon="arrow-up-right">
+                View code
+              </Button>
+            )}
+          </div>
+        )}
       </header>
+
+      {story && (
+        <div className="work-page__text wrap">
+          <StoryCallout story={story} />
+        </div>
       )}
 
-      <div
-        className={`mx-auto px-[var(--space-6)] ${galleryLed ? 'max-w-6xl' : 'max-w-4xl'}`}
-      >
-        {/* Gallery-led pages carry the title here — there's no hero to hold it. */}
-        {galleryLed && (
-          <header className="pt-[var(--space-12)]">
-            {award && (
-              <span className="mb-[var(--space-3)] inline-block rounded-[var(--radius-sm)] border border-[var(--color-border-subtle)] bg-[rgba(var(--color-accent-gold-rgb),0.1)] px-[var(--space-3)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-gold)]">
-                ★ {award}
-              </span>
+      {full ? (
+        <>
+          <div className="work-page__text wrap">
+            <Section heading="Context">
+              <p>{project.context}</p>
+            </Section>
+            {project.idea && (
+              <Section heading="Idea">
+                <p>{project.idea}</p>
+              </Section>
             )}
-            <h1 className="font-[family-name:var(--font-heading)] text-[length:var(--text-3xl)] font-extrabold md:text-[length:var(--text-4xl)]">
-              {project.title}
-            </h1>
-            {project.tagline && (
-              <p className="mt-[var(--space-3)] max-w-2xl font-[family-name:var(--font-body)] text-[length:var(--text-lg)] text-[var(--color-text-secondary)]">
-                {project.tagline}
-              </p>
+            {project.design && (
+              <Section heading="Design">
+                <p>{project.design}</p>
+              </Section>
             )}
-          </header>
-        )}
-
-        {/* Meta row — pill badges */}
-        <div className="mt-[var(--space-8)] flex flex-wrap items-center gap-[var(--space-2)]">
-          {year && <span className="meta-pill">{year}</span>}
-          {project.category && <span className="meta-pill">{project.category}</span>}
-          {project.role && <span className="meta-pill">{project.role}</span>}
-        </div>
-
-        {/* Stack chips */}
-        <div className="mt-[var(--space-4)]">
-          <StackRow stack={project.stack} />
-        </div>
-
-        {/* CTA buttons */}
-        <div className="mt-[var(--space-4)] flex flex-wrap gap-[var(--space-3)]">
-          {project.liveUrl && project.type === 'website' && !story && (
-            <a href={project.liveUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
-              View Live ↗
-            </a>
-          )}
-          {project.codeUrl && (
-            <a href={project.codeUrl} target="_blank" rel="noreferrer" className="btn btn-secondary">
-              View Code ↗
-            </a>
-          )}
-        </div>
-
-        {story && <StoryCallout story={story} />}
-
-        {/* Context — blockquote style */}
-        {project.context && (
-          <Section eyebrow="Background" heading="Context">
-            <blockquote className="context-card">
-              {project.context}
-            </blockquote>
-          </Section>
-        )}
-
-        {/* Idea — large italic pull-quote */}
-        {project.idea && (
-          <Section eyebrow="Concept" heading="Idea">
-            <div className="idea-pullquote">
-              {project.idea}
-            </div>
-          </Section>
-        )}
-
-        {/* Design — standard body with accent treatment */}
-        {project.design && (
-          <Section eyebrow="Aesthetics" heading="Design">
-            <p className="text-[var(--color-text-secondary)] leading-relaxed">{project.design}</p>
-          </Section>
-        )}
-
-        {/* Inspiration — icon callout card */}
-        {project.inspiration && (
-          <Section eyebrow="Reference" heading="Inspiration">
-            <div className="inspiration-card">
-              <div className="inspiration-card-icon" aria-hidden="true">✦</div>
-              <p>{project.inspiration}</p>
-            </div>
-          </Section>
-        )}
-
-        {/* Process — vertical timeline.
-            Placeholder entries are skipped: the data has carried empty step
-            objects, which rendered as blank numbered rows and collided as
-            React keys (every one of them keyed on an absent `step`). */}
-        {processSteps.length > 0 && (
-          <Section eyebrow="How it was built" heading="Process">
-            <div className="process-timeline">
-              {processSteps.map((step, index) => (
-                <ProcessStep
-                  key={step.step ?? index}
-                  step={step.step ?? index + 1}
-                  title={step.title}
-                  description={step.description}
-                  image={step.image}
-                />
-              ))}
-            </div>
-          </Section>
-        )}
-
-        {/* Outcome — gold achievement banner */}
-        {project.outcome && (
-          <Section eyebrow="Result" heading="Outcome">
-            <div className="outcome-banner">
-              <span className="outcome-banner-star" aria-hidden="true">★</span>
+            {project.inspiration && (
+              <Section heading="Inspiration">
+                <p>{project.inspiration}</p>
+              </Section>
+            )}
+            <Section heading="Process">
+              <ol className="process">
+                {steps.map((step, index) => (
+                  <li key={step.step ?? index}>
+                    {step.title && <h3 className="t-h3">{step.title}</h3>}
+                    {step.description && <p>{step.description}</p>}
+                    {step.image && (
+                      <Frame src={step.image} alt={step.title ?? ''} width={1200} height={630} small />
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </Section>
+            <Section heading="Outcome">
               <p>{project.outcome}</p>
+            </Section>
+          </div>
+
+          {hasVideos && (
+            <div className="work-page__media wrap">
+              <VideoGallery videos={project.videos!} />
             </div>
-          </Section>
-        )}
+          )}
+          {hasGallery && (
+            <div className="work-page__media wrap">
+              <ImageGallery images={project.gallery} />
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          {hasGallery && (
+            <div className="work-page__media wrap">
+              <ImageGallery images={project.gallery} layout="showcase" />
+            </div>
+          )}
+          {hasVideos && (
+            <div className="work-page__media wrap">
+              <VideoGallery videos={project.videos!} />
+            </div>
+          )}
+          {!hasMedia && cover}
 
-        {/* Videos */}
-        {project.videos && project.videos.length > 0 && (
-          <Section eyebrow="Motion" heading="Animations">
-            <VideoGallery videos={project.videos} />
-          </Section>
-        )}
+          {shortText.length > 0 && (
+            <div className="work-page__text wrap">
+              <Section heading="About this work">
+                {shortText.map((text) => (
+                  <p key={text}>{text}</p>
+                ))}
+              </Section>
+            </div>
+          )}
+        </>
+      )}
 
+      <div className="work-page__text wrap">
+        <SourceNote project={project} />
       </div>
 
-      {/* Gallery — full-bleed: breaks out of the article's reading column
-          (max-w-4xl) into the wider max-w-6xl used elsewhere on the site,
-          so images get meaningfully more room than the prose above.
-
-          Gallery-led pages drop the "Visuals / Gallery" heading: the images
-          aren't a supporting section there, they're the whole page, and a
-          heading over them would be labelling the obvious. */}
-      {project.gallery?.length > 0 &&
-        (galleryLed ? (
-          <div className="mx-auto max-w-6xl px-[var(--space-6)] pb-[var(--space-16)] pt-[var(--space-10)]">
-            <ImageGallery images={project.gallery} layout="showcase" />
-            <SourceNote project={project} />
-          </div>
-        ) : (
-          <div className="mx-auto max-w-6xl px-[var(--space-6)]">
-            <Section eyebrow="Visuals" heading="Gallery">
-              <ImageGallery images={project.gallery} />
-            </Section>
-          </div>
-        ))}
-
-      {/* Stack repeats at the foot of a long case study, where the chips at the
-          top have scrolled well out of view. A gallery-led page is short enough
-          that they're still on screen, so repeating them is just noise. */}
-      {!galleryLed && (
-        <div className="mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-24)]">
-          {project.stack?.length > 0 && (
-            <Section eyebrow="Technology" heading="Stack">
-              <StackRow stack={project.stack} />
-            </Section>
-          )}
-          <SourceNote project={project} />
-        </div>
-      )}
-
-      {/* Method notes — the blog side of this work. */}
       {methodNotes.length > 0 && (
-        <div className='mx-auto max-w-4xl px-[var(--space-6)] pb-[var(--space-16)]'>
-          <Section eyebrow='From the blog' heading='Method notes'>
-            <ul className='flex flex-col gap-[var(--space-4)]'>
+        <div className="work-page__text wrap">
+          <Section heading="Method notes">
+            <ul className="work-page__notes">
               {methodNotes.map((note) => (
                 <li key={note.slug}>
-                  <Link
-                    to={`/blog/${note.slug}`}
-                    className='font-[family-name:var(--font-heading)] text-[length:var(--text-base)] font-bold text-[var(--color-accent-light)] transition-colors hover:text-[var(--color-text-primary)]'
-                  >
-                    {note.frontmatter.title} →
+                  {/* Plan 3 moves these to /journal/<slug>. */}
+                  <Link to={`/blog/${note.slug}`} className="t-h3 focus-ring">
+                    {note.frontmatter.title}
                   </Link>
-                  <p className='mt-[var(--space-1)] font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]'>
-                    {note.frontmatter.excerpt}
-                  </p>
+                  <p className="t-meta">{note.frontmatter.excerpt}</p>
                 </li>
               ))}
             </ul>
@@ -351,24 +255,20 @@ export default function WorkDetailPage() {
         </div>
       )}
 
-      {/* More Works */}
+      <ContactBand heading="Work with me on something like this" offer={project.offers?.[0]} />
+
       {suggestions.length > 0 && (
-        <section className="mt-[var(--space-16)] border-t border-[var(--color-border-subtle)]">
-          <div className="mx-auto max-w-6xl px-[var(--space-6)] py-[var(--space-16)]">
-            <div className="flex flex-wrap items-baseline justify-between gap-[var(--space-4)]">
-              <h2 className="heading-section">More Works</h2>
-              <Link
-                to="/works"
-                className="font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] text-[var(--color-accent-light)] transition-colors hover:text-[var(--color-text-primary)]"
-              >
-                All works →
-              </Link>
-            </div>
-            <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] sm:grid-cols-2">
-              {suggestions.map((p) => (
-                <WorkCard key={p.id} project={p} />
-              ))}
-            </div>
+        <section className="home-section wrap">
+          <div className="section-head">
+            <h2 className="t-h2">More work</h2>
+            <Button variant="quiet" to="/works" icon="arrow-right">
+              All works
+            </Button>
+          </div>
+          <div className="work-grid work-grid--flush">
+            {suggestions.map((p) => (
+              <WorkCard key={p.id} project={p} />
+            ))}
           </div>
         </section>
       )}
