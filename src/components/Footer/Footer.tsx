@@ -1,16 +1,15 @@
 import { Link } from 'react-router-dom';
+import FieldCartographer from '../FieldCartographer/FieldCartographer';
 import { NAV_LINKS } from '../Nav/Nav';
 import { featuredSocials } from '../../data/socials';
 
-/**
- * The footer shell. The field-cartographer illustration sits above this in
- * plan 5; the top margin leaves it room.
- */
+/** How every page ends: the field cartographer, then the name, the ways around and the ways out. */
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="footer">
+      <FieldCartographer />
       <div className="footer__inner wrap">
         <p className="footer__name">Alikhan Beisenbayev</p>
 

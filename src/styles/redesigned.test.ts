@@ -55,6 +55,7 @@ export const REDESIGNED: string[] = [
   'src/pages/ContactPage.tsx',
   'src/pages/AboutPage.tsx',
   'src/pages/NotFoundPage.tsx',
+  'src/components/FieldCartographer/FieldCartographer.tsx',
   'src/data/proof.ts',
 ];
 

@@ -632,6 +632,9 @@
   /* ---- Footer ---- */
   .footer {
     margin-top: var(--s-10);
+  }
+
+  .footer__inner {
     border-top: 1px solid var(--line);
   }
 
@@ -1668,5 +1671,67 @@
     flex-wrap: wrap;
     gap: var(--s-2) var(--s-7);
     margin-top: var(--s-3);
+  }
+}
+
+@layer components {
+  /* ---- Field cartographer (footer illustration) ----
+   * Three layers, each a little quieter the farther it is. The figure and
+   * the ground it stands on carry the most contrast. */
+  .field-cartographer {
+    display: block;
+    width: 100%;
+    /* Tall enough at any width that the figure's hat stays inside the frame. */
+    height: clamp(170px, 22vw, 420px);
+    color: var(--text-3);
+    view-timeline-name: --footer-art;
+  }
+
+  /* One stroke weight on screen, however the drawing is scaled to fit. */
+  .field-cartographer path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .field-cartographer__far {
+    color: var(--line);
+  }
+
+  .field-cartographer__mid {
+    color: color-mix(in srgb, var(--text-3) 62%, var(--bg));
+  }
+
+  .field-cartographer__near {
+    color: var(--text-2);
+  }
+
+  .field-cartographer__accent {
+    fill: var(--accent);
+    stroke: var(--accent);
+  }
+}
+
+/* The far layers settle into place as the footer scrolls in: a few pixels of
+   depth, only where scroll-driven animation exists and motion is welcome. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .field-cartographer__far,
+    .field-cartographer__mid {
+      animation: footer-art-settle linear both;
+      animation-timeline: --footer-art;
+      animation-range: entry 0% cover 55%;
+    }
+
+    .field-cartographer__far {
+      --footer-art-shift: 24px;
+    }
+
+    .field-cartographer__mid {
+      --footer-art-shift: 12px;
+    }
+
+    @keyframes footer-art-settle {
+      from { transform: translateY(var(--footer-art-shift)); }
+      to { transform: none; }
+    }
   }
 }
