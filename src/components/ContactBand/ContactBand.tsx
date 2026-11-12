@@ -3,7 +3,7 @@ import { CTA } from '../Nav/Nav';
 import type { OfferSlug } from '../../data/offers';
 
 /** Pages where the band would only repeat what the page already is, or that fill the screen. */
-const WITHOUT_BAND = ['/contact', '/connect', '/journal/map-awards', '/blog/map-awards'];
+const WITHOUT_BAND = ['/contact', '/connect', '/journal/map-awards'];
 
 /** Whether the page shell should end a page with the standard band. */
 export function showContactBand(pathname: string): boolean {

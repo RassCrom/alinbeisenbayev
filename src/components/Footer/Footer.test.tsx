@@ -19,10 +19,9 @@ it('has none of the old map-margin labels', () => {
   for (const gone of ['Legend', 'Sources', 'Cartographer', 'Edition', 'Role']) expect(queryByText(gone)).toBeNull();
 });
 
-it('keeps Blog reachable until it is folded into the journal', () => {
-  const { getByRole, queryByRole } = render(<Footer />, { wrapper });
-  expect(getByRole('link', { name: 'Blog' }).getAttribute('href')).toBe('/blog');
-  expect(queryByRole('link', { name: 'Gallery' })).toBeNull();
+it('links to nothing that has been folded into another page', () => {
+  const { queryByRole } = render(<Footer />, { wrapper });
+  for (const gone of ['Blog', 'Gallery', 'Stories', 'Skills']) expect(queryByRole('link', { name: gone })).toBeNull();
 });
 
 it('opens outside profiles in a new tab', () => {

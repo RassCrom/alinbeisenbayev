@@ -47,3 +47,15 @@ it('reads only known kinds from the address', () => {
   expect(parseKind('x')).toBeNull();
   expect(parseKind(null)).toBeNull();
 });
+
+it('reads the same posts, titles and dates as the posts themselves', async () => {
+  // The list is built from frontmatter read at build time (virtual:notes-meta);
+  // the page renders the real MDX modules. The two must agree.
+  const { articles } = await import('../content/blog');
+  const { noteMeta } = await import('../content/notes-meta');
+  const pick = (list: { slug: string; frontmatter: { title: string; date: string; excerpt: string } }[]) =>
+    list
+      .map((note) => [note.slug, note.frontmatter.title, note.frontmatter.date, note.frontmatter.excerpt])
+      .sort((a, b) => a[0].localeCompare(b[0]));
+  expect(pick(noteMeta)).toEqual(pick(articles));
+});

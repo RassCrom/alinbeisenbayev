@@ -189,14 +189,6 @@
     transform: none;
   }
 
-  /* Line clamp for blog excerpts */
-  .clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
   .coord-label {
     font-size: var(--fs-min);
     color: var(--text-3);
@@ -525,7 +517,7 @@
   border-bottom-color: var(--color-bg-overlay) !important;
 }
 
-/* Pin for a visitor's new entry on the /blog/map-awards map (draggable). */
+/* Pin for a visitor's new entry on the /journal/map-awards map (draggable). */
 .awards-new-pin {
   width: 26px;
   height: 34px;
@@ -539,7 +531,7 @@
   cursor: grabbing;
 }
 
-/* Hover card on the /blog/map-awards map: place, count, programme names. */
+/* Hover card on the /journal/map-awards map: place, count, programme names. */
 .awards-popup {
   display: grid;
   gap: 4px;

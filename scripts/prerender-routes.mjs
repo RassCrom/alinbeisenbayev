@@ -51,10 +51,9 @@ function frontmatter(source) {
 
 const SECTIONS = [
   { path: '/works', title: 'Work', description: 'Custom maps, spatial analysis, data visualization, data journalism and remote sensing work by Alikhan Beisenbayev.', priority: '0.9' },
-  { path: '/stories', title: 'Stories', description: 'Scroll-driven map narratives, reports and map essays on history, climate and Central Asia.', priority: '0.8' },
+  { path: '/journal', title: 'Journal', description: 'Map stories, notes on how they were made, and tools, by Alikhan Beisenbayev.', priority: '0.8' },
   { path: '/about', title: 'About', description: 'From Astana to Munich, Vienna and Dresden — the route through geodesy, GIS and cartography, told on a globe.', priority: '0.8' },
-  { path: '/blog', title: 'Blog', description: 'Notes, tutorials and map breakdowns on cartography, QGIS and geospatial storytelling.', priority: '0.7' },
-  { path: '/blog/map-awards', title: 'Map Awards Calendar', description: 'Every cartography, GIS and data visualization award on one map: deadlines, prizes, what to submit, and a calendar feed for Google, Apple and Outlook.', image: '/images/blog/map-awards/cover.jpg', imageAlt: 'Map Awards Calendar', priority: '0.7' },
+  { path: '/journal/map-awards', title: 'Map Awards Calendar', description: 'Every cartography, GIS and data visualization award on one map: deadlines, prizes, what to submit, and a calendar feed for Google, Apple and Outlook.', image: '/images/blog/map-awards/cover.jpg', imageAlt: 'Map Awards Calendar', priority: '0.7' },
   { path: '/connect', title: 'Connect', description: 'Open to job offers and collaboration. LinkedIn, Instagram, TikTok, Bluesky, Telegram, YouTube and email.', priority: '0.6' },
 ];
 
@@ -80,7 +79,7 @@ function routes() {
 
   for (const story of readJson('src/data/stories.json').stories) {
     list.push({
-      path: `/stories/${story.slug}`,
+      path: `/journal/${story.slug}`,
       title: story.title,
       description: story.dek,
       image: ogImage(story.coverImage),
@@ -96,7 +95,7 @@ function routes() {
     // Same filter as src/content/blog.ts: drafts and hidden posts have no page.
     if (data.draft === 'true' || data.hidden === 'true') continue;
     list.push({
-      path: `/blog/${file.replace(/\.mdx$/, '')}`,
+      path: `/journal/${file.replace(/\.mdx$/, '')}`,
       title: data.title,
       description: data.excerpt,
       image: ogImage(data.cover),

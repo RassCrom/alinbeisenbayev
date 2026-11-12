@@ -39,6 +39,7 @@ export const REDESIGNED: string[] = [
   'src/pages/JournalEntryPage.tsx',
   'src/components/JournalCard/JournalCard.tsx',
   'src/components/ChapterNav/ChapterNav.tsx',
+  'src/components/LegacyRedirect/LegacyRedirect.tsx',
 ];
 
 const BANNED: RegExp[] = [

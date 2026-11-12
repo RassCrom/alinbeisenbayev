@@ -1,3 +1,7 @@
 /skills /about 301
 /gallery /works 301
+/stories /journal 301
+/stories/* /journal/:splat 301
+/blog /journal 301
+/blog/* /journal/:splat 301
 /* /index.html 200

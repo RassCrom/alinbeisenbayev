@@ -1,22 +1,15 @@
+import notes from 'virtual:notes-meta';
 import type { ArticleFrontmatter } from './blog';
 
 /*
  * The blog posts' frontmatter without their bodies.
  *
  * src/content/blog.ts loads every post as a component, which is right for the
- * page that renders one and wrong for a list of titles: the journal index and
- * the home page would ship every post's text to show three cards. This asks
- * for the `frontmatter` export alone.
+ * page that renders one and wrong for a list of titles. The frontmatter comes
+ * from `virtual:notes-meta` (see vite.config.ts), which reads it from the
+ * files at build time.
  */
-const modules = import.meta.glob<ArticleFrontmatter>('./blog/*.mdx', {
-  eager: true,
-  import: 'frontmatter',
-});
+const all = notes as unknown as { slug: string; frontmatter: ArticleFrontmatter }[];
 
 /** Published posts only: same rule as `articles` in blog.ts. */
-export const noteMeta: { slug: string; frontmatter: ArticleFrontmatter }[] = Object.entries(modules)
-  .map(([path, frontmatter]) => ({
-    slug: path.replace('./blog/', '').replace(/\.mdx$/, ''),
-    frontmatter,
-  }))
-  .filter((note) => !note.frontmatter.draft && !note.frontmatter.hidden);
+export const noteMeta = all.filter((note) => !note.frontmatter.draft && !note.frontmatter.hidden);

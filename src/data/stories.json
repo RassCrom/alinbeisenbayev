@@ -10,7 +10,7 @@
       "format": "report",
       "subject": ["Bulgaria", "elections", "Europe"],
       "coverImage": "/images/projects/election-maps/bulgaria-runoff-map.webp",
-      "url": "/stories/bulgaria-runoff-2026",
+      "url": "/journal/bulgaria-runoff-2026",
       "external": false,
       "sources": ["Central Election Commission of Bulgaria (CIK)", "OpenStreetMap"],
       "workSlug": "election-maps"
@@ -25,7 +25,7 @@
       "format": "map essay",
       "subject": ["metro", "transit maps", "Madrid", "design history"],
       "coverImage": "/images/projects/metro-animation/madrid.webp",
-      "url": "/stories/why-metro-maps-look-perfect",
+      "url": "/journal/why-metro-maps-look-perfect",
       "external": false,
       "sources": ["Metro de Madrid", "OpenStreetMap"],
       "workSlug": "metro-animation"
@@ -40,7 +40,7 @@
       "format": "map essay",
       "subject": ["Saint Lucia", "Caribbean", "place names", "history"],
       "coverImage": "/images/stories/saint-lucia/cover.webp",
-      "url": "/stories/saint-lucia",
+      "url": "/journal/saint-lucia",
       "external": false,
       "sources": ["Copernicus GLO-30", "WorldPop 2025"]
     },
@@ -54,7 +54,7 @@
       "format": "report",
       "subject": ["Asian Games", "sport", "Central Asia", "Kazakhstan"],
       "coverImage": "/images/stories/asian-games-2026/medals-map.webp",
-      "url": "/stories/asian-games-2026",
+      "url": "/journal/asian-games-2026",
       "external": false,
       "sources": ["Olympic Council of Asia results, via Wikipedia"]
     },

@@ -299,28 +299,3 @@ export interface SocialsData {
   socials: Social[];
 }
 
-/* ---- blog.json ---- */
-
-export type BlogPostType = 'post' | 'carousel' | 'reels' | 'video';
-
-export interface BlogPost {
-  id: string;
-  account: string;
-  platform: 'youtube' | 'telegram';
-  type: BlogPostType;
-  title: string;
-  text?: string;
-  description?: string;
-  previewImage?: string;
-  videoUrl?: string;
-  thumbnailUrl?: string;
-  url: string;
-  date: string;
-}
-
-export interface BlogData {
-  feeds: {
-    youtube: BlogPost[];
-    telegram: BlogPost[];
-  };
-}

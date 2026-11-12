@@ -2,10 +2,6 @@ import { Link } from 'react-router-dom';
 import { NAV_LINKS } from '../Nav/Nav';
 import { featuredSocials } from '../../data/socials';
 
-// INTERIM: remove in plan 3, when the blog joins the journal. Until then it
-// has no other door.
-const INTERIM_LINKS = [{ to: '/blog', label: 'Blog' }] as const;
-
 /**
  * The footer shell. The field-cartographer illustration sits above this in
  * plan 5; the top margin leaves it room.
@@ -19,7 +15,7 @@ export default function Footer() {
         <p className="footer__name">Alikhan Beisenbayev</p>
 
         <nav aria-label="Footer" className="footer__links">
-          {[...NAV_LINKS, ...INTERIM_LINKS].map((link) => (
+          {NAV_LINKS.map((link) => (
             <Link key={link.to} to={link.to} className="footer__link focus-ring">
               {link.label}
             </Link>

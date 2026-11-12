@@ -1,5 +1,5 @@
 /*
- * Awards added by visitors from the /blog/map-awards form.
+ * Awards added by visitors from the /journal/map-awards form.
  *
  * Shared storage is a Supabase table (supabase/award_submissions.sql), reached
  * through its REST endpoint with plain fetch — no SDK, nothing added to the

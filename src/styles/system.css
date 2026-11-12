@@ -1205,6 +1205,9 @@
 
   .entry__body {
     display: grid;
+    /* minmax(0, ...) so a wide code block or image scrolls inside the column
+       instead of stretching the whole page sideways. */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--s-7);
     margin-top: var(--s-8);
   }

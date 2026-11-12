@@ -740,7 +740,7 @@ export default function MapAwardsPage() {
       >
         <header className="grid gap-2 border-b border-[var(--color-border-subtle)] px-4 pb-3 pt-3">
           <div className="flex items-center justify-between gap-2">
-            <Link to="/blog" className="font-[family-name:var(--font-mono)] text-[12px] text-[var(--color-accent-light)] hover:text-[var(--color-text-primary)]">
+            <Link to="/journal" className="font-[family-name:var(--font-mono)] text-[12px] text-[var(--color-accent-light)] hover:text-[var(--color-text-primary)]">
               ← Blog
             </Link>
             <button

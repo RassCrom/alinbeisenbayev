@@ -243,8 +243,7 @@ export default function WorkDetailPage() {
             <ul className="work-page__notes">
               {methodNotes.map((note) => (
                 <li key={note.slug}>
-                  {/* Plan 3 moves these to /journal/<slug>. */}
-                  <Link to={`/blog/${note.slug}`} className="t-h3 focus-ring">
+                  <Link to={`/journal/${note.slug}`} className="t-h3 focus-ring">
                     {note.frontmatter.title}
                   </Link>
                   <p className="t-meta">{note.frontmatter.excerpt}</p>

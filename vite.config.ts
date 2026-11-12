@@ -5,6 +5,8 @@ import mdx from '@mdx-js/rollup';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import rehypeSlug from 'rehype-slug';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { Plugin } from 'vite';
 import { awardsData } from './src/data/mapAwards';
 import { AWARDS_FEED_PATH, buildIcs } from './src/utils/ics';
@@ -34,10 +36,56 @@ function awardsCalendar(): Plugin {
   };
 }
 
+/**
+ * `virtual:notes-meta`: the frontmatter of every post under src/content/blog,
+ * read at build time, without the posts themselves.
+ *
+ * Importing a post for its frontmatter drags its whole body into the bundle
+ * (an MDX module does not tree-shake), which put every post's text on the
+ * home page to show three cards. This hands out the handful of fields a list
+ * needs and nothing else.
+ */
+function notesMeta(): Plugin {
+  const id = 'virtual:notes-meta';
+  const resolved = '\0' + id;
+  const dir = join(__dirname, 'src/content/blog');
+  /** A frontmatter value: a quoted string, an array or a boolean reads as JSON; anything else stays text. */
+  const parse = (raw: string): unknown => {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return raw;
+    }
+  };
+  return {
+    name: 'notes-meta',
+    resolveId: (source) => (source === id ? resolved : undefined),
+    load(loaded) {
+      if (loaded !== resolved) return undefined;
+      const notes = readdirSync(dir)
+        .filter((file) => file.endsWith('.mdx'))
+        .map((file) => {
+          const path = join(dir, file);
+          // A post edited in dev refreshes the list.
+          this.addWatchFile(path);
+          const block = readFileSync(path, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
+          const frontmatter: Record<string, unknown> = {};
+          for (const line of block.split(/\r?\n/)) {
+            const match = line.match(/^(\w+):\s*(.*)$/);
+            if (match) frontmatter[match[1]] = parse(match[2].trim());
+          }
+          return { slug: file.replace(/\.mdx$/, ''), frontmatter };
+        });
+      return `export default ${JSON.stringify(notes)};`;
+    },
+  };
+}
+
 export default defineConfig({
   test: { environment: 'jsdom', setupFiles: 'src/test/setup.ts' },
   plugins: [
     awardsCalendar(),
+    notesMeta(),
     // Must run before @vitejs/plugin-react so .mdx compiles to JSX first.
     {
       enforce: 'pre',

@@ -9,7 +9,7 @@ import type { Award } from '../data/mapAwards';
 
 export const SITE_ORIGIN = 'https://alinbeisenbayev.com';
 export const AWARDS_FEED_PATH = '/calendars/map-awards.ics';
-export const AWARDS_PAGE_PATH = '/blog/map-awards';
+export const AWARDS_PAGE_PATH = '/journal/map-awards';
 export const AWARDS_FEED_URL = `${SITE_ORIGIN}${AWARDS_FEED_PATH}`;
 
 const CALENDAR_NAME = 'Map awards & deadlines';
