@@ -1145,14 +1145,15 @@
  */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 260ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-duration: var(--t-enter);
+  animation-timing-function: var(--ease);
 }
 
-/* The morphing cover gets a touch longer, so the shape change reads. */
+/* The growing cover gets the longest duration on the site, so the change of
+   shape reads. */
 ::view-transition-group(*) {
-  animation-duration: 360ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-duration: var(--t-page);
+  animation-timing-function: var(--ease);
 }
 
 @media (prefers-reduced-motion: reduce) {

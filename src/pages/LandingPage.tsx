@@ -150,11 +150,7 @@ export default function LandingPage() {
         <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-2">
           {featured.map((project, index) => (
             <div key={project.id} className={index === 0 || index === featured.length - 1 ? 'md:col-span-2' : ''}>
-              <WorkCard
-                project={project}
-                index={index}
-                large={index === 0}
-              />
+              <WorkCard project={project} size={index === 0 ? 'lead' : 'half'} />
             </div>
           ))}
         </div>

@@ -13,6 +13,10 @@ export const REDESIGNED: string[] = [
   'src/components/Skeleton/Skeleton.tsx',
   'src/components/Frame/Frame.tsx',
   'src/components/Nav/Nav.tsx',
+  'src/components/WorkCard/WorkCard.tsx',
+  'src/hooks/useTilt.ts',
+  'src/utils/tilt.ts',
+  'src/utils/motion.ts',
 ];
 
 const BANNED: RegExp[] = [

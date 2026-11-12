@@ -1,54 +1,31 @@
 import { useCallback, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import { storyForWork } from '../../data/stories';
-import { COVER_SIZES, coverSrcSet } from '../../utils/images';
-import { projectYear } from '../../utils/date';
+import Frame from '../Frame/Frame';
+import { useTilt } from '../../hooks/useTilt';
+import { COVER_SIZES } from '../../utils/images';
+import { prefersReducedMotion } from '../../utils/motion';
 import type { Project } from '../../types';
 
 export interface WorkCardProps {
   project: Project;
-  /** Plate number rendered before the category tag (landing grid) */
-  index?: number;
-  /** Bento showcase variant: wider image, larger title */
-  large?: boolean;
+  /** `lead` is the full-width feature; `half` sits two or three to a row. */
+  size?: 'lead' | 'half';
 }
 
-const MAX_TILT_DEG = 5;
+/** "social media" -> "Social media". */
+function sentenceCase(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
-export default function WorkCard({ project, index, large = false }: WorkCardProps) {
-  const { slug, title, tagline, coverImage, status } = project;
-  const year = projectYear(project.endDate);
-  const award = project.awards[0];
-  // Looked up here rather than passed in: three call sites render this card,
-  // and a badge that one of them forgot to wire would be worse than none.
-  const story = storyForWork(slug);
-  const cardRef = useRef<HTMLAnchorElement>(null);
-  const reducedMotionRef = useRef<boolean | null>(null);
-
-  // Pointer-tracked 3D tilt + spotlight position, written straight to the
-  // element so mousemove never enters the React render path.
-  const handleMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (reducedMotionRef.current === null) {
-      reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width;
-    const py = (e.clientY - rect.top) / rect.height;
-    el.style.setProperty('--mx', `${px * 100}%`);
-    el.style.setProperty('--my', `${py * 100}%`);
-    if (reducedMotionRef.current) return;
-    const tiltX = (0.5 - py) * MAX_TILT_DEG;
-    const tiltY = (px - 0.5) * MAX_TILT_DEG;
-    el.style.transform = `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
-  };
-
-  const handleLeave = () => {
-    const el = cardRef.current;
-    if (el) el.style.transform = '';
-  };
+/**
+ * A work, as the cover, its title and one line saying what kind of thing it
+ * is. Nothing else: the cover is the argument.
+ */
+export default function WorkCard({ project, size = 'half' }: WorkCardProps) {
+  const { slug, title, coverImage, category } = project;
+  const lead = size === 'lead';
+  const tilt = useTilt<HTMLAnchorElement>();
 
   /*
    * Warm the detail route while the pointer is still on the card.
@@ -74,17 +51,16 @@ export default function WorkCard({ project, index, large = false }: WorkCardProp
   }, []);
 
   /*
-   * Morph the cover into the detail hero, when that can be done honestly.
+   * Grow the cover into the detail hero, when that can be done honestly.
    *
    * React Router's own `viewTransition` prop needs a data router
    * (RouterProvider); this app renders BrowserRouter, where it is silently
-   * ignored — so the transition is driven here instead.
+   * ignored, so the transition is driven here instead.
    *
    * Only when `warm` is true. startViewTransition snapshots whatever the DOM
    * shows after the update, and a route chunk that has not loaded yet renders
-   * the Suspense fallback — so an un-warmed click would cross-fade the card
-   * into the word "Loading…". Falling through to the plain <Link> in that case
-   * is both simpler and better than a transition to nothing.
+   * the Suspense fallback, so an un-warmed click would morph the cover into a
+   * skeleton. Falling through to the plain <Link> is simpler and better.
    */
   const navigate = useNavigate();
   const handleClick = useCallback(
@@ -94,7 +70,7 @@ export default function WorkCard({ project, index, large = false }: WorkCardProp
       // Let the browser handle new-tab, download and middle-click gestures.
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       if (event.button !== 0) return;
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (prefersReducedMotion()) return;
 
       event.preventDefault();
       const transition = document.startViewTransition(() => {
@@ -102,13 +78,8 @@ export default function WorkCard({ project, index, large = false }: WorkCardProp
         // resolves, so the router update cannot be deferred.
         flushSync(() => navigate(`/works/${slug}`));
       });
-      /*
-       * A skipped transition rejects `ready`, and nothing here needs to know.
-       * The browser skips whenever it cannot animate — a backgrounded tab is
-       * the common one — and the navigation itself has already happened by
-       * then, so the only visible effect of not catching this is an uncaught
-       * "Transition was aborted because of invalid state" in the console.
-       */
+      // The browser skips a transition it cannot animate (a backgrounded tab,
+      // usually) and rejects `ready`; the navigation has already happened.
       transition.ready.catch(() => {});
     },
     [navigate, slug],
@@ -116,87 +87,31 @@ export default function WorkCard({ project, index, large = false }: WorkCardProp
 
   return (
     <Link
-      ref={cardRef}
+      ref={tilt.ref}
       to={`/works/${slug}`}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
+      className={lead ? 'work-card work-card--lead' : 'work-card'}
+      onPointerMove={tilt.onPointerMove}
+      onPointerLeave={tilt.onPointerLeave}
       onPointerEnter={prefetch}
       onFocus={prefetch}
       onClick={handleClick}
-      className="group relative block h-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[image:var(--gradient-card)] shadow-[var(--shadow-card)] transition-[transform,border-color,box-shadow] duration-200 ease-out will-change-transform hover:border-[var(--color-border-default)] hover:shadow-[var(--shadow-glow)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)] active:scale-[0.99]"
     >
-      <div className={`relative overflow-hidden ${large ? 'aspect-[2/1]' : 'aspect-video'}`}>
-        <img
-          src={coverImage}
-          srcSet={coverSrcSet(coverImage)}
-          sizes={large ? COVER_SIZES.cardWide : COVER_SIZES.card}
-          alt={title}
-          width={1200}
-          height={630}
-          loading="lazy"
-          decoding="async"
-          /* Paired with the same name on the detail hero, so the browser
-             morphs this thumbnail into it across the navigation. Scoped per
-             slug: two elements sharing a name in one snapshot abort the
-             transition, and only one card for a given slug is ever on screen. */
-          style={{ viewTransitionName: `cover-${slug}` }}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-x-[var(--space-3)] top-[var(--space-3)] flex items-start gap-[var(--space-2)]">
-          {index !== undefined && (
-            <span className="shrink-0 rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] tracking-wider text-[var(--color-text-secondary)]">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-          )}
-          {award && (
-            <span
-              title={award}
-              className="ml-auto rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-base)] leading-none text-[var(--color-accent-gold)]"
-            >
-              ★
-            </span>
-          )}
-        </div>
-        {story && (
-          <span className="absolute bottom-[var(--space-3)] right-[var(--space-3)] rounded-[var(--radius-sm)] bg-[rgba(var(--color-chrome-rgb),0.8)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-light)]">
-            Published {story.format}
-          </span>
-        )}
-        {status === 'in-progress' && (
-          <span className="absolute bottom-[var(--space-3)] left-[var(--space-3)] rounded-[var(--radius-sm)] bg-[var(--color-accent-glow)] px-[var(--space-2)] py-[var(--space-1)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-light)]">
-            In Progress
-          </span>
-        )}
-      </div>
-      <div className={large ? 'p-[var(--space-6)]' : 'p-[var(--space-4)]'}>
-        <div className="flex items-baseline justify-between gap-[var(--space-2)]">
-          <h3
-            className={`font-[family-name:var(--font-heading)] font-bold ${
-              large ? 'text-[length:var(--text-2xl)]' : 'text-[length:var(--text-lg)]'
-            }`}
-          >
-            {title}
-          </h3>
-          <span className="font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
-            {year}
-          </span>
-        </div>
-        <p className="mt-[var(--space-2)] font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
-          {tagline}
-        </p>
-        <span className="mt-[var(--space-3)] inline-block font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-light)] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          View case study →
-        </span>
-      </div>
-      {/* Cursor spotlight */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[var(--z-raised)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          background:
-            'radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--color-accent-light-rgb), 0.12), transparent 65%)',
-        }}
+      <Frame
+        src={coverImage}
+        // The title is the heading right below; reading it twice helps nobody.
+        alt=""
+        width={lead ? 1600 : 1200}
+        height={900}
+        ratio={lead ? '16 / 9' : '4 / 3'}
+        sizes={lead ? COVER_SIZES.hero : COVER_SIZES.card}
+        /* Paired with the same name on the detail hero. Scoped per slug: two
+           elements sharing a name in one snapshot abort the transition. */
+        viewTransitionName={`cover-${slug}`}
       />
+      <div className="work-card__text">
+        <h3 className={lead ? 't-h2' : 't-h3'}>{title}</h3>
+        <p className="t-meta">{sentenceCase(category)}</p>
+      </div>
     </Link>
   );
 }
