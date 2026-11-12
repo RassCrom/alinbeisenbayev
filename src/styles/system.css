@@ -1254,3 +1254,208 @@
     }
   }
 }
+
+@layer components {
+  /* ---- Field ---- */
+  .field {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .field label,
+  .field__label {
+    font-size: var(--fs-small);
+    color: var(--text-2);
+  }
+
+  .field__hint {
+    margin-left: var(--s-2);
+    font-size: var(--fs-min);
+    color: var(--text-3);
+  }
+
+  .field__input {
+    width: 100%;
+    padding: var(--s-3) var(--s-4);
+    border: none;
+    border-radius: var(--r-outer-sm);
+    background: var(--raised);
+    color: var(--text);
+    font: inherit;
+    line-height: 1.45;
+    transition: box-shadow var(--t-hover) var(--ease);
+  }
+
+  textarea.field__input {
+    min-height: 168px;
+    resize: vertical;
+  }
+
+  .field__input[aria-invalid='true'] {
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+  }
+
+  .field__error {
+    font-size: var(--fs-min);
+    color: var(--accent);
+    animation: field-error-in var(--t-hover) var(--ease);
+  }
+
+  @keyframes field-error-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---- Contact page ---- */
+  .contact {
+    display: grid;
+    gap: var(--s-8);
+    padding-top: var(--s-7);
+  }
+
+  .contact__intro {
+    display: grid;
+    align-content: start;
+    gap: var(--s-5);
+  }
+
+  .contact__steps {
+    display: grid;
+    gap: var(--s-2);
+    padding-left: 0;
+    list-style: none;
+    counter-reset: step;
+    font-size: clamp(1.125rem, 1.45vw, 1.25rem);
+    color: var(--text-2);
+  }
+
+  .contact__steps li {
+    display: grid;
+    grid-template-columns: 1.5em 1fr;
+    counter-increment: step;
+  }
+
+  .contact__steps li::before {
+    content: counter(step);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .contact__direct {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 4px;
+  }
+
+  .contact-form {
+    display: grid;
+    gap: var(--s-5);
+    padding: var(--s-5);
+    border-radius: var(--r-outer);
+    background: var(--surface);
+  }
+
+  .contact-form__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  /* On a surface, an unpressed chip needs the next tier up to be seen. */
+  .contact-form .chip {
+    background: var(--raised);
+  }
+
+  /* The honeypot: present for bots, absent for people and assistive tech. */
+  .contact-form__trap {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .contact-form__failed {
+    color: var(--text);
+  }
+
+  .contact-form__failed a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .button:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .contact-sent {
+    display: grid;
+    justify-items: start;
+    gap: var(--s-4);
+    padding: var(--s-6) var(--s-5);
+    border-radius: var(--r-outer);
+    background: var(--surface);
+    animation: card-in var(--t-enter) var(--ease) both;
+  }
+
+  .contact-sent__mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r-pill);
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+    color: var(--accent);
+    animation: mark-in var(--t-enter) var(--ease) both;
+  }
+
+  @keyframes mark-in {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .contact-sent__copy {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .contact-sent__copy dd {
+    white-space: pre-line;
+  }
+
+  @media (min-width: 768px) {
+    .contact {
+      padding-top: var(--s-8);
+    }
+
+    .contact-form,
+    .contact-sent {
+      padding: var(--s-7);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .contact {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+      gap: var(--s-9);
+      align-items: start;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field__error,
+  .contact-sent,
+  .contact-sent__mark {
+    animation: none;
+  }
+
+  .field__input {
+    transition: none;
+  }
+}

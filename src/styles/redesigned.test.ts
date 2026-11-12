@@ -40,6 +40,11 @@ export const REDESIGNED: string[] = [
   'src/components/JournalCard/JournalCard.tsx',
   'src/components/ChapterNav/ChapterNav.tsx',
   'src/components/LegacyRedirect/LegacyRedirect.tsx',
+  'src/shared/inquiry.ts',
+  'src/server/contact.ts',
+  'src/components/Field/Field.tsx',
+  'src/components/ContactForm/ContactForm.tsx',
+  'src/pages/ContactPage.tsx',
 ];
 
 const BANNED: RegExp[] = [

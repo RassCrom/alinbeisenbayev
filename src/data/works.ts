@@ -1,5 +1,5 @@
 import { galleryItems } from './gallery';
-import { OFFERS, firstOfferLabel, offerLabel, type OfferSlug } from './offers';
+import { firstOfferLabel, offerLabel, parseOffer, type OfferSlug } from './offers';
 import { projects } from './projects';
 import type { GalleryItem, Project } from '../types';
 
@@ -33,7 +33,7 @@ export function cardRatio(width: number, height: number): number {
 }
 
 // Lives in offers.ts so a card on the home page does not pull the gallery data in with it.
-export { firstOfferLabel };
+export { firstOfferLabel, parseOffer };
 
 /**
  * `YYYY`, `YYYY-MM` or `YYYY-MM-DD` as months since year 0, with the day as
@@ -89,11 +89,6 @@ export const workEntries: WorkEntry[] = [
   ...projects.map(fromProject),
   ...galleryItems.filter((item) => !item.workSlug).map(fromPiece),
 ].sort((a, b) => b.when - a.when || a.title.localeCompare(b.title));
-
-/** The `?offer=` value, if it names a real offer. */
-export function parseOffer(value: string | null): OfferSlug | null {
-  return OFFERS.find((offer) => offer.slug === value)?.slug ?? null;
-}
 
 /** Entries tagged with `offer` (all of them when it is null) whose text contains `query`. */
 export function filterEntries(entries: WorkEntry[], offer: OfferSlug | null, query: string): WorkEntry[] {

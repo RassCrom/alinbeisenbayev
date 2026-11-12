@@ -7,7 +7,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import rehypeSlug from 'rehype-slug';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { Plugin } from 'vite';
+import { loadEnv, type Plugin } from 'vite';
 import { awardsData } from './src/data/mapAwards';
 import { AWARDS_FEED_PATH, buildIcs } from './src/utils/ics';
 
@@ -32,6 +32,43 @@ function awardsCalendar(): Plugin {
     },
     generateBundle() {
       this.emitFile({ type: 'asset', fileName: AWARDS_FEED_PATH.slice(1), source: feed() });
+    },
+  };
+}
+
+/**
+ * Serves POST /api/contact in dev through the same handler the Cloudflare
+ * Pages Function uses in production (functions/api/contact.ts), with the
+ * variables from .env.local. Without them the handler answers "not
+ * configured" and the form shows its failed state, which is the honest
+ * result locally.
+ */
+function contactEndpoint(): Plugin {
+  return {
+    name: 'contact-endpoint',
+    configureServer(server) {
+      // Every variable, not only VITE_ ones: these are server-side secrets.
+      const env = loadEnv(server.config.mode, server.config.root, '');
+      server.middlewares.use('/api/contact', async (req, res) => {
+        const chunks: Buffer[] = [];
+        for await (const chunk of req) chunks.push(chunk as Buffer);
+        const headers = new Headers();
+        for (const [name, value] of Object.entries(req.headers)) {
+          if (typeof value === 'string') headers.set(name, value);
+        }
+        const { handleContact } = await server.ssrLoadModule('/src/server/contact.ts');
+        const response: Response = await handleContact(
+          new Request(`http://${req.headers.host}/api/contact`, {
+            method: req.method,
+            headers,
+            body: req.method === 'GET' || req.method === 'HEAD' ? undefined : Buffer.concat(chunks),
+          }),
+          env,
+        );
+        res.statusCode = response.status;
+        response.headers.forEach((value, name) => res.setHeader(name, value));
+        res.end(await response.text());
+      });
     },
   };
 }
@@ -86,6 +123,7 @@ export default defineConfig({
   plugins: [
     awardsCalendar(),
     notesMeta(),
+    contactEndpoint(),
     // Must run before @vitejs/plugin-react so .mdx compiles to JSX first.
     {
       enforce: 'pre',

@@ -13,6 +13,8 @@ export interface ButtonProps {
   /** With `href`: the link leaves the site, so it opens in a new tab. */
   external?: boolean;
   type?: 'button' | 'submit';
+  /** Buttons only: a request is in flight. */
+  disabled?: boolean;
   /** Trailing icon. */
   icon?: IconName;
   onClick?: () => void;
@@ -26,6 +28,7 @@ export default function Button({
   href,
   external = false,
   type = 'button',
+  disabled = false,
   icon,
   onClick,
   children,
@@ -60,7 +63,7 @@ export default function Button({
     );
   }
   return (
-    <button type={type} className={className} data-icon={icon} onClick={onClick}>
+    <button type={type} className={className} data-icon={icon} onClick={onClick} disabled={disabled} aria-busy={disabled || undefined}>
       {content}
     </button>
   );

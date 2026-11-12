@@ -35,3 +35,8 @@ export function offerLabel(slug: OfferSlug | undefined): string {
 export function firstOfferLabel(offers: OfferSlug[]): string {
   return offerLabel(offers[0]);
 }
+
+/** The `?offer=` value, if it names a real offer. */
+export function parseOffer(value: string | null): OfferSlug | null {
+  return OFFERS.find((offer) => offer.slug === value)?.slug ?? null;
+}
