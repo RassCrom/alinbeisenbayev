@@ -3,6 +3,7 @@
   "redirects": [
     { "source": "/skills", "destination": "/about", "permanent": true },
     { "source": "/gallery", "destination": "/works", "permanent": true },
+    { "source": "/connect", "destination": "/contact", "permanent": true },
     { "source": "/stories", "destination": "/journal", "permanent": true },
     { "source": "/stories/:slug", "destination": "/journal/:slug", "permanent": true },
     { "source": "/blog", "destination": "/journal", "permanent": true },

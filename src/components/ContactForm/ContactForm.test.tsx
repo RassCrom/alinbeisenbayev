@@ -5,11 +5,19 @@ import ContactForm from './ContactForm';
 const EMAIL = 'owner@example.com';
 const ok = () => new Response(JSON.stringify({ ok: true }), { status: 200 });
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+});
 
-function setup(fetchImpl: ReturnType<typeof vi.fn> = vi.fn(async () => ok()), props = {}) {
+/** Renders the form. By default ten seconds have passed since it appeared, as for a person who typed. */
+function setup(fetchImpl: ReturnType<typeof vi.fn> = vi.fn(async () => ok()), props = {}, secondsSpent = 10) {
   vi.stubGlobal('fetch', fetchImpl);
+  let now = 1_700_000_000_000;
+  vi.spyOn(Date, 'now').mockImplementation(() => now);
   const view = render(<ContactForm directEmail={EMAIL} {...props} />);
+  now += secondsSpent * 1000;
   const type = (label: string, value: string) =>
     fireEvent.change(view.getByLabelText(label), { target: { value } });
   const fill = () => {
@@ -158,4 +166,28 @@ it('shows what the server objects to', async () => {
   submit();
   await waitFor(() => expect(view.queryByText('Please enter an email address I can reply to.')).not.toBeNull());
   expect(view.queryByText(/This did not send/)).toBeNull();
+});
+
+it('holds back a submit made faster than a person types, so it is never mistaken for a bot', async () => {
+  // The server answers a too-fast submit with a silent "ok" and sends
+  // nothing. A real visitor who pastes and sends at once must not get that.
+  vi.useFakeTimers();
+  const fetchImpl = vi.fn(async () => ok());
+  const { view, fill, submit } = setup(fetchImpl, {}, 0.4);
+  fill();
+  submit();
+  expect(view.getByRole('button', { name: 'Sending' })).not.toBeNull();
+  expect(fetchImpl).not.toHaveBeenCalled();
+
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(2000);
+  });
+  expect(fetchImpl).not.toHaveBeenCalled();
+
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(200);
+  });
+  expect(fetchImpl).toHaveBeenCalledTimes(1);
+  const [, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
+  expect(JSON.parse(String(init.body)).elapsedMs).toBeGreaterThanOrEqual(2500);
 });

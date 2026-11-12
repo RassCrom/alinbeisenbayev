@@ -1,5 +1,6 @@
 /skills /about 301
 /gallery /works 301
+/connect /contact 301
 /stories /journal 301
 /stories/* /journal/:splat 301
 /blog /journal 301

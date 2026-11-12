@@ -7,7 +7,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => <MemoryRouter>{
 
 it('hides the band where it would repeat the page', () => {
   // A work page places its own band, worded for that work.
-  for (const path of ['/contact', '/connect', '/journal/map-awards', '/works/silk-road']) {
+  for (const path of ['/contact', '/journal/map-awards', '/works/silk-road']) {
     expect(showContactBand(path)).toBe(false);
   }
   for (const path of ['/', '/works', '/about', '/journal']) {

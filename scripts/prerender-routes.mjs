@@ -52,9 +52,9 @@ function frontmatter(source) {
 const SECTIONS = [
   { path: '/works', title: 'Work', description: 'Custom maps, spatial analysis, data visualization, data journalism and remote sensing work by Alikhan Beisenbayev.', priority: '0.9' },
   { path: '/journal', title: 'Journal', description: 'Map stories, notes on how they were made, and tools, by Alikhan Beisenbayev.', priority: '0.8' },
-  { path: '/about', title: 'About', description: 'From Astana to Munich, Vienna and Dresden — the route through geodesy, GIS and cartography, told on a globe.', priority: '0.8' },
+  { path: '/about', title: 'About', description: 'Alikhan Beisenbayev, cartographer and data storyteller: recognition, audience, and the route from Astana to Vienna.', priority: '0.8' },
   { path: '/journal/map-awards', title: 'Map Awards Calendar', description: 'Every cartography, GIS and data visualization award on one map: deadlines, prizes, what to submit, and a calendar feed for Google, Apple and Outlook.', image: '/images/blog/map-awards/cover.jpg', imageAlt: 'Map Awards Calendar', priority: '0.7' },
-  { path: '/connect', title: 'Connect', description: 'Open to job offers and collaboration. LinkedIn, Instagram, TikTok, Bluesky, Telegram, YouTube and email.', priority: '0.6' },
+  { path: '/contact', title: 'Work with me', description: 'Commission a custom map, a spatial analysis, a data visualization, a data story or remote sensing work.', priority: '0.8' },
 ];
 
 function routes() {

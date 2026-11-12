@@ -5,7 +5,7 @@ import Field from '../Field/Field';
 import FilterChip from '../FilterChip/FilterChip';
 import Icon from '../Icon/Icon';
 import { OFFERS, offerLabel, type OfferSlug } from '../../data/offers';
-import { validateInquiry, type Inquiry, type InquiryErrors } from '../../shared/inquiry';
+import { MIN_FILL_MS, validateInquiry, type Inquiry, type InquiryErrors } from '../../shared/inquiry';
 
 export interface ContactFormProps {
   /** The offer the visitor came for, already chosen. */
@@ -88,10 +88,17 @@ export default function ContactForm({ initialOffer, directEmail }: ContactFormPr
     setErrors({});
     setStatus('sending');
     try {
+      // The server treats a form sent within MIN_FILL_MS of appearing as a
+      // bot and answers "ok" without sending anything. A person who pastes
+      // and sends at once must never get that answer, so the request waits
+      // out the remainder here, behind the "Sending" state.
+      const elapsed = Date.now() - startedAt.current;
+      if (elapsed < MIN_FILL_MS) await new Promise((resolve) => setTimeout(resolve, MIN_FILL_MS - elapsed));
+
       const response = await fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ...inquiry, company, elapsedMs: Date.now() - startedAt.current }),
+        body: JSON.stringify({ ...inquiry, company, elapsedMs: Math.max(elapsed, MIN_FILL_MS) }),
       });
       const result = (await response.json().catch(() => ({}))) as { ok?: boolean; errors?: InquiryErrors };
       if (response.ok && result.ok) {

@@ -16,6 +16,8 @@ const landing = (from: string) => {
         <Route path="/stories/:slug" element={<LegacyRedirect to="/journal" />} />
         <Route path="/blog" element={<LegacyRedirect to="/journal" />} />
         <Route path="/blog/:slug" element={<LegacyRedirect to="/journal" />} />
+        <Route path="/connect" element={<LegacyRedirect to="/contact" />} />
+        <Route path="/contact" element={<Where />} />
         <Route path="/journal/*" element={<Where />} />
         <Route path="/journal" element={<Where />} />
       </Routes>
@@ -39,4 +41,9 @@ it('keeps the slug', () => {
 
 it('keeps the query and the hash of a deep link', () => {
   expect(landing('/stories/saint-lucia?x=1#sources')).toBe('/journal/saint-lucia?x=1#sources');
+});
+
+it('sends the old Connect page to the form, keeping a chosen offer', () => {
+  expect(landing('/connect')).toBe('/contact');
+  expect(landing('/connect?offer=remote-sensing')).toBe('/contact?offer=remote-sensing');
 });

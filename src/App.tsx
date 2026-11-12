@@ -14,7 +14,7 @@ const HomePage = lazy(() => import('./pages/HomePage'));
 const WorksPage = lazy(() => import('./pages/WorksPage'));
 const WorkDetailPage = lazy(() => import('./pages/WorkDetailPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
-const ConnectPage = lazy(() => import('./pages/ConnectPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const MapAwardsPage = lazy(() => import('./pages/MapAwardsPage'));
 const JournalPage = lazy(() => import('./pages/JournalPage'));
 const JournalEntryPage = lazy(() => import('./pages/JournalEntryPage'));
@@ -52,15 +52,14 @@ export default function App() {
             <Route path="/journal/map-awards" element={<MapAwardsPage />} />
             <Route path="/journal/:slug" element={<JournalEntryPage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/connect" element={<ConnectPage />} />
-            {/* Interim: plan 4 gives this route its own page. */}
-            <Route path="/contact" element={<ConnectPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             {/* Old addresses. The same redirects exist at the host, for visitors
                 who arrive by link rather than by a click inside the site. */}
             <Route path="/stories" element={<LegacyRedirect to="/journal" />} />
             <Route path="/stories/:slug" element={<LegacyRedirect to="/journal" />} />
             <Route path="/blog" element={<LegacyRedirect to="/journal" />} />
             <Route path="/blog/:slug" element={<LegacyRedirect to="/journal" />} />
+            <Route path="/connect" element={<LegacyRedirect to="/contact" />} />
             <Route path="/gallery" element={<Navigate to="/works" replace />} />
             <Route path="/skills" element={<Navigate to="/about" replace />} />
             <Route path="*" element={<NotFoundPage />} />
