@@ -1,4 +1,4 @@
-# Netlify counterpart of the "headers" block in vercel.json; keep the two in sync.
+# Read by Cloudflare Pages, the live host. vercel.json carries the same rules for a Vercel deploy.
 # Hashed build output never changes under the same name.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
@@ -7,13 +7,9 @@
   Cache-Control: public, max-age=31536000, immutable
 
 # Media keeps its filename when re-exported, so a week, not forever.
-/atlas/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 /images/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 /videos/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 /og/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-/telegram_media/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400

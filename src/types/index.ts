@@ -163,16 +163,9 @@ export interface Project {
   /** Margin source note; see SourceNote. */
   sourceNote?: SourceNote;
   /**
-   * Hand nudge for the atlas view: absolute world coordinates (0 to 1) that
-   * override the seeded placement on the given axis. Leave unset to let
-   * src/atlas/layout.ts place the settlement.
-   */
-  map?: { x?: number; y?: number };
-  /**
    * The city the project was made in, derived by src/data/projects.ts from
    * the name of the city file it sits in ("long-beach.json" gives "Long
-   * Beach"). Not written in the JSON; absent when the data is read another
-   * way, as scripts/print-atlas.ts does.
+   * Beach"). Not written in the JSON.
    */
   madeIn?: string;
 }

@@ -10,8 +10,7 @@
     "gallery": "python scripts/gallery.py",
     "preview": "vite preview",
     "test": "vitest run",
-    "budget": "node scripts/check-budget.mjs",
-    "atlas:print": "node scripts/print-atlas.ts"
+    "budget": "node scripts/check-budget.mjs"
   },
   "dependencies": {
     "@fontsource-variable/geologica": "^5.3.0",

@@ -1,5 +1,13 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { expect, it } from 'vitest';
+
+/** Every file under a directory. */
+function walk(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+    entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)],
+  );
+}
 
 /*
  * Files rebuilt on the new design system. Each must follow its type and copy
@@ -70,4 +78,16 @@ it.each(REDESIGNED.length ? REDESIGNED : ['(none yet)'])('%s follows the type an
 it('base styles carry no grain, contour background or custom cursor', () => {
   const css = readFileSync('src/styles/global.css', 'utf8');
   expect(css).not.toMatch(/feTurbulence|astana-contours|has-custom-cursor|cursor-pointer-el/);
+});
+
+it('has no atlas left in it', () => {
+  // Retired by the redesign. The code lives on in the main and experiment-map branches.
+  expect(existsSync('src/atlas')).toBe(false);
+  expect(existsSync('public/atlas')).toBe(false);
+  expect(readFileSync('package.json', 'utf8')).not.toMatch(/atlas/);
+  const sources = [...walk('src'), ...walk('scripts')].filter((file) => /\.(ts|tsx|mjs|py|css)$/.test(file));
+  const mentions = sources.filter(
+    (file) => !file.endsWith('redesigned.test.ts') && /atlas/i.test(readFileSync(file, 'utf8').replace(/Atlas of Sustainability/g, '')),
+  );
+  expect(mentions).toEqual([]);
 });
