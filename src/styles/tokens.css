@@ -47,9 +47,9 @@
   /* Typography */
   /* Self-hosted via @fontsource (imported in main.tsx); the variable builds
      cover every weight the site uses in one file per script subset. */
-  --font-heading: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
-  --font-body:    'Lora Variable', 'Lora', Georgia, serif;
-  --font-mono:    'DM Mono', 'Courier New', monospace;
+  --font-heading: 'Geologica Variable', 'Geologica', system-ui, sans-serif;
+  --font-body:    var(--font-heading);
+  --font-mono:    var(--font-heading);
 
   /* Type scale */
   --text-xs:   0.75rem;

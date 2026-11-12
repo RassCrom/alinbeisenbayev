@@ -5,7 +5,8 @@
  * their computed styles written inline (the atlas stylesheet and its custom
  * properties do not reach an SVG image) and every image turned into a data
  * URL (an SVG image loads nothing from the network). The web fonts are not
- * embedded, so the chart falls back to Georgia; the moving parts a still
+ * embedded, so the overlay falls back to the system sans (the cartouche, drawn on the
+ * canvas, does use Geologica); the moving parts a still
  * cannot carry (the slider track, the select) are simplified to text.
  */
 
@@ -120,7 +121,7 @@ function cloneOverlay(container: HTMLElement): HTMLElement {
   const wrapper = document.createElement('div');
   wrapper.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
   const rect = container.getBoundingClientRect();
-  wrapper.style.cssText = `position:relative;width:${rect.width}px;height:${rect.height}px;overflow:hidden;font-family:Georgia,serif;`;
+  wrapper.style.cssText = `position:relative;width:${rect.width}px;height:${rect.height}px;overflow:hidden;font-family:'Geologica Variable',system-ui,sans-serif;`;
   for (const layer of container.querySelectorAll<HTMLElement>(OVERLAY)) {
     const clone = layer.cloneNode(true) as HTMLElement;
     inlineStyles(layer, clone);
@@ -193,7 +194,7 @@ export async function exportChart({ glCanvas, container, render, caption, fileNa
   // Cartouche along the top edge.
   ctx.save();
   ctx.scale(scale, scale);
-  ctx.font = '500 13px Georgia, serif';
+  ctx.font = "500 13px 'Geologica Variable', system-ui, sans-serif";
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
   const paddingX = 14;

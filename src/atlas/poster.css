@@ -4,7 +4,7 @@
   --atlas-gold: #d6b66e;
   --atlas-gold-rgb: 214, 182, 110;
   --atlas-bone: #ebe1c9;
-  --atlas-serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --atlas-serif: 'Geologica Variable', 'Geologica', system-ui, sans-serif;
   min-height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;

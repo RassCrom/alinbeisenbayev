@@ -72,7 +72,7 @@
 }
 
 .island-locator__name {
-  font-family: 'Lora', Georgia, serif;
+  font-family: var(--font-heading);
   font-size: 13px;
   letter-spacing: 0.3em;
   padding-left: 0.3em;
@@ -80,14 +80,14 @@
 }
 
 .island-locator__native {
-  font-family: 'Lora', Georgia, serif;
+  font-family: var(--font-heading);
   font-style: italic;
   font-size: 11px;
   color: rgba(235, 225, 201, 0.7);
 }
 
 .island-locator__tier {
-  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-family: var(--font-heading);
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
