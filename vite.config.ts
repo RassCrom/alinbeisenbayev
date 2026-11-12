@@ -5,9 +5,38 @@ import mdx from '@mdx-js/rollup';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import rehypeSlug from 'rehype-slug';
+import type { Plugin } from 'vite';
+import { awardsData } from './src/data/mapAwards';
+import { AWARDS_FEED_PATH, buildIcs } from './src/utils/ics';
+
+/**
+ * The subscribable calendar of map-award deadlines (/calendars/map-awards.ics),
+ * built from the same JSON the /blog/map-awards page reads, so the feed can
+ * never drift from the map. Served live in dev, emitted as a file on build.
+ */
+function awardsCalendar(): Plugin {
+  const feed = () =>
+    buildIcs(awardsData.awards, awardsData.checked, (a) => {
+      const place = awardsData.places[a.place];
+      return place ? `${place.name} (${place.detail})` : '';
+    });
+  return {
+    name: 'awards-calendar',
+    configureServer(server) {
+      server.middlewares.use(AWARDS_FEED_PATH, (_req, res) => {
+        res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+        res.end(feed());
+      });
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: AWARDS_FEED_PATH.slice(1), source: feed() });
+    },
+  };
+}
 
 export default defineConfig({
   plugins: [
+    awardsCalendar(),
     // Must run before @vitejs/plugin-react so .mdx compiles to JSX first.
     {
       enforce: 'pre',

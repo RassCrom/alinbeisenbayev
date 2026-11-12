@@ -140,6 +140,61 @@ function ArticleCard({ article }: { article: (typeof articles)[number] }) {
   );
 }
 
+/**
+ * Interactive pages that live under /blog but are not MDX articles. They sort
+ * with the articles by `date`, and the search matches `keywords` too.
+ */
+const TOOLS = [
+  {
+    to: '/blog/map-awards',
+    title: 'Map Awards Calendar',
+    excerpt:
+      'Every cartography, GIS and data viz competition I could find, on one map: deadlines, prizes, what to submit, and a one-click calendar feed for Google, Apple and Outlook.',
+    cover: '/images/blog/map-awards/cover.webp',
+    tags: ['awards', 'interactive map', 'calendar'],
+    date: '2026-11-12',
+    keywords: 'awards competitions contests deadlines prizes calendar map gis data viz',
+  },
+];
+
+function ToolCard({ tool }: { tool: (typeof TOOLS)[number] }) {
+  return (
+    <Link
+      to={tool.to}
+      className="flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[image:var(--gradient-card)] shadow-[var(--shadow-card)] transition-colors hover:border-[var(--color-accent)]"
+    >
+      <img
+        src={tool.cover}
+        alt=""
+        width={1200}
+        height={630}
+        loading="lazy"
+        decoding="async"
+        className="aspect-video w-full object-cover"
+      />
+      <div className="flex flex-1 flex-col gap-[var(--space-3)] p-[var(--space-6)]">
+        <div className="flex flex-wrap items-center gap-[var(--space-2)]">
+          <span className="rounded-[var(--radius-full)] border border-[var(--color-accent)] px-[var(--space-2)] py-[2px] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-light)]">
+            Interactive
+          </span>
+          {tool.tags.map((tag) => (
+            <span key={tag} className="font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-text-muted)]">
+              #{tag}
+            </span>
+          ))}
+        </div>
+        <h3 className="font-[family-name:var(--font-heading)] text-[length:var(--text-xl)] font-bold">{tool.title}</h3>
+        <p className="clamp-3 font-[family-name:var(--font-body)] text-[length:var(--text-sm)] text-[var(--color-text-secondary)]">
+          {tool.excerpt}
+        </p>
+        <span className="mt-auto pt-[var(--space-3)] font-[family-name:var(--font-mono)] text-[length:var(--text-xs)] text-[var(--color-accent-light)]">
+          Open the map →
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 export default function BlogPage() {
   usePageMeta('Blog', 'Notes, tutorials and map breakdowns on cartography, QGIS and geospatial storytelling.');
   const [tab, setTab] = useState<TabId>('articles');
@@ -168,6 +223,14 @@ export default function BlogPage() {
           [a.frontmatter.title, a.frontmatter.excerpt].join(' ').toLowerCase().includes(q),
         )
       : articles;
+  }, [tab, search]);
+
+  const filteredTools = useMemo(() => {
+    if (tab !== 'articles' && tab !== 'all') return [];
+    const q = search.trim().toLowerCase();
+    return q
+      ? TOOLS.filter((t) => [t.title, t.excerpt, t.keywords].join(' ').toLowerCase().includes(q))
+      : TOOLS;
   }, [tab, search]);
 
   return (
@@ -199,8 +262,11 @@ export default function BlogPage() {
       </div>
 
       {tab === 'articles' ? (
-        filteredArticles.length > 0 ? (
+        filteredArticles.length > 0 || filteredTools.length > 0 ? (
           <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
+            {filteredTools.map((tool) => (
+              <ToolCard key={tool.to} tool={tool} />
+            ))}
             {filteredArticles.map((article) => (
               <ArticleCard key={article.slug} article={article} />
             ))}
@@ -211,9 +277,10 @@ export default function BlogPage() {
           </p>
         )
       ) : tab === 'all' ? (
-        posts.length > 0 || filteredArticles.length > 0 ? (
+        posts.length > 0 || filteredArticles.length > 0 || filteredTools.length > 0 ? (
           <div className="mt-[var(--space-8)] grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2 lg:grid-cols-3">
             {[
+              ...filteredTools.map((tool) => ({ date: tool.date, node: <ToolCard key={tool.to} tool={tool} /> })),
               ...filteredArticles.map((article) => ({
                 date: article.frontmatter.date,
                 node: <ArticleCard key={article.slug} article={article} />,

@@ -1,0 +1,505 @@
+{
+  "checked": "2026-11-12",
+  "places": {
+    "redlands": { "name": "Redlands, California", "detail": "Esri headquarters", "lat": 34.0566, "lng": -117.1958, "role": "organizer" },
+    "sandiego": { "name": "San Diego", "detail": "Esri User Conference, 12–16 Jul 2027", "lat": 32.7065, "lng": -117.1617, "role": "venue" },
+    "newyork": { "name": "New York", "detail": "AAG 2027 exhibition and the Webby Awards", "lat": 40.7128, "lng": -74.006, "role": "venue" },
+    "usa": { "name": "United States", "detail": "US-based organizers with no fixed venue (entries online or by post)", "lat": 39.5, "lng": -98.35, "role": "organizer", "approx": true },
+    "seattle": { "name": "Seattle", "detail": "Tableau headquarters", "lat": 47.6062, "lng": -122.3321, "role": "organizer", "approx": true },
+    "ottawa": { "name": "Canada", "detail": "Canadian Cartographic Association (national, no fixed venue)", "lat": 45.4215, "lng": -75.6972, "role": "organizer", "approx": true },
+    "london": { "name": "London", "detail": "GEO Business (ExCeL) and London-based organizers", "lat": 51.5081, "lng": 0.0291, "role": "venue" },
+    "edinburgh": { "name": "Edinburgh", "detail": "BCS conference 2026 and DataFest; BCS 2027 venue not announced", "lat": 55.9533, "lng": -3.1883, "role": "venue" },
+    "aarhus": { "name": "Aarhus", "detail": "Sigma Awards began at Aarhus University; now hosted online by GIJN", "lat": 56.1629, "lng": 10.2039, "role": "organizer", "approx": true },
+    "amsterdam": { "name": "Amsterdam", "detail": "Geospatial World Forum, RAI, 20–22 Apr 2027", "lat": 52.3417, "lng": 4.8889, "role": "venue" },
+    "paris": { "name": "Paris", "detail": "State of the Map 2026; 2027 venue not announced", "lat": 48.8566, "lng": 2.3522, "role": "venue", "approx": true },
+    "frankfurt": { "name": "Frankfurt am Main", "detail": "Seat of the Kartographie-Stiftung Ravenstein; 2026 ceremony on 12 Nov", "lat": 50.1109, "lng": 8.6821, "role": "organizer" },
+    "munich": { "name": "Oberpfaffenhofen (Munich)", "detail": "Copernicus Masters organizer", "lat": 48.0833, "lng": 11.2833, "role": "organizer", "approx": true },
+    "zurich": { "name": "Zurich", "detail": "D ONE and the Data Innovation Alliance", "lat": 47.3769, "lng": 8.5417, "role": "organizer", "approx": true },
+    "vienna": { "name": "Vienna", "detail": "European Newspaper Congress, where the award is presented", "lat": 48.2082, "lng": 16.3738, "role": "venue", "approx": true },
+    "warsaw": { "name": "Warsaw", "detail": "ICC 2027, 18–23 Jul 2027", "lat": 52.2297, "lng": 21.0122, "role": "venue" },
+    "pamplona": { "name": "Pamplona", "detail": "Historic Malofiej venue", "lat": 42.8125, "lng": -1.6458, "role": "venue", "approx": true },
+    "helsinki": { "name": "Helsinki", "detail": "#30DayMapChallenge organizer (Finland); the challenge runs online", "lat": 60.1699, "lng": 24.9384, "role": "organizer", "approx": true },
+    "yerevan": { "name": "Yerevan", "detail": "Open Data Day Armenia, where winners are announced", "lat": 40.1792, "lng": 44.4991, "role": "venue" },
+    "dubai": { "name": "Dubai", "detail": "World Government Summit", "lat": 25.2048, "lng": 55.2708, "role": "venue" },
+    "delhi": { "name": "India", "detail": "Esri India (national competition)", "lat": 28.6139, "lng": 77.209, "role": "organizer", "approx": true },
+    "almaty": { "name": "Almaty", "detail": "Satbayev University, 22 Satpayev Street", "lat": 43.2367, "lng": 76.9306, "role": "venue" },
+    "busan": { "name": "Busan", "detail": "PacificVis 2027, 19–22 Apr 2027", "lat": 35.1796, "lng": 129.0756, "role": "venue" }
+  },
+  "awards": [
+    {
+      "id": "gisday-kz", "name": "GIS Day Kazakhstan 2026 · Map & Cake Competition", "org": "GIS Day Kazakhstan (Satbayev University, Almaty)",
+      "kind": "Map design", "aud": ["open", "student"], "region": "Kazakhstan / Central Asia", "place": "almaty",
+      "when": "2026-11-19", "firm": true, "open": true, "label": "Event 19–20 Nov 2026",
+      "prize": "Prizes for the best entries, shown at GIS Day Kazakhstan 2026. Amounts not published.",
+      "fee": "Free",
+      "elig": "Anyone attending GIS Day Kazakhstan. Bring a map, or bake a map-themed cake.",
+      "need": "Register through the Map & Cake form, then bring the map (print or screen) or the cake to the event.",
+      "note": "5th edition, theme “Innovations in Geospatial Technologies”. Day 1 talks, day 2 workshops. Contact: gistem.almaty@gmail.com.",
+      "url": "https://www.gisday.kz/",
+      "register": "https://docs.google.com/forms/d/e/1FAIpQLSeJgquh15suF2293El1UrBHCNIZyxYvFkZopRmeI0y-nX3Kng/viewform"
+    },
+    {
+      "id": "30day", "name": "#30DayMapChallenge", "org": "Topi Tjukanov and the community",
+      "kind": "Community", "aud": ["open"], "region": "Worldwide", "place": "helsinki",
+      "when": "2026-11-30", "firm": true, "ongoing": true, "label": "1–30 Nov, every year",
+      "prize": "No prize. One map a day on a daily theme; good for visibility and a portfolio.",
+      "fee": "Free", "elig": "Anyone, any tool.",
+      "need": "Post a map for each daily theme with #30DayMapChallenge on any social platform.",
+      "note": "Running now. Themes are on 30daymapchallenge.com.",
+      "url": "https://30daymapchallenge.com/"
+    },
+    {
+      "id": "storymaps", "name": "ArcGIS StoryMaps Competition 2026", "org": "Esri",
+      "kind": "Storytelling", "aud": ["open", "student"], "region": "Worldwide", "place": "redlands",
+      "when": "2026-12-11", "firm": true, "open": true, "label": "11 Dec 2026, 17:00 PT",
+      "prize": "Certificate, feature and interview on the StoryMaps site, award presented at Esri UC 2027. No cash prize listed.",
+      "fee": "Free", "elig": "Age 18+, worldwide, one entry in one of four categories. Separate student finalist slots.",
+      "need": "A published ArcGIS StoryMaps story and the online entry form.",
+      "note": "Up to 5 finalists and 3 student finalists per category, announced 9 Feb 2027, then a public vote. One category is “Seeing What Others Missed”.",
+      "url": "https://www.esri.com/en-us/arcgis/products/arcgis-storymaps/contest/overview"
+    },
+    {
+      "id": "webby", "name": "31st Webby Awards", "org": "International Academy of Digital Arts and Sciences",
+      "kind": "Data viz", "aud": ["open", "industry"], "region": "Worldwide", "place": "newyork",
+      "when": "2026-12-18", "firm": true, "open": true, "label": "18 Dec 2026 (final)",
+      "prize": "Webby and People's Voice awards, including Best Data Visualization and an AI Data Visualization & Reporting category.",
+      "fee": "Paid per entry; rises after each deadline", "elig": "Websites, apps, video and interactive work published online.",
+      "need": "Live URL, category choice and entry fee.",
+      "note": "Early deadline was 30 Oct 2026; extended deadline 5 Feb 2027. Winners in spring 2027.",
+      "url": "https://www.webbyawards.com/eligibility-and-guidelines/"
+    },
+    {
+      "id": "ena", "name": "European Newspaper Award", "org": "European Newspaper Award",
+      "kind": "Data viz", "aud": ["industry"], "region": "Europe", "place": "vienna",
+      "when": "2026-11-30", "firm": false, "label": "Expected late Nov 2026",
+      "prize": "Awards of Excellence, including infographics categories with one focused on maps.",
+      "fee": "Paid entry", "elig": "Newspapers and their websites in Europe; work published 1 Nov 2025 – 15 Nov 2026.",
+      "need": "PDFs or links of the published pages, submitted by the newspaper.",
+      "note": "Submission opened 1 Oct; this round's deadlines are still listed as to be announced. Past rounds closed around the end of November.",
+      "url": "https://newspaperaward.org/"
+    },
+    {
+      "id": "cagis", "name": "54th CaGIS Map Design Competition", "org": "Cartography and Geographic Information Society",
+      "kind": "Map design", "aud": ["open", "student"], "region": "Worldwide", "place": "usa",
+      "when": "2027-01-31", "firm": true, "open": true, "label": "31 Jan 2027",
+      "prize": "Students: $500 + Avenza MAPublisher (Arthur Robinson Award for print, David Woodward Award for digital). Professional categories: awards.",
+      "fee": "Free for students; check the form for professional entries", "elig": "Anyone, for maps completed or published in 2026.",
+      "need": "Entry form by email; a printed copy by post unless the map is digital or interactive.",
+      "note": "Professional categories: Reference, Thematic, Interactive/Digital, Book/Atlas, Recreation/Travel, Other.",
+      "url": "https://cartogis.org/awards/map-competition/"
+    },
+    {
+      "id": "atlas", "name": "Atlas of Design, Volume 8", "org": "NACIS",
+      "kind": "Map design", "aud": ["open", "student"], "region": "Worldwide", "place": "usa",
+      "when": "2027-01-18", "firm": true, "open": true, "label": "18 Jan 2027, 23:59 PST",
+      "prize": "Publication in a printed, juried book of map design, published every two years (Vol. 7 had 33 maps).",
+      "fee": "Free", "elig": "Anyone; no limits on subject, geography or language.",
+      "need": "Map image and description through the online submission form, plus a statement on whether generative AI was used.",
+      "note": "AI-use disclosure is new for Vol. 8 (AoD blog, 23 Oct 2026).",
+      "url": "https://atlasofdesign.org/submit/",
+      "register": "https://atlasofdesign.org/submit/"
+    },
+    {
+      "id": "us-children", "name": "U.S. Children's Map Competition 2027", "org": "CaGIS / USNC-ICA",
+      "kind": "Children", "aud": ["children"], "region": "USA", "place": "newyork",
+      "when": "2027-01-22", "firm": true, "open": true, "label": "22 Jan 2027 (arrival)",
+      "prize": "Exhibition at AAG 2027 in New York (8–12 Feb). Up to six entries go on to the ICA Barbara Petchenik competition.",
+      "fee": "Free", "elig": "US children. Theme: “Maps in Everyday Life”.",
+      "need": "An original drawing and entry form, mailed to the Esri Library in Redlands.",
+      "note": "US qualifying round for the international Petchenik competition at ICC 2027.",
+      "url": "https://cartogis.org/awards/children/"
+    },
+    {
+      "id": "datalab", "name": "The Data Lab Data Visualisation Competition", "org": "The Data Lab (Scotland)",
+      "kind": "Data viz", "aud": ["open", "student"], "region": "Scotland / UK", "place": "edinburgh",
+      "when": "2027-01-15", "firm": true, "open": true, "label": "15 Jan 2027",
+      "prize": "Finalists present online (4–5 Feb 2027); shortlisted entrants invited to DataFest, Edinburgh (12–13 May 2027).",
+      "fee": "Free", "elig": "Members of The Data Lab Community; check the page for residency rules.",
+      "need": "A visualization built on the competition's open data, submitted online.",
+      "note": "Popular with students and early-career analysts.",
+      "url": "https://thedatalab.com/data-visualisation-competition/"
+    },
+    {
+      "id": "sigma", "name": "Sigma Awards", "org": "GIJN (Global Investigative Journalism Network)",
+      "kind": "Data viz", "aud": ["open"], "region": "Worldwide", "place": "aarhus",
+      "when": "2027-01-15", "firm": false, "label": "Expected mid-Jan 2027",
+      "prize": "International recognition for data journalism; map-led projects regularly win.",
+      "fee": "Free", "elig": "Data journalism projects published in 2026.",
+      "need": "Project link and a written description of the data work.",
+      "note": "2026 edition closed 11 Jan 2026, extended to 18 Jan. Call for 2027 not yet published.",
+      "url": "https://www.sigmaawards.org/"
+    },
+    {
+      "id": "pacificvis", "name": "PacificVis 2027 Visual Data Storytelling Contest", "org": "IEEE PacificVis",
+      "kind": "Data viz", "aud": ["open", "student"], "region": "Worldwide", "place": "busan",
+      "when": "2027-02-01", "firm": true, "open": true, "label": "1 Feb 2027",
+      "prize": "Contest awards and presentation at PacificVis, Busan, 19–22 Apr 2027.",
+      "fee": "Conference registration if selected", "elig": "Researchers, students and practitioners.",
+      "need": "A data story plus a short write-up in the conference format.",
+      "note": "Notifications 15 Feb 2027.",
+      "url": "https://pacificvis2027.github.io/contribute/storytelling/"
+    },
+    {
+      "id": "snd", "name": "SND Best of News Design (SND48)", "org": "Society for News Design",
+      "kind": "Data viz", "aud": ["open", "student"], "region": "Worldwide", "place": "usa",
+      "when": "2027-02-14", "firm": false, "label": "Expected mid-Feb 2027",
+      "prize": "Medals and World's Best designations, including information graphics and maps.",
+      "fee": "Paid per entry; prices rise after the standard deadline", "elig": "News organisations, freelancers and students.",
+      "need": "PDFs or links of published work, entered through Award Force.",
+      "note": "SND47: standard deadline 14 Feb 2026, extended 6 Mar 2026.",
+      "url": "https://snd.org/best-of-design-competitions/"
+    },
+    {
+      "id": "ica-honours", "name": "ICA Honours and Awards", "org": "International Cartographic Association",
+      "kind": "Professional", "aud": ["national"], "region": "Worldwide", "place": "warsaw",
+      "when": "2027-02-17", "firm": true, "open": true, "label": "17 Feb 2027 (to ICA)",
+      "prize": "Carl Mannerfelt Gold Medal, Honorary Fellowship and other ICA honours, presented at ICC 2027.",
+      "fee": "Free", "elig": "Nominations come only from ICA national members. National committees set earlier dates (US: 1 Feb 2027).",
+      "need": "A nomination dossier from your national ICA committee.",
+      "note": "Recognises career contributions, not a single map.",
+      "url": "https://cartogis.org/usnc-ica/ica-general-assembly/"
+    },
+    {
+      "id": "armenia", "name": "Open Data Armenia Contest", "org": "Open Data Armenia",
+      "kind": "Data viz", "aud": ["open", "student"], "region": "Armenia & diaspora", "place": "yerevan",
+      "when": "2027-03-06", "firm": false, "label": "Expected Jan–Mar 2027",
+      "prize": "$3,000 total prize fund. Categories: Culture Apps of Armenia, Data Visualization, and a Dateno.io special prize for AI-assisted work.",
+      "fee": "Free", "elig": "Individuals or teams of up to 5, from any country, working with open data about Armenia.",
+      "need": "An openly licensed project (CC, MIT or Apache 2) that stays online for at least a year.",
+      "note": "2026: 14 Jan – 6 Mar 2026, winners announced 13 Mar at Open Data Day in Yerevan.",
+      "url": "https://contest.opendata.am/"
+    },
+    {
+      "id": "eysa", "name": "Esri Young Scholars Award 2027", "org": "Esri distributors (per country)",
+      "kind": "Student", "aud": ["student"], "region": "Per country", "place": "sandiego",
+      "when": "2027-03-15", "firm": false, "label": "Expected March 2027",
+      "prize": "Varies by country. National winners are showcased at the Esri User Conference.",
+      "fee": "Free", "elig": "Students where the local Esri office runs the award; the project must use Esri software.",
+      "need": "A project poster or story map and the national application form.",
+      "note": "2027 round opens Nov 2026. 2026 deadlines: Germany/Switzerland 8 Mar, UK 22 Mar, South Africa 28 Mar.",
+      "url": "https://esriaustralia.com.au/esri-young-scholar-award"
+    },
+    {
+      "id": "agi", "name": "AGI Awards for Excellence", "org": "Association for Geographic Information (UK)",
+      "kind": "Professional", "aud": ["industry"], "region": "UK", "place": "london",
+      "when": "2027-03-12", "firm": false, "label": "Expected mid-Mar 2027",
+      "prize": "Award presented at GEO Business, London (June). One winner per category.",
+      "fee": "Check rules", "elig": "UK geospatial professionals and organisations.",
+      "need": "Written nomination against the category criteria.",
+      "note": "2026 categories: Geospatial Professional, Early Career, Environment & Sustainability, Geospatial Technology, Foresight, Chris Holcroft Award.",
+      "url": "https://www.agi.org.uk/agi-awards/"
+    },
+    {
+      "id": "nicholson", "name": "Norman Nicholson Scholarship", "org": "Canadian Cartographic Association",
+      "kind": "Student", "aud": ["student"], "region": "Canada", "place": "ottawa",
+      "when": "2027-03-29", "firm": false, "label": "29 Mar 2027 (annual date)",
+      "prize": "Scholarship plus student CCA membership.",
+      "fee": "Free", "elig": "Students at Canadian institutions.",
+      "need": "A one-page statement on plans for continuing education in cartography.",
+      "note": "CCA lists 29 March as the yearly application date.",
+      "url": "https://cca-acc.org/about-us/awards-prizes-and-scholarships/norman-nicholson-scholarship/"
+    },
+    {
+      "id": "gwf", "name": "Geospatial World Excellence & Leadership Awards", "org": "Geospatial World",
+      "kind": "Professional", "aud": ["industry"], "region": "Worldwide", "place": "amsterdam",
+      "when": "2027-03-01", "firm": false, "label": "Before GWF, 20–22 Apr 2027",
+      "prize": "Awards presented at Geospatial World Forum, RAI Amsterdam.",
+      "fee": "Check nomination form", "elig": "Companies, agencies and leaders.",
+      "need": "Nomination form describing the product, project or policy.",
+      "note": "Rising Stars 2027 closed 20 Oct 2026. 2027 nomination date not yet published.",
+      "url": "https://geospatialworld.net/gwf/2026/excellence-awards.html"
+    },
+    {
+      "id": "gisci", "name": "GISCI Map Contest", "org": "GIS Certification Institute",
+      "kind": "Map design", "aud": ["open"], "region": "Worldwide", "place": "usa",
+      "when": "2027-04-15", "firm": false, "label": "Expected mid-Apr 2027",
+      "prize": "$125 cash; GISPs get their next renewal fee waived ($285 value). Winning maps shown at Esri UC if made with Esri software.",
+      "fee": "Free", "elig": "Open to map-makers; one winner in each of four categories.",
+      "need": "Map file and the online submission form.",
+      "note": "2026 deadline was 15 April 2026.",
+      "url": "https://www.gisci.org/Learn-More/Map-Contest/2026-Map-Contest"
+    },
+    {
+      "id": "ica-ime", "name": "ICA International Map Exhibition & Map Awards", "org": "International Cartographic Association",
+      "kind": "Map design", "aud": ["national"], "region": "Worldwide", "place": "warsaw",
+      "when": "2027-04-30", "firm": false, "label": "Spring 2027, set by each country",
+      "prize": "International jury awards in six categories plus a public vote, at ICC 2027 Warsaw.",
+      "fee": "Through national member", "elig": "Maps from ICA member countries, submitted by the national ICA member.",
+      "need": "Your map sent to your country's national ICA coordinator. New or revised since ICC 2025.",
+      "note": "Conference theme: Big Data Cartography.",
+      "url": "https://icaci.org/icc2027/"
+    },
+    {
+      "id": "petchenik", "name": "Barbara Petchenik Children's Map Competition", "org": "International Cartographic Association",
+      "kind": "Children", "aud": ["children", "national"], "region": "Worldwide", "place": "warsaw",
+      "when": "2027-05-15", "firm": false, "label": "National rounds, early–mid 2027",
+      "prize": "Awards in four age groups up to 15, a creativity award and a public award.",
+      "fee": "Free", "elig": "Children up to 15, selected through national competitions.",
+      "need": "A hand-drawn map entered through the national round.",
+      "note": "Biennial since 1993.",
+      "url": "https://icaci.org/"
+    },
+    {
+      "id": "cca-web", "name": "CCA Web Map Award", "org": "Canadian Cartographic Association",
+      "kind": "Student", "aud": ["student"], "region": "Canada", "place": "ottawa",
+      "when": "2027-05-14", "firm": true, "label": "14 May 2027",
+      "prize": "Award and recognition at the CCA conference; amount on the CCA page.",
+      "fee": "Free", "elig": "Students at Canadian post-secondary institutions.",
+      "need": "A live interactive web map and the application form.",
+      "note": "Sits alongside CCA's student print map award.",
+      "url": "https://cca-acc.org/about-us/awards-prizes-and-scholarships/cca-web-map-award"
+    },
+    {
+      "id": "ona", "name": "Online Journalism Awards", "org": "Online News Association",
+      "kind": "Data viz", "aud": ["industry"], "region": "Worldwide", "place": "usa",
+      "when": "2027-05-20", "firm": false, "label": "Expected mid–late May 2027",
+      "prize": "OJA awards, some with cash; visual and data storytelling categories.",
+      "fee": "Paid entry", "elig": "News organisations and journalists publishing online.",
+      "need": "Links to published work and an entry statement.",
+      "note": "2026 deadlines: early 12 May, late 21 May.",
+      "url": "https://awards.journalists.org/awards/"
+    },
+    {
+      "id": "esri-uc", "name": "Esri UC Map Gallery 2027", "org": "Esri",
+      "kind": "Map design", "aud": ["open", "industry"], "region": "Worldwide", "place": "sandiego",
+      "when": "2027-05-28", "firm": false, "label": "Expected late May 2027",
+      "prize": "Top three per category recognised at the UC closing session; Mapper's Choice and the ICA-IMIA Excellence in Cartography award.",
+      "fee": "Free for UC attendees", "elig": "Esri UC attendees; the map must use Esri software.",
+      "need": "Map file (print or digital) through the Call for Maps form, and a UC registration.",
+      "note": "Past deadlines: 29 May 2026, 6 Jun 2024.",
+      "url": "https://www.esri.com/en-us/about/events/uc/get-involved/call-for-maps"
+    },
+    {
+      "id": "bcs-jolly", "name": "BCS Peter Jolly Award", "org": "British Cartographic Society",
+      "kind": "Map design", "aud": ["members"], "region": "UK", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "Best map or data visualisation, chosen by a vote of BCS members. Supported by Ordnance Survey.",
+      "fee": "BCS membership", "elig": "BCS members only; any single map or geographic data visualisation, print or digital.",
+      "need": "The Peter Jolly entry form and the map file.",
+      "note": "BCS publishes 2027 award details in February 2027. The 2025 awards closed 22 June 2025.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-stanfords", "name": "BCS Stanfords Award for Printed Mapping", "org": "British Cartographic Society with Stanfords",
+      "kind": "Map design", "aud": ["open"], "region": "Worldwide", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "Trophy and certificate.",
+      "fee": "Check rules", "elig": "Any printed mapping: poster, folded sheet map, atlas or book page.",
+      "need": "Electronic entry plus a hard copy that reaches the BCS Awards Officer by the closing date.",
+      "note": "2026 winner: “The Boroughs of London” by Mike Hall and Matt Brown.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-collins", "name": "BCS Collins Bartholomew Award", "org": "British Cartographic Society with HarperCollins",
+      "kind": "Map design", "aud": ["open"], "region": "Worldwide", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "Trophy and certificate for thematic mapping and infographics.",
+      "fee": "Check rules", "elig": "Thematic maps and infographics that communicate their theme well.",
+      "need": "The BCS awards form and the map or infographic.",
+      "note": "Judged on originality and clarity of the theme.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-os-student", "name": "BCS Ordnance Survey Student Award", "org": "British Cartographic Society with Ordnance Survey",
+      "kind": "Student", "aud": ["student"], "region": "Worldwide", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "£100, a year of OS Maps, a trophy and a certificate.",
+      "fee": "Check rules", "elig": "Full- or part-time students.",
+      "need": "The BCS awards form and a map or visualisation that uses geographic data in a new way.",
+      "note": "Rewards innovative use and visualisation of geographic data.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-garsdale", "name": "BCS Garsdale Design Award (3D Cartography)", "org": "British Cartographic Society with Garsdale Design",
+      "kind": "Map design", "aud": ["open"], "region": "Worldwide", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "Annual award for 3D cartography, sponsored by GD3D.",
+      "fee": "Check rules", "elig": "Anyone making 3D cartography, real or imagined, in any technique or medium.",
+      "need": "The BCS awards form plus images or a video of the 3D work.",
+      "note": "A good fit for 3D renders and physical relief models.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-digital", "name": "BCS Digital Mapping Award", "org": "British Cartographic Society",
+      "kind": "Map design", "aud": ["open"], "region": "Worldwide", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "Award for mapping made for digital use.",
+      "fee": "Check rules", "elig": "Digital maps, GIS projects, interactive web maps, enhanced digital mapping.",
+      "need": "The BCS awards form and a link to the digital product.",
+      "note": "Covers interactive web maps and story maps.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-mumford", "name": "BCS Ian Mumford Award", "org": "British Cartographic Society",
+      "kind": "Student", "aud": ["student"], "region": "Worldwide", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "Award for original cartographic research by a student.",
+      "fee": "Free", "elig": "University and college students, full or part time.",
+      "need": "The Ian Mumford form, the research work and a tutor recommendation.",
+      "note": "For research, such as a thesis or a dissertation chapter, rather than a single map.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-children", "name": "BCS Children's Map Competition", "org": "British Cartographic Society with Dennis Maps",
+      "kind": "Children", "aud": ["children"], "region": "UK", "place": "edinburgh",
+      "when": "2027-06-21", "firm": false, "label": "Expected June 2027",
+      "prize": "A prize and certificate for the overall winner in each age group.",
+      "fee": "Free", "elig": "Children, in age groups; a yearly theme.",
+      "need": "A map drawn on the year's theme and the entry form.",
+      "note": "Separate from the ICA Petchenik competition, which BCS also runs for the UK.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "bcs-johns", "name": "BCS Henry Johns Award", "org": "British Cartographic Society with Lovell Johns",
+      "kind": "Professional", "aud": ["open"], "region": "Worldwide", "place": "edinburgh",
+      "firm": false, "label": "No entry; chosen from the journal",
+      "prize": "£100 and a certificate for the best paper in The Cartographic Journal.",
+      "fee": "None", "elig": "Authors of papers in the previous volume of The Cartographic Journal.",
+      "need": "Publish a paper in The Cartographic Journal.",
+      "note": "Presented at the BCS annual conference.",
+      "url": "https://www.cartography.org.uk/awards"
+    },
+    {
+      "id": "osm", "name": "OpenStreetMap Awards", "org": "OSM community (with OSMF)",
+      "kind": "Community", "aud": ["open"], "region": "Worldwide", "place": "paris",
+      "when": "2027-07-15", "firm": false, "label": "Expected summer 2027",
+      "prize": "Community-voted awards presented at State of the Map.",
+      "fee": "Free", "elig": "Anyone can nominate OSM contributors, teams and projects.",
+      "need": "A nomination on awards.openstreetmap.org.",
+      "note": "2025: nominations until 23 Jul, seven categories. No 2026 edition found.",
+      "url": "https://awards.openstreetmap.org/"
+    },
+    {
+      "id": "gsa", "name": "Best Student Geologic Map Competition", "org": "USGS NCGMP and GSA",
+      "kind": "Student", "aud": ["student"], "region": "USA (open to all students)", "place": "usa",
+      "when": "2027-07-20", "firm": false, "label": "Via GSA Connects abstract, mid-2027",
+      "prize": "Awards from the sponsoring societies; poster presented at GSA Connects.",
+      "fee": "GSA abstract and meeting fees", "elig": "Any student with a geologic map poster.",
+      "need": "A GSA Connects abstract in the Best Student Geologic Map topical session, then the poster.",
+      "note": "2026 edition had 20 posters at GSA Connects in Denver.",
+      "url": "https://www.usgs.gov/programs/national-cooperative-geologic-mapping-program/science/best-student-geologic-map"
+    },
+    {
+      "id": "ravenstein", "name": "Ravenstein-Förderpreis", "org": "Kartographie-Stiftung Ravenstein with DGfK",
+      "kind": "Student", "aud": ["student"], "region": "Germany, Austria, Switzerland", "place": "frankfurt",
+      "when": "2027-08-27", "firm": false, "label": "Expected late Aug 2027",
+      "prize": "Prize money, a free one-year DGfK membership and a certificate.",
+      "fee": "Free", "elig": "Cartography trainees and university students in German-speaking countries.",
+      "need": "Online submission through the foundation's portal: the map or project and a short description.",
+      "note": "2026 entries closed 28 Aug 2026; the 2026 ceremony is on 12 Nov 2026 in Frankfurt am Main, where the foundation is based.",
+      "url": "https://www.kartographie-stiftung-ravenstein.de/",
+      "register": "https://www.kartographie-stiftung-ravenstein.de/preisverleihung.php"
+    },
+    {
+      "id": "nacis-poster", "name": "NACIS Student Map & Poster Competition", "org": "North American Cartographic Information Society",
+      "kind": "Student", "aud": ["student"], "region": "Worldwide", "place": "usa",
+      "when": "2027-08-31", "firm": false, "label": "Expected 31 Aug 2027",
+      "prize": "$500.",
+      "fee": "Free", "elig": "Students enrolled during the 2026–27 academic year.",
+      "need": "Map or research poster as PNG, PDF or JPEG.",
+      "note": "Winners announced at the NACIS annual meeting. Questions: posters@nacis.org.",
+      "url": "https://nacis.org/awards/student-map-and-poster-competition/"
+    },
+    {
+      "id": "nacis-dyn", "name": "NACIS Student Dynamic Map Competition", "org": "North American Cartographic Information Society",
+      "kind": "Student", "aud": ["student"], "region": "Worldwide", "place": "usa",
+      "when": "2027-08-31", "firm": false, "label": "Expected 31 Aug 2027",
+      "prize": "$500 for an individual project, $500 for a group project.",
+      "fee": "Free", "elig": "Students; interactive or animated maps made in the current academic year.",
+      "need": "A link to the live interactive or animated map.",
+      "note": "28th edition ran at NACIS 2026.",
+      "url": "https://nacis.org/awards/student-dynamic-map-competition/"
+    },
+    {
+      "id": "geohipster", "name": "GeoHipster Calendar", "org": "GeoHipster",
+      "kind": "Map design", "aud": ["open"], "region": "Worldwide", "place": "usa",
+      "when": "2026-10-23", "firm": true, "label": "2027 call closed 23 Oct 2026",
+      "prize": "About 14 maps printed in the yearly calendar; winners get a free calendar and a write-up.",
+      "fee": "Free", "elig": "Any map you made, alone or with colleagues.",
+      "need": "Hi-res JPG or PNG, landscape, 8 × 10.5 in (20.32 × 26.67 cm) or proportional, with ¼ in bleed and ½ in margins; little small text. Sent by email.",
+      "note": "The call usually opens in July. Leave room for the author box GeoHipster adds in a corner.",
+      "url": "https://www.geohipster.com/2026/07/13/2027-geohipster-calendar/"
+    },
+    {
+      "id": "swissviz", "name": "Swiss Viz Awards", "org": "D ONE and Data Innovation Alliance",
+      "kind": "Data viz", "aud": ["open", "student"], "region": "Switzerland", "place": "zurich",
+      "when": "2027-10-29", "firm": false, "label": "Expected late Oct 2027",
+      "prize": "Official Swiss Viz Award per category and promotion on Data Innovation Alliance channels.",
+      "fee": "Free", "elig": "Anyone, for work made in or about Switzerland.",
+      "need": "Title, image or video, link, category, purpose, audience, impact, publication date and authors.",
+      "note": "Categories: Public Lens, Operational Insight, Avant-Garde, Student Work. 2026 round closed 30 Oct; ceremony 10 Dec 2026.",
+      "url": "https://www.swissviz.org/"
+    },
+    {
+      "id": "ironviz", "name": "Tableau Iron Viz", "org": "Tableau (Salesforce)",
+      "kind": "Data viz", "aud": ["open", "student"], "region": "Worldwide", "place": "seattle",
+      "firm": false, "label": "Qualifier usually in autumn",
+      "prize": "Champion: $15,000 plus $15,000 to a nonprofit. Runners-up: $6,000 plus $6,000. Top 10 qualifiers: $200 Tableau Store card.",
+      "fee": "Free", "elig": "Tableau Public users; separate Student Iron Viz.",
+      "need": "A visualization published on Tableau Public on the qualifier's theme.",
+      "note": "Qualifier is open for about a month (2025 edition closed 31 Oct 2024).",
+      "url": "https://www.tableau.com/community/iron-viz"
+    },
+    {
+      "id": "iib", "name": "Information is Beautiful Awards", "org": "Data Visualization Society",
+      "kind": "Data viz", "aud": ["open"], "region": "Worldwide", "place": "london",
+      "firm": false, "label": "Next cycle not announced",
+      "prize": "Gold, silver and bronze per category, plus shortlist and longlist.",
+      "fee": "Check terms", "elig": "Any data visualization, maps included.",
+      "need": "Link or images of the work and a short description.",
+      "note": "Last cycle ran 15 Dec 2024 – 3 Feb 2025.",
+      "url": "https://www.informationisbeautifulawards.com/"
+    },
+    {
+      "id": "malofiej", "name": "Malofiej Awards", "org": "SND-E (Spanish chapter of SND)",
+      "kind": "Data viz", "aud": ["open"], "region": "Worldwide", "place": "pamplona",
+      "firm": false, "label": "Status unclear",
+      "prize": "Medals for news infographics, including maps.",
+      "fee": "Paid entry", "elig": "Newsrooms and infographic designers.",
+      "need": "Published graphics, print or online.",
+      "note": "Historically judged in Pamplona each March. No current call found.",
+      "url": "https://en.wikipedia.org/wiki/Malofiej_Awards"
+    },
+    {
+      "id": "wdvp", "name": "World Data Visualization Prize", "org": "World Government Summit",
+      "kind": "Data viz", "aud": ["open"], "region": "Worldwide", "place": "dubai",
+      "firm": false, "label": "Status unclear",
+      "prize": "Grand prize and category prizes, announced at the World Government Summit.",
+      "fee": "Free", "elig": "Anyone.",
+      "need": "A visualization on the round's theme.",
+      "note": "Started in 2019. Most recent winners found are from 2023.",
+      "url": "https://worldgovernmentsummit.org/awards/world-data-visualization-prize"
+    },
+    {
+      "id": "copernicus", "name": "Copernicus Masters", "org": "ESA / European Commission partners",
+      "kind": "Earth observation", "aud": ["open", "industry"], "region": "Worldwide", "place": "munich",
+      "firm": false, "label": "Status unclear",
+      "prize": "Cash, incubation and data access for Earth observation ideas and start-ups.",
+      "fee": "Free", "elig": "Individuals, teams, start-ups and researchers.",
+      "need": "An idea or product pitch on the online platform.",
+      "note": "Past calls ran early summer. Also see the EUSPA CASSINI Challenges.",
+      "url": "https://copernicus-masters.com/"
+    },
+    {
+      "id": "esri-india", "name": "Esri India StoryMaps Challenge", "org": "Esri India",
+      "kind": "Storytelling", "aud": ["open", "student"], "region": "India", "place": "delhi",
+      "firm": false, "label": "2026 cycle, see page",
+      "prize": "1st prize ₹1,00,000.",
+      "fee": "Free", "elig": "Residents of India.",
+      "need": "A published ArcGIS StoryMaps story.",
+      "note": "Separate from the global StoryMaps Competition.",
+      "url": "https://www.esri.in/en-in/products/arcgis-storymaps/contest/overview"
+    },
+    {
+      "id": "mapscom", "name": "Maps.com map submissions", "org": "Maps.com (Esri)",
+      "kind": "Showcase", "aud": ["open"], "region": "Worldwide", "place": "redlands",
+      "rolling": true, "firm": false, "label": "Rolling, any time",
+      "prize": "No prize. Selected maps get an editorial profile with a link back to your work.",
+      "fee": "Free", "elig": "Anyone with a published static map, interactive map or video.",
+      "need": "Title, description, a public URL of the map, data sources, and permission to feature it.",
+      "note": "Editors look for maps that are bold but still easy to read.",
+      "url": "https://www.maps.com/submit-map/",
+      "register": "https://www.maps.com/submit-map/"
+    }
+  ]
+}

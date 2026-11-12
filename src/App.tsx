@@ -20,6 +20,7 @@ const SkillsPage = lazy(() => import('./pages/SkillsPage'));
 const ConnectPage = lazy(() => import('./pages/ConnectPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
+const MapAwardsPage = lazy(() => import('./pages/MapAwardsPage'));
 
 /**
  * The atlas fills the viewport and is a screen, not a document: a footer
@@ -30,6 +31,8 @@ function AppFooter() {
   const { pathname } = useLocation();
   const { mode, supported } = useViewMode();
   if (pathname === '/' && mode === 'map' && supported) return null;
+  // The awards map is a full-screen screen too.
+  if (pathname === '/blog/map-awards') return null;
   return <Footer />;
 }
 
@@ -63,6 +66,7 @@ export default function App() {
             <Route path="/skills" element={<SkillsPage />} />
             <Route path="/connect" element={<ConnectPage />} />
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/map-awards" element={<MapAwardsPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

@@ -56,6 +56,7 @@ const SECTIONS = [
   { path: '/about', title: 'About', description: 'From Astana to Munich, Vienna and Dresden — the route through geodesy, GIS and cartography, told on a globe.', priority: '0.8' },
   { path: '/skills', title: 'Skills', description: 'Cartography, GIS, remote sensing, web mapping and data visualisation — each skill linked to the work that used it.', priority: '0.7' },
   { path: '/blog', title: 'Blog', description: 'Notes, tutorials and map breakdowns on cartography, QGIS and geospatial storytelling.', priority: '0.7' },
+  { path: '/blog/map-awards', title: 'Map Awards Calendar', description: 'Every cartography, GIS and data visualization award on one map: deadlines, prizes, what to submit, and a calendar feed for Google, Apple and Outlook.', image: '/images/blog/map-awards/cover.jpg', imageAlt: 'Map Awards Calendar', priority: '0.7' },
   { path: '/connect', title: 'Connect', description: 'Open to job offers and collaboration. LinkedIn, Instagram, TikTok, Bluesky, Telegram, YouTube and email.', priority: '0.6' },
 ];
 
