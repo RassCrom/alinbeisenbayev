@@ -120,3 +120,10 @@ it('loads the map only when it is chosen', async () => {
   expect(await view.findByTestId('map-view')).not.toBeNull();
   expect(cards(view.container)).toHaveLength(0);
 });
+
+it('loads the first card of the grid eagerly and the rest lazily', () => {
+  // jsdom matches no media query, so this is the one-column phone layout.
+  const images = [...at('/works').container.querySelectorAll<HTMLImageElement>('.works__cell img')];
+  expect(images[0].getAttribute('loading')).toBe('eager');
+  expect(images.slice(1).every((img) => img.getAttribute('loading') === 'lazy')).toBe(true);
+});

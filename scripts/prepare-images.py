@@ -29,7 +29,7 @@ PUBLIC = ROOT / "public"
 OG_DIR = PUBLIC / "og"
 MANIFEST = ROOT / "src" / "data" / "image-variants.json"
 
-WIDTHS = (640, 1280, 1920)
+WIDTHS = (640, 960, 1280, 1920)
 # A variant is only worth a request when it is clearly smaller than the original.
 MIN_SHRINK = 1.15
 WEBP_QUALITY = 80

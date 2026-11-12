@@ -11,6 +11,8 @@ import type { GalleryItem } from '../../types';
 export interface PieceCardProps {
   item: GalleryItem;
   onOpen: (item: GalleryItem) => void;
+  /** Load the image eagerly: for a card that is on screen when the page opens. */
+  priority?: boolean;
 }
 
 /**
@@ -21,7 +23,7 @@ export interface PieceCardProps {
  * mouse, and never for a visitor on data saver or with reduced motion: on
  * touch there is no hover to end it, and the full clip is one tap away.
  */
-export default function PieceCard({ item, onOpen }: PieceCardProps) {
+export default function PieceCard({ item, onOpen, priority = false }: PieceCardProps) {
   const [previewing, setPreviewing] = useState(false);
   const isVideo = item.kind === 'video';
   const label = firstOfferLabel(item.offers ?? []);
@@ -49,6 +51,7 @@ export default function PieceCard({ item, onOpen }: PieceCardProps) {
         height={item.height}
         ratio={String(cardRatio(item.width, item.height))}
         sizes={COVER_SIZES.cardThird}
+        priority={priority}
         overlay={
           <>
             {previewing && (

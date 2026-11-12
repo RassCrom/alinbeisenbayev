@@ -14,13 +14,15 @@ export interface WorkCardProps {
   size?: 'lead' | 'half';
   /** Cover shape, e.g. '3 / 2'. Defaults to 16 / 9 for the lead and 4 / 3 otherwise. */
   ratio?: string;
+  /** Load the cover eagerly: for a card that is on screen when the page opens. */
+  priority?: boolean;
 }
 
 /**
  * A work, as the cover, its title and one line saying what kind of thing it
  * is. Nothing else: the cover is the argument.
  */
-export default function WorkCard({ project, size = 'half', ratio }: WorkCardProps) {
+export default function WorkCard({ project, size = 'half', ratio, priority = false }: WorkCardProps) {
   const { slug, title, coverImage } = project;
   const label = firstOfferLabel(project.offers ?? []);
   const lead = size === 'lead';
@@ -103,6 +105,7 @@ export default function WorkCard({ project, size = 'half', ratio }: WorkCardProp
         height={900}
         ratio={ratio ?? (lead ? '16 / 9' : '4 / 3')}
         sizes={lead ? COVER_SIZES.hero : COVER_SIZES.card}
+        priority={priority}
         /* Paired with the same name on the detail hero. Scoped per slug: two
            elements sharing a name in one snapshot abort the transition. */
         viewTransitionName={`cover-${slug}`}

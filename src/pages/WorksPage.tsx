@@ -163,12 +163,13 @@ export default function WorksPage() {
           <div className="works__grid" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
             {grid.map((column, index) => (
               <div key={index} className="works__column">
-                {column.map((entry) => (
+                {column.map((entry, row) => (
                   <div key={entry.id} className="works__cell">
+                    {/* The top card of each column is on screen at once; it should not wait to be scrolled to. */}
                     {entry.kind === 'project' ? (
-                      <WorkCard project={entry.project} />
+                      <WorkCard project={entry.project} priority={row === 0} />
                     ) : (
-                      <PieceCard item={entry.item} onOpen={(item) => update({ item: item.id })} />
+                      <PieceCard item={entry.item} priority={row === 0} onOpen={(item) => update({ item: item.id })} />
                     )}
                   </div>
                 ))}
