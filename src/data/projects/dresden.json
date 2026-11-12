@@ -10,6 +10,9 @@
       "featuredOrder": 7,
       "type": "static-map",
       "category": "print",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "history",
         "Gulag",

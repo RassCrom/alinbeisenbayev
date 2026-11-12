@@ -10,6 +10,9 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "cartography"
       ],

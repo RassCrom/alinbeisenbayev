@@ -80,7 +80,7 @@ LOOP_CRF = 30
 POSTER_MAX = 1080
 
 # Fields a person may edit in the manifest; a re-run never overwrites them.
-EDITABLE = ("title", "series", "date", "hidden")
+EDITABLE = ("title", "series", "date", "hidden", "offers", "workSlug")
 
 SKIP_DIRS = {"draft", "drafts", "wip", "archive", "trash", "process", "sketches"}
 SKIP_WORDS = re.compile(r"(?:^|[\s_.\-])(draft|wip|test|tmp|temp|backup|copy)(?=$|[\s_.\-\d])", re.I)
@@ -408,7 +408,7 @@ def main() -> None:
     MANIFEST.write_text(
         json.dumps(
             {
-                "_note": "Written by scripts/gallery.py. Edit title, series, date or add \"hidden\": true — those edits survive re-runs.",
+                "_note": "Written by scripts/gallery.py. Edit title, series, date, offers, workSlug or add \"hidden\": true — those edits survive re-runs.",
                 "items": items,
             },
             indent=2,

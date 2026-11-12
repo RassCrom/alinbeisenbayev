@@ -1,10 +1,13 @@
 {
-  "_note": "Written by scripts/gallery.py. Edit title, series, date or add \"hidden\": true — those edits survive re-runs.",
+  "_note": "Written by scripts/gallery.py. Edit title, series, date, offers, workSlug or add \"hidden\": true — those edits survive re-runs.",
   "items": [
     {
       "id": "oregon-fires-2024-vs-2026-portrait",
       "key": "./oregon_fires_2024_vs_2026_portrait:video",
-      "title": "Oregon Fires 2024 vs 2026 Portrait",
+      "title": "Oregon fires, 2024 and 2026",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-22",
       "kind": "video",
       "width": 1080,
@@ -22,7 +25,10 @@
     {
       "id": "seriea-2026-27-title-chances",
       "key": "./seriea-2026-27-title-chances:video",
-      "title": "Seriea 2026 27 Title Chances",
+      "title": "Serie A 2026–27 title chances",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-20",
       "kind": "video",
       "width": 1080,
@@ -40,7 +46,10 @@
     {
       "id": "uzbekistan-river-pulse-paper-60fps",
       "key": "./uzbekistan_river_pulse_paper_60fps:video",
-      "title": "Uzbekistan River Pulse Paper 60fps",
+      "title": "Uzbekistan's river pulse",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-18",
       "kind": "video",
       "width": 1080,
@@ -58,7 +67,10 @@
     {
       "id": "beni-meander",
       "key": "./beni_meander:video",
-      "title": "Beni Meander",
+      "title": "Beni River meanders",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-17",
       "kind": "video",
       "width": 1080,
@@ -76,7 +88,12 @@
     {
       "id": "austria-population-mountains-worldpop-2025-sst",
       "key": "./austria_population_mountains_worldpop_2025_sst:image",
-      "title": "Austria Population Mountains Worldpop 2025 Sst",
+      "title": "Austria's population peaks",
+      "offers": [
+        "data-visualization",
+        "spatial-analysis"
+      ],
+      "workSlug": "population-peaks",
       "date": "2026-09-16",
       "kind": "image",
       "width": 1080,
@@ -94,7 +111,12 @@
     {
       "id": "france-population-mountains-worldpop-2025-sst",
       "key": "./france_population_mountains_worldpop_2025_sst:image",
-      "title": "France Population Mountains Worldpop 2025 Sst",
+      "title": "France's population peaks",
+      "offers": [
+        "data-visualization",
+        "spatial-analysis"
+      ],
+      "workSlug": "population-peaks",
       "date": "2026-09-16",
       "kind": "image",
       "width": 1080,
@@ -112,7 +134,12 @@
     {
       "id": "kazakhstan-population-mountains-worldpop-2025-sst-3x",
       "key": "./kazakhstan_population_mountains_worldpop_2025_sst_3x:image",
-      "title": "Kazakhstan Population Mountains Worldpop 2025 Sst 3x",
+      "title": "Kazakhstan's population peaks",
+      "offers": [
+        "data-visualization",
+        "spatial-analysis"
+      ],
+      "workSlug": "population-peaks",
       "date": "2026-09-16",
       "kind": "image",
       "width": 2048,
@@ -132,7 +159,10 @@
     {
       "id": "vanishing-ranges",
       "key": "./vanishing_ranges:video",
-      "title": "Vanishing Ranges",
+      "title": "Vanishing ranges",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-16",
       "kind": "video",
       "width": 1080,
@@ -150,7 +180,10 @@
     {
       "id": "warming-united-states-map",
       "key": "./warming_united-states_map:video",
-      "title": "Warming United States Map",
+      "title": "The warming of the United States",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-16",
       "kind": "video",
       "width": 1080,
@@ -168,7 +201,11 @@
     {
       "id": "metro-animation-stock-tt-3",
       "key": "metro-animation/stock-tt-3:video",
-      "title": "Stock Tt 3",
+      "title": "Stockholm metro, growth",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "metro-animation",
       "series": "Metro Animation",
       "date": "2026-09-15",
       "kind": "video",
@@ -187,7 +224,10 @@
     {
       "id": "forest-1992-2020",
       "key": "./forest_1992_2020:video",
-      "title": "Forest 1992 2020",
+      "title": "Forest cover, 1992–2020",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-14",
       "kind": "video",
       "width": 1080,
@@ -205,7 +245,11 @@
     {
       "id": "metro-animation-lausanne-2",
       "key": "metro-animation/lausanne-2:video",
-      "title": "Lausanne 2",
+      "title": "Lausanne metro",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "metro-animation",
       "series": "Metro Animation",
       "date": "2026-09-14",
       "kind": "video",
@@ -225,6 +269,9 @@
       "id": "safires",
       "key": "./safires:video",
       "title": "Safires",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-14",
       "kind": "video",
       "width": 1080,
@@ -242,7 +289,10 @@
     {
       "id": "tsunami-tohoku-preview",
       "key": "./tsunami_tohoku_preview:image",
-      "title": "Tsunami Tohoku Preview",
+      "title": "Tōhoku tsunami",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-14",
       "kind": "image",
       "width": 1080,
@@ -260,7 +310,12 @@
     {
       "id": "zurich-v2-years-3d",
       "key": "./zurich_v2_years_3d:video",
-      "title": "Zurich V2 Years 3d",
+      "title": "Zurich buildings by year",
+      "offers": [
+        "data-visualization",
+        "spatial-analysis"
+      ],
+      "workSlug": "building-ages",
       "date": "2026-09-14",
       "kind": "video",
       "width": 1080,
@@ -278,7 +333,10 @@
     {
       "id": "5-germany-unrest-v2-4x5",
       "key": "./5 germany_unrest_v2_4x5:video",
-      "title": "5 germany unrest v2 4x5",
+      "title": "Unrest in Germany",
+      "offers": [
+        "data-journalism"
+      ],
       "date": "2026-09-13",
       "kind": "video",
       "width": 1080,
@@ -296,7 +354,11 @@
     {
       "id": "metro-animation-berlin-morph",
       "key": "metro-animation/berlin-morph:video",
-      "title": "Berlin Morph",
+      "title": "Berlin metro",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "metro-animation",
       "series": "Metro Animation",
       "date": "2026-09-13",
       "kind": "video",
@@ -315,7 +377,10 @@
     {
       "id": "dodo-pizza-kaz",
       "key": "./dodo-pizza-kaz:image",
-      "title": "Dodo Pizza Kaz",
+      "title": "Dodo Pizza in Kazakhstan",
+      "offers": [
+        "spatial-analysis"
+      ],
       "date": "2026-09-13",
       "kind": "image",
       "width": 1080,
@@ -333,7 +398,10 @@
     {
       "id": "first-voyage-around-the-world-dark",
       "key": "./first-voyage-around-the-world-dark:video",
-      "title": "First Voyage Around the World Dark",
+      "title": "The first voyage around the world",
+      "offers": [
+        "custom-maps"
+      ],
       "date": "2026-09-13",
       "kind": "video",
       "width": 1080,
@@ -351,7 +419,10 @@
     {
       "id": "us-open-womens-champions-2000-2026",
       "key": "./us_open_womens_champions_2000_2026:video",
-      "title": "Us Open Womens Champions 2000 2026",
+      "title": "US Open women's champions, 2000–2026",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-13",
       "kind": "video",
       "width": 1080,
@@ -369,7 +440,10 @@
     {
       "id": "ocean-chlorophyl",
       "key": "./ocean_chlorophyl:image",
-      "title": "Ocean Chlorophyl",
+      "title": "Ocean chlorophyll",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-12",
       "kind": "image",
       "width": 1080,
@@ -387,7 +461,10 @@
     {
       "id": "temperature-anomaly",
       "key": "./temperature_anomaly:image",
-      "title": "Temperature Anomaly",
+      "title": "Temperature anomaly",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-12",
       "kind": "image",
       "width": 1080,
@@ -405,7 +482,10 @@
     {
       "id": "temperature-anomaly-bathy",
       "key": "./temperature_anomaly_bathy:image",
-      "title": "Temperature Anomaly Bathy",
+      "title": "Temperature anomaly with bathymetry",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-09-12",
       "kind": "image",
       "width": 1080,
@@ -423,7 +503,11 @@
     {
       "id": "trains-of-netherlands-20260922-night",
       "key": "./trains_of_netherlands_20260922_night:video",
-      "title": "Trains of Netherlands 20260922 Night",
+      "title": "Trains of the Netherlands at night",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "train-movements",
       "date": "2026-09-12",
       "kind": "video",
       "width": 1080,
@@ -441,7 +525,10 @@
     {
       "id": "art-style",
       "key": "./art_style:image",
-      "title": "Art Style",
+      "title": "Art style",
+      "offers": [
+        "custom-maps"
+      ],
       "date": "2026-09-09",
       "kind": "image",
       "width": 720,
@@ -459,7 +546,10 @@
     {
       "id": "3-europe-at-nomad-games-26",
       "key": "./3 europe-at-nomad-games-26:image",
-      "title": "3 europe-at-nomad-games-26",
+      "title": "Europe at the Nomad Games 2026",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-07",
       "kind": "image",
       "width": 1080,
@@ -477,7 +567,10 @@
     {
       "id": "kazakhstan-2022-2026",
       "key": "./kazakhstan_2022_2026:video",
-      "title": "Kazakhstan 2022 2026",
+      "title": "Kazakhstan, 2022–2026",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-07",
       "kind": "video",
       "width": 1080,
@@ -495,7 +588,10 @@
     {
       "id": "warming-kazakhstan",
       "key": "./warming_kazakhstan:video",
-      "title": "Warming Kazakhstan",
+      "title": "The warming of Kazakhstan",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-07",
       "kind": "video",
       "width": 1080,
@@ -513,7 +609,11 @@
     {
       "id": "at-rail-travel-20260904-experiment",
       "key": "./at_rail_travel_20260904_experiment:video",
-      "title": "At Rail Travel 20260904 Experiment",
+      "title": "Austria by rail, experiment",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "train-movements",
       "date": "2026-09-04",
       "kind": "video",
       "width": 1080,
@@ -531,7 +631,12 @@
     {
       "id": "amsterdam-v2-years-3d",
       "key": "./amsterdam_v2_years_3d:video",
-      "title": "Amsterdam V2 Years 3d",
+      "title": "Amsterdam buildings by year",
+      "offers": [
+        "data-visualization",
+        "spatial-analysis"
+      ],
+      "workSlug": "building-ages",
       "date": "2026-09-03",
       "kind": "video",
       "width": 1080,
@@ -549,7 +654,10 @@
     {
       "id": "heat-peaks-austria-july-2026",
       "key": "./heat-peaks-austria-july-2026:video",
-      "title": "Heat Peaks Austria July 2026",
+      "title": "Heat peaks in Austria, July 2026",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-09-03",
       "kind": "video",
       "width": 1080,
@@ -567,7 +675,11 @@
     {
       "id": "metro-animation-prague-light",
       "key": "metro-animation/prague-light:video",
-      "title": "Prague Light",
+      "title": "Prague metro, light",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "metro-animation",
       "series": "Metro Animation",
       "date": "2026-09-03",
       "kind": "video",
@@ -586,7 +698,10 @@
     {
       "id": "germany-flight-movement",
       "key": "./germany_flight_movement:video",
-      "title": "Germany Flight Movement",
+      "title": "Flights over Germany",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-08-30",
       "kind": "video",
       "width": 1080,
@@ -604,7 +719,11 @@
     {
       "id": "switzerland-train-movement-real-delays-aug25",
       "key": "./switzerland_train_movement_real_delays_aug25:video",
-      "title": "Switzerland Train Movement Real Delays Aug25",
+      "title": "Swiss trains with real delays",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "train-movements",
       "date": "2026-08-30",
       "kind": "video",
       "width": 1080,
@@ -622,7 +741,11 @@
     {
       "id": "austria-rail-travel-2024-09-04",
       "key": "./austria_rail_travel_2024-09-04:video",
-      "title": "Austria Rail Travel 2024 09 04",
+      "title": "Austria by rail",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "train-movements",
       "date": "2026-08-29",
       "kind": "video",
       "width": 1080,
@@ -640,7 +763,11 @@
     {
       "id": "germany-rail-travel-2026-09-05-zoomed-centered-daylight",
       "key": "./germany_rail_travel_2026-09-05_zoomed_centered_daylight:image",
-      "title": "Germany Rail Travel 2026 09 05 Zoomed Centered Daylight",
+      "title": "Germany by rail",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "train-movements",
       "date": "2026-08-29",
       "kind": "image",
       "width": 1080,
@@ -658,7 +785,10 @@
     {
       "id": "kazakhstan-lightning-2025",
       "key": "./kazakhstan_lightning_2025:video",
-      "title": "Kazakhstan Lightning 2025",
+      "title": "Lightning over Kazakhstan, 2025",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2026-08-29",
       "kind": "video",
       "width": 1080,
@@ -676,7 +806,10 @@
     {
       "id": "coral-city-roads-almaty",
       "key": "coral-city-roads/almaty:video",
-      "title": "Almaty",
+      "title": "Almaty street network",
+      "offers": [
+        "custom-maps"
+      ],
       "series": "Coral City Roads",
       "date": "2026-07-17",
       "kind": "video",
@@ -695,7 +828,10 @@
     {
       "id": "2-dogs-vienna-map",
       "key": "./2 dogs-vienna-map:image",
-      "title": "2 dogs-vienna-map",
+      "title": "Dogs of Vienna",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-07-13",
       "kind": "image",
       "width": 1080,
@@ -713,7 +849,11 @@
     {
       "id": "metro-animation-vienna",
       "key": "metro-animation/vienna:video",
-      "title": "Vienna",
+      "title": "Vienna metro",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "metro-animation",
       "series": "Metro Animation",
       "date": "2026-07-09",
       "kind": "video",
@@ -732,7 +872,11 @@
     {
       "id": "metro-animation-stockholm",
       "key": "metro-animation/stockholm:video",
-      "title": "Stockholm",
+      "title": "Stockholm metro",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "metro-animation",
       "series": "Metro Animation",
       "date": "2026-07-07",
       "kind": "video",
@@ -751,7 +895,11 @@
     {
       "id": "metro-animation-prague",
       "key": "metro-animation/prague:video",
-      "title": "Prague",
+      "title": "Prague metro",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "metro-animation",
       "series": "Metro Animation",
       "date": "2026-06-30",
       "kind": "video",
@@ -770,7 +918,11 @@
     {
       "id": "tropical-nights-in-europe",
       "key": "./tropical nights in europe:image",
-      "title": "Tropical Nights in Europe",
+      "title": "Tropical nights in Europe",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "tropical-night",
       "date": "2026-06-19",
       "kind": "image",
       "width": 717,
@@ -788,7 +940,11 @@
     {
       "id": "alash-orda-story",
       "key": "./alash orda story:image",
-      "title": "Alash Orda Story",
+      "title": "Alash Orda",
+      "offers": [
+        "data-journalism"
+      ],
+      "workSlug": "alash-orda",
       "date": "2026-06-11",
       "kind": "image",
       "width": 1583,
@@ -807,7 +963,12 @@
     {
       "id": "armenia-energy-profile",
       "key": "./armenia energy profile:image",
-      "title": "Armenia Energy Profile",
+      "title": "Armenia's energy profile",
+      "offers": [
+        "data-journalism",
+        "data-visualization"
+      ],
+      "workSlug": "armenia-energy",
       "date": "2026-06-11",
       "kind": "image",
       "width": 1560,
@@ -826,7 +987,11 @@
     {
       "id": "austrian-income-by-districts",
       "key": "./austrian income by districts:image",
-      "title": "Austrian Income by Districts",
+      "title": "Austrian income by district",
+      "offers": [
+        "data-visualization"
+      ],
+      "workSlug": "austria-income",
       "date": "2026-06-11",
       "kind": "image",
       "width": 1511,
@@ -845,7 +1010,12 @@
     {
       "id": "building-ages-of-astana",
       "key": "./building ages of astana:image",
-      "title": "Building Ages of Astana",
+      "title": "Building ages of Astana",
+      "offers": [
+        "custom-maps",
+        "data-visualization"
+      ],
+      "workSlug": "astana-buildings",
       "date": "2026-06-11",
       "kind": "image",
       "width": 1906,
@@ -865,7 +1035,11 @@
     {
       "id": "earth-on-fire",
       "key": "./earth on fire:image",
-      "title": "Earth on Fire",
+      "title": "Earth on fire",
+      "offers": [
+        "remote-sensing"
+      ],
+      "workSlug": "earth-on-fire",
       "date": "2026-06-11",
       "kind": "image",
       "width": 952,
@@ -884,6 +1058,10 @@
       "id": "figura",
       "key": "./figura:image",
       "title": "Figura",
+      "offers": [
+        "custom-maps"
+      ],
+      "workSlug": "figura-game",
       "date": "2026-06-11",
       "kind": "image",
       "width": 592,
@@ -902,6 +1080,10 @@
       "id": "historical-vienna",
       "key": "./historical vienna:image",
       "title": "Historical Vienna",
+      "offers": [
+        "custom-maps"
+      ],
+      "workSlug": "historical-vienna",
       "date": "2026-06-11",
       "kind": "image",
       "width": 1487,
@@ -921,6 +1103,10 @@
       "id": "notable-kazakhs",
       "key": "./notable kazakhs:image",
       "title": "Notable Kazakhs",
+      "offers": [
+        "custom-maps"
+      ],
+      "workSlug": "notable-kazakhs",
       "date": "2026-06-11",
       "kind": "image",
       "width": 1823,
@@ -940,6 +1126,10 @@
       "id": "tigranes-the-greatest",
       "key": "./tigranes the greatest:image",
       "title": "Tigranes the Greatest",
+      "offers": [
+        "data-journalism"
+      ],
+      "workSlug": "tigranes-the-greatest",
       "date": "2026-06-11",
       "kind": "image",
       "width": 1919,
@@ -960,6 +1150,9 @@
       "id": "world-cup-2026",
       "key": "./world cup 2026:image",
       "title": "World Cup 2026",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-04-11",
       "kind": "image",
       "width": 1920,
@@ -979,7 +1172,10 @@
     {
       "id": "europe-population-2023",
       "key": "./europe population 2023:image",
-      "title": "Europe Population 2023",
+      "title": "Europe population, 2023",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2026-04-09",
       "kind": "image",
       "width": 2560,
@@ -1000,6 +1196,10 @@
       "id": "silk-road-through-centuries",
       "key": "./silk road through centuries:image",
       "title": "Silk Road Through Centuries",
+      "offers": [
+        "custom-maps"
+      ],
+      "workSlug": "silk-road",
       "date": "2026-04-01",
       "kind": "image",
       "width": 2560,
@@ -1019,7 +1219,10 @@
     {
       "id": "storm-boris-flooding",
       "key": "./storm boris flooding:image",
-      "title": "Storm Boris Flooding",
+      "title": "Storm Boris flooding",
+      "offers": [
+        "remote-sensing"
+      ],
       "date": "2024-09-17",
       "kind": "image",
       "width": 1802,
@@ -1039,6 +1242,9 @@
       "id": "world-nomad-games-2024",
       "key": "./world nomad games 2024:image",
       "title": "World Nomad Games 2024",
+      "offers": [
+        "data-visualization"
+      ],
       "date": "2024-09-15",
       "kind": "image",
       "width": 2560,
@@ -1059,6 +1265,9 @@
       "id": "duck-river",
       "key": "./duck river:image",
       "title": "Duck River",
+      "offers": [
+        "custom-maps"
+      ],
       "date": "2024-08-10",
       "kind": "image",
       "width": 2560,

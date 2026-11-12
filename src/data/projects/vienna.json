@@ -9,6 +9,9 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "Central Asia",
         "Asia",
@@ -122,6 +125,9 @@
       "featuredOrder": 1,
       "type": "static-map",
       "category": "print",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "print",
         "history",
@@ -220,6 +226,10 @@
       "featured": false,
       "type": "website",
       "category": "platform",
+      "offers": [
+        "remote-sensing",
+        "spatial-analysis"
+      ],
       "keywords": [
         "wildfire",
         "remote sensing",
@@ -315,6 +325,10 @@
       "featuredOrder": 4,
       "type": "website",
       "category": "storytelling map",
+      "offers": [
+        "data-journalism",
+        "spatial-analysis"
+      ],
       "keywords": [
         "urban heat",
         "Vienna",
@@ -369,6 +383,10 @@
       "featured": false,
       "type": "static-map",
       "category": "print",
+      "offers": [
+        "remote-sensing",
+        "custom-maps"
+      ],
       "keywords": [
         "fire",
         "global",
@@ -468,6 +486,9 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "data-visualization"
+      ],
       "keywords": [
         "summer",
         "heat",
@@ -527,6 +548,10 @@
       "featuredOrder": 3,
       "type": "website",
       "category": "interactive map",
+      "offers": [
+        "custom-maps",
+        "data-visualization"
+      ],
       "keywords": [
         "Astana",
         "buildings",
@@ -624,6 +649,9 @@
       "featured": false,
       "type": "website",
       "category": "interactive map",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "Kazakhstan",
         "people",
@@ -680,6 +708,9 @@
       "featured": false,
       "type": "website",
       "category": "storytelling map",
+      "offers": [
+        "data-journalism"
+      ],
       "keywords": [
         "Kazakhstan",
         "history",
@@ -735,6 +766,9 @@
       "featured": false,
       "type": "website",
       "category": "game",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "game",
         "history",
@@ -788,6 +822,9 @@
       "featured": false,
       "type": "website",
       "category": "interactive map",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "Vienna",
         "history",
@@ -839,6 +876,9 @@
       "featured": false,
       "type": "website",
       "category": "interactive map",
+      "offers": [
+        "data-visualization"
+      ],
       "keywords": [
         "Austria",
         "income",
@@ -895,6 +935,10 @@
       "featuredOrder": 5,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "custom-maps",
+        "data-journalism"
+      ],
       "keywords": [
         "history",
         "Soviet",
@@ -968,6 +1012,9 @@
       "featuredOrder": 8,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "remote-sensing"
+      ],
       "keywords": [
         "cartography"
       ],
@@ -1025,6 +1072,9 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "data-visualization"
+      ],
       "keywords": [
         "cartography"
       ],
@@ -1087,6 +1137,9 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "data-visualization"
+      ],
       "keywords": [
         "chess",
         "cartography"
@@ -1161,6 +1214,9 @@
       "featured": false,
       "type": "animation",
       "category": "social media",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "cartography",
         "street networks",
@@ -1327,6 +1383,10 @@
       "featuredOrder": 6,
       "type": "animation",
       "category": "social media",
+      "offers": [
+        "data-visualization",
+        "custom-maps"
+      ],
       "keywords": [
         "transit",
         "metro",
@@ -1555,6 +1615,9 @@
       "featured": false,
       "type": "animation",
       "category": "social media",
+      "offers": [
+        "data-visualization"
+      ],
       "keywords": [
         "football",
         "sports analytics",
@@ -1655,6 +1718,9 @@
       "featured": false,
       "type": "website",
       "category": "game",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "world building",
         "card game",
@@ -1694,6 +1760,9 @@
       "featured": false,
       "type": "website",
       "category": "print",
+      "offers": [
+        "remote-sensing"
+      ],
       "keywords": [
         "poster",
         "design"
@@ -1783,6 +1852,10 @@
       "featured": false,
       "type": "animation",
       "category": "social media",
+      "offers": [
+        "data-visualization",
+        "spatial-analysis"
+      ],
       "keywords": [
         "3D",
         "buildings",
@@ -1970,6 +2043,9 @@
       "featured": false,
       "type": "animation",
       "category": "social media",
+      "offers": [
+        "data-visualization"
+      ],
       "keywords": [
         "rail",
         "GTFS",
@@ -2143,6 +2219,10 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "data-journalism",
+        "data-visualization"
+      ],
       "keywords": [
         "elections",
         "politics",
@@ -2323,6 +2403,10 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "data-visualization",
+        "spatial-analysis"
+      ],
       "keywords": [
         "population",
         "density",
@@ -2511,6 +2595,9 @@
       "featured": false,
       "type": "animation",
       "category": "social media",
+      "offers": [
+        "data-visualization"
+      ],
       "keywords": [
         "football",
         "sports",

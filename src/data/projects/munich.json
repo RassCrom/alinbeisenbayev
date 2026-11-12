@@ -10,6 +10,10 @@
       "featuredOrder": 2,
       "type": "website",
       "category": "storytelling map",
+      "offers": [
+        "data-journalism",
+        "custom-maps"
+      ],
       "keywords": [
         "storytelling",
         "Armenia",
@@ -100,6 +104,10 @@
       "featured": false,
       "type": "website",
       "category": "analysis",
+      "offers": [
+        "spatial-analysis",
+        "remote-sensing"
+      ],
       "keywords": [
         "wildfire",
         "analysis",
@@ -177,6 +185,9 @@
       "featured": false,
       "type": "website",
       "category": "game",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "game",
         "geography",
@@ -230,6 +241,10 @@
       "featured": false,
       "type": "static-map",
       "category": "print",
+      "offers": [
+        "custom-maps",
+        "data-visualization"
+      ],
       "keywords": [
         "Kazakhstan",
         "Akmola",
@@ -292,6 +307,9 @@
       "featured": false,
       "type": "static-map",
       "category": "social media",
+      "offers": [
+        "custom-maps"
+      ],
       "keywords": [
         "cartography"
       ],

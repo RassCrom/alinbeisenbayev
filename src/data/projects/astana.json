@@ -9,6 +9,10 @@
       "featured": false,
       "type": "website",
       "category": "storytelling map",
+      "offers": [
+        "data-journalism",
+        "data-visualization"
+      ],
       "keywords": [
         "storytelling",
         "Armenia",

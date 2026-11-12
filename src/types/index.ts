@@ -1,3 +1,5 @@
+import type { OfferSlug } from '../data/offers';
+
 /* ---- src/data/projects/*.json (merged by src/data/projects.ts) ---- */
 
 /*
@@ -86,6 +88,10 @@ export interface GalleryItem {
   preview?: string;
   duration?: number;
   hidden?: boolean;
+  /** Hand-edited in gallery.json; the gallery script does not write it. */
+  offers?: OfferSlug[];
+  /** The project whose own page already shows this piece, so the index does not list it twice. */
+  workSlug?: string;
 }
 
 export interface VideoItem {
@@ -134,6 +140,8 @@ export interface Project {
   featuredOrder?: number;
   type: ProjectType;
   category: ProjectCategory;
+  /** What a client could hire this kind of work as. The first one is the card's type line. */
+  offers: OfferSlug[];
   keywords: string[];
   role: string;
   startDate: string | null;
