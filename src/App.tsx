@@ -1,7 +1,9 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Nav from './components/Nav/Nav';
+import ContactBand, { showContactBand } from './components/ContactBand/ContactBand';
 import Footer from './components/Footer/Footer';
+import PageFallback from './components/PageFallback/PageFallback';
 import ScrollManager from './components/ScrollManager/ScrollManager';
 // Not lazy: this is the fallback route, so it must not depend on a chunk fetch
 // that could itself fail. It is small.
@@ -19,19 +21,17 @@ const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const MapAwardsPage = lazy(() => import('./pages/MapAwardsPage'));
 
-function AppFooter() {
+/** What every page ends with: the call to action, then the footer. */
+function PageEnd() {
   const { pathname } = useLocation();
-  // The awards map fills the viewport; a footer under it would only be
+  // The awards map fills the viewport; anything under it would only be
   // reachable by scrolling past the map.
-  if (pathname === '/blog/map-awards') return null;
-  return <Footer />;
-}
-
-function PageFallback() {
+  const fullScreen = pathname === '/blog/map-awards' || pathname === '/journal/map-awards';
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <span className="mono-label">Loading…</span>
-    </div>
+    <>
+      {showContactBand(pathname) && <ContactBand />}
+      {!fullScreen && <Footer />}
+    </>
   );
 }
 
@@ -65,7 +65,7 @@ export default function App() {
           </Routes>
         </Suspense>
       </main>
-      <AppFooter />
+      <PageEnd />
     </>
   );
 }

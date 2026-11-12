@@ -22,6 +22,10 @@ export const REDESIGNED: string[] = [
   'src/components/HeroStack/HeroStack.tsx',
   'src/components/JournalCard/JournalCard.tsx',
   'src/pages/HomePage.tsx',
+  'src/components/ContactBand/ContactBand.tsx',
+  'src/components/Footer/Footer.tsx',
+  'src/components/PageFallback/PageFallback.tsx',
+  'src/App.tsx',
 ];
 
 const BANNED: RegExp[] = [
