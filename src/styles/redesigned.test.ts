@@ -6,7 +6,13 @@ import { expect, it } from 'vitest';
  * rules: Geologica only, no italics, no letter-spaced capitals, no legacy
  * tokens or primitives. A plan that rebuilds a page appends its files here.
  */
-export const REDESIGNED: string[] = [];
+export const REDESIGNED: string[] = [
+  'src/styles/system.css',
+  'src/components/Icon/Icon.tsx',
+  'src/components/Button/Button.tsx',
+  'src/components/Skeleton/Skeleton.tsx',
+  'src/components/Frame/Frame.tsx',
+];
 
 const BANNED: RegExp[] = [
   /\bitalic\b/,

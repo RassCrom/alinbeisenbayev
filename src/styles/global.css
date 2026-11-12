@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
+@import './system.css';
 
 /* Base element styles — layered so Tailwind utilities can override them.
    (Unlayered rules would beat every utility in @layer utilities.) */
