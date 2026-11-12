@@ -17,6 +17,11 @@ export const REDESIGNED: string[] = [
   'src/hooks/useTilt.ts',
   'src/utils/tilt.ts',
   'src/utils/motion.ts',
+  'src/data/offers.ts',
+  'src/data/featured.ts',
+  'src/components/HeroStack/HeroStack.tsx',
+  'src/components/JournalCard/JournalCard.tsx',
+  'src/pages/HomePage.tsx',
 ];
 
 const BANNED: RegExp[] = [

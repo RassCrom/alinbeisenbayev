@@ -321,3 +321,288 @@
     transition: none;
   }
 }
+
+@layer components {
+  /* ---- Section furniture ---- */
+  .home-section {
+    margin-top: var(--s-9);
+  }
+
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-2) var(--s-5);
+    margin-bottom: var(--s-6);
+  }
+
+  /* ---- Home hero ---- */
+  .home-hero {
+    /* The leaning stack reaches past the right edge; clip it here, on an
+       ancestor, so the 3D context on the stack itself stays intact. */
+    overflow: clip;
+  }
+
+  .home-hero__inner {
+    display: grid;
+    align-items: center;
+    gap: var(--s-8);
+    padding-top: var(--s-7);
+    padding-bottom: var(--s-7);
+  }
+
+  .home-hero__copy {
+    display: grid;
+    gap: var(--s-5);
+    max-width: 580px;
+  }
+
+  .home-hero__lede {
+    max-width: 30em;
+    font-size: clamp(1.125rem, 1.45vw, 1.25rem);
+    line-height: 1.45;
+    color: var(--text-2);
+  }
+
+  .home-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-6);
+    margin-top: var(--s-2);
+  }
+
+  /* ---- Hero stack ----
+   * Three sheets at three distances. The whole stack leans back and to the
+   * side; --rx / --ry (from useTilt) add a few degrees toward the pointer. */
+  .hero-stack {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 760 / 600;
+    perspective: 1500px;
+    perspective-origin: 30% 50%;
+  }
+
+  .hero-stack__tilt {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(-10deg + var(--ry, 0deg))) rotateX(calc(4deg + var(--rx, 0deg)));
+    transition: transform var(--t-enter) var(--ease);
+  }
+
+  .hero-stack__sheet {
+    position: absolute;
+  }
+
+  .hero-stack__sheet .frame {
+    box-shadow: var(--shadow-lift);
+  }
+
+  .hero-stack__sheet--1 {
+    left: 0;
+    top: 17%;
+    width: 92%;
+    transform: translateZ(60px);
+  }
+
+  .hero-stack__sheet--2 {
+    left: 44%;
+    top: -7%;
+    width: 47%;
+    opacity: 0.9;
+    transform: translateZ(-30px);
+  }
+
+  .hero-stack__sheet--3 {
+    left: 62%;
+    top: 31.7%;
+    width: 45%;
+    opacity: 0.7;
+    transform: translateZ(-120px);
+  }
+
+  /* ---- Selected work ---- */
+  .work-grid {
+    display: grid;
+    gap: var(--s-7) var(--s-6);
+    margin-top: var(--s-7);
+  }
+
+  /* ---- Offers ---- */
+  .offers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: var(--s-6);
+    border-top: 1px solid var(--line);
+  }
+
+  .offers li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .offers li:nth-child(even) .offers__link {
+    padding-left: var(--s-4);
+    border-left: 1px solid var(--line);
+  }
+
+  .offers__link {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--s-5);
+    min-height: 124px;
+    height: 100%;
+    padding: var(--s-4) var(--s-4) var(--s-4) 0;
+    font-size: var(--fs-h3);
+    font-weight: 550;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  .offers__link .icon {
+    color: var(--text-2);
+    transition:
+      transform var(--t-hover) var(--ease),
+      color var(--t-hover) var(--ease);
+  }
+
+  /* ---- Journal ---- */
+  .journal-grid {
+    display: grid;
+    gap: var(--s-7) var(--s-6);
+  }
+
+  .journal-card {
+    display: block;
+    outline: none;
+  }
+
+  .journal-card .frame {
+    transition: box-shadow var(--t-hover) var(--ease), transform var(--t-hover) var(--ease);
+  }
+
+  .journal-card:focus-visible .frame {
+    box-shadow: var(--shadow-lift);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .journal-card__text {
+    display: grid;
+    gap: var(--s-1);
+    padding: var(--s-4) var(--s-2) 0;
+  }
+
+  .journal-card__text h3 {
+    overflow-wrap: anywhere;
+  }
+
+  @media (hover: hover) {
+    .offers__link:hover .icon {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .journal-card:hover .frame {
+      box-shadow: var(--shadow-lift);
+      transform: translateY(-4px);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .home-section {
+      margin-top: var(--s-10);
+    }
+
+    .home-section--first {
+      margin-top: var(--s-8);
+    }
+
+    .section-head {
+      margin-bottom: var(--s-7);
+    }
+
+    .home-hero__inner {
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1fr);
+      gap: var(--s-6);
+      min-height: min(calc(100vh - var(--nav-h)), 860px);
+    }
+
+    .hero-stack__tilt {
+      transform: rotateY(calc(-22deg + var(--ry, 0deg))) rotateX(calc(7deg + var(--rx, 0deg)));
+    }
+
+    .hero-stack__sheet--1 {
+      transform: translateZ(120px);
+    }
+
+    .hero-stack__sheet--2 {
+      transform: translateZ(-60px);
+    }
+
+    .hero-stack__sheet--3 {
+      transform: translateZ(-240px);
+    }
+
+    .work-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--s-8) var(--s-6);
+      margin-top: var(--s-8);
+    }
+
+    .journal-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .offers {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .offers li {
+      border-bottom: none;
+    }
+
+    .offers li + li .offers__link,
+    .offers li:nth-child(even) .offers__link {
+      padding-left: var(--s-5);
+      border-left: 1px solid var(--line);
+    }
+
+    .offers__link {
+      min-height: 164px;
+      padding-top: var(--s-5);
+      padding-bottom: var(--s-5);
+    }
+  }
+}
+
+/* The stack settles almost flat as the page scrolls away from it. Only where
+   scroll-driven animation exists and motion is welcome; elsewhere it simply
+   keeps its pose. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .hero-stack__tilt {
+      animation: stack-settle linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 60vh;
+    }
+
+    @keyframes stack-settle {
+      to {
+        transform: rotateY(-5deg) rotateX(1deg);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-stack__tilt,
+  .journal-card .frame,
+  .offers__link .icon {
+    transition: none;
+  }
+}

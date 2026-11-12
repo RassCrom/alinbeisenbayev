@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { useViewMode } from './atlas/viewMode';
 import Nav from './components/Nav/Nav';
 import Footer from './components/Footer/Footer';
 import ScrollManager from './components/ScrollManager/ScrollManager';
@@ -20,16 +19,10 @@ const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const MapAwardsPage = lazy(() => import('./pages/MapAwardsPage'));
 
-/**
- * The atlas fills the viewport and is a screen, not a document: a footer
- * under it would only be reachable by scrolling past the map. The sheet
- * view keeps the footer as before.
- */
 function AppFooter() {
   const { pathname } = useLocation();
-  const { mode, supported } = useViewMode();
-  if (pathname === '/' && mode === 'map' && supported) return null;
-  // The awards map is a full-screen screen too.
+  // The awards map fills the viewport; a footer under it would only be
+  // reachable by scrolling past the map.
   if (pathname === '/blog/map-awards') return null;
   return <Footer />;
 }
