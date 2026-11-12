@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import Frame from '../Frame/Frame';
+import { firstOfferLabel } from '../../data/offers';
 import { useTilt } from '../../hooks/useTilt';
 import { COVER_SIZES } from '../../utils/images';
 import { prefersReducedMotion } from '../../utils/motion';
@@ -11,19 +12,17 @@ export interface WorkCardProps {
   project: Project;
   /** `lead` is the full-width feature; `half` sits two or three to a row. */
   size?: 'lead' | 'half';
-}
-
-/** "social media" -> "Social media". */
-function sentenceCase(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1);
+  /** Cover shape, e.g. '3 / 2'. Defaults to 16 / 9 for the lead and 4 / 3 otherwise. */
+  ratio?: string;
 }
 
 /**
  * A work, as the cover, its title and one line saying what kind of thing it
  * is. Nothing else: the cover is the argument.
  */
-export default function WorkCard({ project, size = 'half' }: WorkCardProps) {
-  const { slug, title, coverImage, category } = project;
+export default function WorkCard({ project, size = 'half', ratio }: WorkCardProps) {
+  const { slug, title, coverImage } = project;
+  const label = firstOfferLabel(project.offers ?? []);
   const lead = size === 'lead';
   const tilt = useTilt<HTMLAnchorElement>();
 
@@ -102,7 +101,7 @@ export default function WorkCard({ project, size = 'half' }: WorkCardProps) {
         alt=""
         width={lead ? 1600 : 1200}
         height={900}
-        ratio={lead ? '16 / 9' : '4 / 3'}
+        ratio={ratio ?? (lead ? '16 / 9' : '4 / 3')}
         sizes={lead ? COVER_SIZES.hero : COVER_SIZES.card}
         /* Paired with the same name on the detail hero. Scoped per slug: two
            elements sharing a name in one snapshot abort the transition. */
@@ -110,7 +109,7 @@ export default function WorkCard({ project, size = 'half' }: WorkCardProps) {
       />
       <div className="work-card__text">
         <h3 className={lead ? 't-h2' : 't-h3'}>{title}</h3>
-        <p className="t-meta">{sentenceCase(category)}</p>
+        {label && <p className="t-meta">{label}</p>}
       </div>
     </Link>
   );

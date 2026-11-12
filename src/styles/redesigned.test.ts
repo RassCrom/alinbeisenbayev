@@ -26,6 +26,9 @@ export const REDESIGNED: string[] = [
   'src/components/Footer/Footer.tsx',
   'src/components/PageFallback/PageFallback.tsx',
   'src/App.tsx',
+  'src/data/works.ts',
+  'src/components/PieceCard/PieceCard.tsx',
+  'src/components/FilterChip/FilterChip.tsx',
 ];
 
 const BANNED: RegExp[] = [

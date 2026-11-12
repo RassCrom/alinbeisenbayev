@@ -13,3 +13,9 @@ export function prefersReducedMotion(): boolean {
 export function hasFinePointer(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
 }
+
+/** The visitor has asked the browser to spend less data. Not every browser reports it. */
+export function savesData(): boolean {
+  const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+  return connection?.saveData === true;
+}

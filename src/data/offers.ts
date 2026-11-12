@@ -23,3 +23,15 @@ export const OFFERS: readonly Offer[] = [
 export function offerHref(slug: OfferSlug): string {
   return `/works?offer=${slug}`;
 }
+
+const LABELS = new Map(OFFERS.map((offer) => [offer.slug, offer.label]));
+
+/** An offer's display label, or '' for a slug nobody knows. */
+export function offerLabel(slug: OfferSlug | undefined): string {
+  return (slug && LABELS.get(slug)) ?? '';
+}
+
+/** A card's one type line: the label of its first offer, or nothing. */
+export function firstOfferLabel(offers: OfferSlug[]): string {
+  return offerLabel(offers[0]);
+}

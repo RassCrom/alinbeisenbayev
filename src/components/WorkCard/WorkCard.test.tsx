@@ -19,6 +19,7 @@ const project = {
   featured: true,
   type: 'static-map',
   category: 'print',
+  offers: ['custom-maps', 'data-journalism'],
   awards: ['Some award'],
   coverImage: '/images/projects/silk-road/preview.webp',
   endDate: '2024-05',
@@ -32,16 +33,24 @@ it('shows the cover, the title and one type line, nothing else', () => {
   const { getByRole, queryByText, container } = render(<WorkCard project={project} />, { wrapper });
   expect(getByRole('link').getAttribute('href')).toBe('/works/silk-road');
   expect(getByRole('heading').textContent).toBe(project.title);
-  expect(queryByText('Print')).not.toBeNull();
+  // The type line is the first offer, not the internal category.
+  expect(queryByText('Custom maps')).not.toBeNull();
+  expect(queryByText('Print')).toBeNull();
+  expect(queryByText('Data journalism')).toBeNull();
   for (const gone of ['★', 'In Progress', 'View case study', project.tagline, '2024', 'Published']) {
     expect(queryByText(gone, { exact: false })).toBeNull();
   }
   expect(container.querySelector('img')!.style.viewTransitionName).toBe('cover-silk-road');
 });
 
-it('sentence-cases a two-word category', () => {
-  const social = { ...project, category: 'social media' } as Project;
-  expect(render(<WorkCard project={social} />, { wrapper }).queryByText('Social media')).not.toBeNull();
+it('leaves the type line out for a work nobody has tagged', () => {
+  const untagged = { ...project, offers: [] } as Project;
+  expect(render(<WorkCard project={untagged} />, { wrapper }).container.querySelector('.t-meta')).toBeNull();
+});
+
+it('takes a cover shape from its caller', () => {
+  const { container } = render(<WorkCard project={project} ratio="3 / 2" />, { wrapper });
+  expect((container.querySelector('img')!.parentElement as HTMLElement).style.aspectRatio).toBe('3 / 2');
 });
 
 async function warmAndClick(): Promise<ReturnType<typeof vi.fn>> {

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import Skeleton from '../Skeleton/Skeleton';
 import { coverSrcSet } from '../../utils/images';
 
@@ -10,7 +11,11 @@ export interface FrameProps {
   height: number;
   /** e.g. '16 / 9'. The image then covers the box. */
   ratio?: string;
+  /** Overrides the cover manifest lookup, for images that carry their own sizes. */
+  srcSet?: string;
   sizes?: string;
+  /** Drawn inside the media box, above the image: a play mark, a preview clip. */
+  overlay?: ReactNode;
   /** The small radius set: 12 outer, 4 padding, 8 inner. */
   small?: boolean;
   /** Load eagerly at high priority. For the one image a page leads with. */
@@ -29,7 +34,9 @@ export default function Frame({
   width,
   height,
   ratio,
+  srcSet,
   sizes,
+  overlay,
   small = false,
   priority = false,
   viewTransitionName,
@@ -50,7 +57,7 @@ export default function Frame({
         <img
           ref={imgRef}
           src={src}
-          srcSet={coverSrcSet(src)}
+          srcSet={srcSet ?? coverSrcSet(src)}
           sizes={sizes}
           alt={alt}
           width={width}
@@ -65,6 +72,7 @@ export default function Frame({
           onError={() => setLoaded(true)}
           style={viewTransitionName ? { viewTransitionName } : undefined}
         />
+        {overlay}
       </div>
     </div>
   );

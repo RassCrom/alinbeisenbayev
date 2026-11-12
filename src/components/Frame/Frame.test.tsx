@@ -30,3 +30,15 @@ it('marks the image loaded so it can fade in', () => {
   fireEvent.load(img);
   expect(img.dataset.loaded).toBe('true');
 });
+
+it('uses a srcSet it is given as is', () => {
+  const { container } = render(<Frame src="/a.webp" srcSet="/a-w480.webp 480w" alt="" width={4} height={3} />);
+  expect(container.querySelector('img')!.getAttribute('srcset')).toBe('/a-w480.webp 480w');
+});
+
+it('renders an overlay inside the media box', () => {
+  const { getByTestId } = render(
+    <Frame src="/a.webp" alt="" width={4} height={3} overlay={<span data-testid="over" />} />,
+  );
+  expect(getByTestId('over').parentElement!.className).toContain('frame__media');
+});

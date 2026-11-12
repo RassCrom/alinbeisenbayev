@@ -1,5 +1,5 @@
 import { galleryItems } from './gallery';
-import { OFFERS, type OfferSlug } from './offers';
+import { OFFERS, firstOfferLabel, offerLabel, type OfferSlug } from './offers';
 import { projects } from './projects';
 import type { GalleryItem, Project } from '../types';
 
@@ -27,12 +27,13 @@ const PROJECT_RATIO = 4 / 3;
 const MIN_RATIO = 0.7;
 const MAX_RATIO = 1.78;
 
-const LABELS = new Map(OFFERS.map((offer) => [offer.slug, offer.label]));
-
-/** The card's one type line: the label of the first offer, or nothing. */
-export function firstOfferLabel(offers: OfferSlug[]): string {
-  return LABELS.get(offers[0]) ?? '';
+/** The shape a piece's card reserves: its own, within the column's limits. */
+export function cardRatio(width: number, height: number): number {
+  return Math.min(MAX_RATIO, Math.max(MIN_RATIO, width / height));
 }
+
+// Lives in offers.ts so a card on the home page does not pull the gallery data in with it.
+export { firstOfferLabel };
 
 /**
  * `YYYY`, `YYYY-MM` or `YYYY-MM-DD` as months since year 0, with the day as
@@ -45,7 +46,7 @@ function whenOf(date: string | null | undefined): number | null {
   return Number(match[1]) * 12 + Number(match[2] ?? 12) + Number(match[3] ?? 0) / 32;
 }
 
-const offerText = (offers: OfferSlug[]) => offers.map((slug) => LABELS.get(slug) ?? '').join(' ');
+const offerText = (offers: OfferSlug[]) => offers.map(offerLabel).join(' ');
 
 function fromProject(project: Project): WorkEntry {
   return {
@@ -73,7 +74,7 @@ function fromPiece(item: GalleryItem): WorkEntry {
     title: item.title,
     offers: item.offers ?? [],
     cover: item.kind === 'video' ? (item.poster ?? item.src) : item.src,
-    ratio: Math.min(MAX_RATIO, Math.max(MIN_RATIO, item.width / item.height)),
+    ratio: cardRatio(item.width, item.height),
     when: whenOf(item.date) ?? Number.NEGATIVE_INFINITY,
     search: [item.title, item.series ?? '', offerText(item.offers ?? [])].join(' ').toLowerCase(),
   };
