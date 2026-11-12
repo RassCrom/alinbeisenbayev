@@ -1185,3 +1185,69 @@
     }
   }
 }
+
+@layer components {
+  /* ---- Journal entry ---- */
+  .entry {
+    padding-top: var(--s-6);
+  }
+
+  .entry__head {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: var(--s-7);
+  }
+
+  .entry__head h1 {
+    max-width: 18em;
+    overflow-wrap: anywhere;
+  }
+
+  .entry__body {
+    display: grid;
+    gap: var(--s-7);
+    margin-top: var(--s-8);
+  }
+
+  .entry__body > * {
+    max-width: 68ch;
+  }
+
+  /* ---- Chapter list ---- */
+  .chapter-nav {
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-5);
+    border-radius: var(--r-outer-sm);
+    background: var(--surface);
+  }
+
+  .chapter-nav ol {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .chapter-nav__link {
+    display: block;
+    padding-left: var(--s-3);
+    border-left: 2px solid transparent;
+    font-size: var(--fs-small);
+    color: var(--text-2);
+    transition: color var(--t-hover) var(--ease);
+  }
+
+  .chapter-nav__link:hover,
+  .chapter-nav__link[aria-current='location'] {
+    color: var(--text);
+  }
+
+  .chapter-nav__link[aria-current='location'] {
+    border-left-color: var(--accent);
+  }
+
+  @media (min-width: 768px) {
+    .entry {
+      padding-top: var(--s-7);
+    }
+  }
+}
