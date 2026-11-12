@@ -122,7 +122,7 @@ export interface Project {
   title: string;
   tagline: string;
   status: ProjectStatus;
-  /** Kept out of every listing (works, atlas, landing, skills); its page still opens by URL. */
+  /** Kept out of every listing (works, landing); its page still opens by URL. */
   hidden?: boolean;
   featured: boolean;
   /**
@@ -269,25 +269,6 @@ export interface AboutStoryData {
   profile: Profile;
   story: StoryPoint[];
   endCta: EndCta;
-}
-
-/* ---- skills.json ---- */
-
-export type SkillLevel = 'expert' | 'advanced' | 'intermediate' | 'beginner' | 'learning';
-export type IconType = 'image' | 'text';
-
-export interface Skill {
-  id: string;
-  name: string;
-  category: string;
-  level: SkillLevel;
-  iconType: IconType;
-  iconUrl?: string;
-}
-
-export interface SkillsData {
-  categories: string[];
-  skills: Skill[];
 }
 
 /* ---- socials.json ---- */

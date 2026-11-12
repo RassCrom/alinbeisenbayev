@@ -1,30 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { featuredSocials, isExternalSocial } from '../../data/socials';
+import Button from '../Button/Button';
+import Icon from '../Icon/Icon';
 
 export const NAV_LINKS = [
-  { to: '/works', label: 'Works' },
-  { to: '/gallery', label: 'Gallery' },
-  { to: '/stories', label: 'Stories' },
+  { to: '/works', label: 'Work' },
+  { to: '/journal', label: 'Journal' },
   { to: '/about', label: 'About' },
-  { to: '/skills', label: 'Skills' },
-  { to: '/blog', label: 'Blog' },
-  { to: '/connect', label: 'Connect' },
-];
+] as const;
+
+/** The site's one call to action. It sits in the nav on every page. */
+export const CTA = { to: '/contact', label: 'Work with me' } as const;
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
-  const location = useLocation();
-
+  const { pathname } = useLocation();
   const toggleRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
+  // A link in the sheet navigates; the sheet should not outlive that.
   useEffect(() => {
     setOpen(false);
-  }, [location.pathname]);
+  }, [pathname]);
 
-  // Open: focus moves into the drawer and Escape closes it. Close: focus
-  // goes back to the hamburger, unless a route change already moved it.
+  // Open: focus moves into the sheet and Escape closes it. Close: focus goes
+  // back to the menu button, unless a route change already moved it.
   useEffect(() => {
     if (!open) return;
     closeRef.current?.focus();
@@ -34,126 +34,71 @@ export default function Nav() {
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
-      if (document.activeElement === document.body || closeRef.current?.contains(document.activeElement)) {
-        toggleRef.current?.focus();
-      }
+      const active = document.activeElement;
+      if (active === document.body || active === closeRef.current) toggleRef.current?.focus();
     };
   }, [open]);
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `mono-label transition-colors hover:text-[var(--color-text-primary)] ${
-      isActive ? 'text-[var(--color-accent-light)]' : ''
-    }`;
+    isActive ? 'nav__link nav__link--active focus-ring' : 'nav__link focus-ring';
 
   return (
     <>
-    <header className="fixed inset-x-0 top-0 z-[var(--z-overlay)] border-b border-[var(--color-border-subtle)] bg-[rgba(var(--color-chrome-rgb),0.85)] backdrop-blur-md">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-[var(--space-6)]">
-        <div className="flex items-center gap-[var(--space-3)]">
-          <Link
-            to="/"
-            className="font-[family-name:var(--font-heading)] text-[length:var(--text-lg)] font-extrabold tracking-tight"
-          >
-            alin<span className="text-[var(--color-accent-light)]">beisenbayev</span>
+      <header className="nav">
+        <nav className="nav__bar wrap" aria-label="Main">
+          <Link to="/" className="nav__name focus-ring">
+            Alikhan<span className="nav__surname"> Beisenbayev</span>
           </Link>
 
-        </div>
+          <div className="nav__links">
+            {NAV_LINKS.map((link) => (
+              <NavLink key={link.to} to={link.to} className={linkClass}>
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
 
-        {/* Desktop links */}
-        <div className="hidden items-center gap-[var(--space-8)] md:flex">
-          {NAV_LINKS.map((link) => (
-            <NavLink key={link.to} to={link.to} className={linkClass}>
-              {link.label}
-            </NavLink>
-          ))}
-        </div>
+          <div className="nav__end">
+            <Button to={CTA.to} size="sm">
+              {CTA.label}
+            </Button>
+            <button
+              ref={toggleRef}
+              type="button"
+              className="nav__toggle focus-ring"
+              aria-label="Open menu"
+              aria-expanded={open}
+              onClick={() => setOpen(true)}
+            >
+              <Icon name="menu" />
+            </button>
+          </div>
+        </nav>
+      </header>
 
-        {/* Mobile hamburger */}
-        <button
-          ref={toggleRef}
-          type="button"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          aria-expanded={open}
-          aria-controls="nav-drawer"
-          onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
-        >
-          <span
-            className={`h-0.5 w-6 bg-[var(--color-text-primary)] transition-transform ${open ? 'translate-y-2 rotate-45' : ''}`}
-          />
-          <span
-            className={`h-0.5 w-6 bg-[var(--color-text-primary)] transition-opacity ${open ? 'opacity-0' : ''}`}
-          />
-          <span
-            className={`h-0.5 w-6 bg-[var(--color-text-primary)] transition-transform ${open ? '-translate-y-2 -rotate-45' : ''}`}
-          />
-        </button>
-      </nav>
-    </header>
-
-      {/* Mobile slide-in drawer (sibling of header: backdrop-filter on the
-          header would otherwise become the containing block for fixed children).
-          Closed, it is `invisible` as well as off-screen, so its links leave
-          the tab order; visibility is in the transition so it hides only
-          after the slide-out ends. */}
-      <div
-        id="nav-drawer"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu"
-        className={`fixed inset-y-0 right-0 z-[var(--z-modal)] flex w-64 transform flex-col border-l border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-elevated)] transition-[transform,visibility] duration-300 md:hidden ${
-          open ? 'visible translate-x-0' : 'invisible translate-x-full'
-        }`}
-      >
-        <button
-          ref={closeRef}
-          type="button"
-          aria-label="Close menu"
-          onClick={() => setOpen(false)}
-          className="absolute right-[var(--space-4)] top-[var(--space-4)] flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] text-[length:var(--text-2xl)] leading-none text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-text-primary)]"
-        >
-          ×
-        </button>
-        <div className="flex flex-col gap-[var(--space-6)] p-[var(--space-8)] pt-[var(--space-24)]">
-          {NAV_LINKS.map((link) => (
-            <NavLink key={link.to} to={link.to} className={linkClass}>
-              {link.label}
-            </NavLink>
-          ))}
-        </div>
-        {/* Social links pinned to the drawer bottom */}
-        <div className="mt-auto border-t border-[var(--color-border-subtle)] px-[var(--space-6)] py-[var(--space-6)]">
-          <div className="flex items-center justify-between gap-[var(--space-2)]">
-            {featuredSocials.map((social) => (
-              <a
-                key={social.id}
-                href={social.url}
-                target={isExternalSocial(social) ? '_blank' : undefined}
-                rel="noreferrer"
-                aria-label={social.platform}
-                title={social.platform}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border-default)] opacity-80 transition-all hover:border-[var(--color-accent)] hover:opacity-100 active:scale-95"
-              >
-                <img
-                  src={social.iconUrl}
-                  alt=""
-                  width={20}
-                  height={20}
-                  loading="lazy"
-                  className={social.platform === 'TikTok' ? 'pt-1' : undefined}
-                />
-              </a>
+      {/* A sibling of the header, not a child: the header's backdrop blur
+          would make it the containing block for a fixed descendant. */}
+      {open && (
+        <div className="nav__sheet" role="dialog" aria-modal="true" aria-label="Menu">
+          <div className="nav__sheet-top wrap">
+            <button
+              ref={closeRef}
+              type="button"
+              className="nav__toggle nav__toggle--close focus-ring"
+              aria-label="Close menu"
+              onClick={() => setOpen(false)}
+            >
+              <Icon name="close" />
+            </button>
+          </div>
+          <div className="nav__sheet-links wrap">
+            {NAV_LINKS.map((link) => (
+              <NavLink key={link.to} to={link.to} className={linkClass}>
+                {link.label}
+              </NavLink>
             ))}
           </div>
         </div>
-      </div>
-      {open && (
-        <button
-          type="button"
-          aria-label="Close menu"
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-[var(--z-overlay)] cursor-default bg-black/40 md:hidden"
-        />
       )}
     </>
   );

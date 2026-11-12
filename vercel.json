@@ -1,5 +1,6 @@
 {
   "cleanUrls": true,
+  "redirects": [{ "source": "/skills", "destination": "/about", "permanent": true }],
   "headers": [
     {
       "source": "/assets/(.*)",

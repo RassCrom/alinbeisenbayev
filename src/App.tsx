@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useViewMode } from './atlas/viewMode';
 import Nav from './components/Nav/Nav';
 import Footer from './components/Footer/Footer';
@@ -15,7 +15,6 @@ const GalleryPage = lazy(() => import('./pages/GalleryPage'));
 const StoriesPage = lazy(() => import('./pages/StoriesPage'));
 const StoryDetailPage = lazy(() => import('./pages/StoryDetailPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
-const SkillsPage = lazy(() => import('./pages/SkillsPage'));
 const ConnectPage = lazy(() => import('./pages/ConnectPage'));
 const BlogPage = lazy(() => import('./pages/BlogPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
@@ -51,7 +50,7 @@ export default function App() {
       </a>
       <ScrollManager />
       <Nav />
-      <main id="main" tabIndex={-1} className="min-h-screen pt-16 outline-none">
+      <main id="main" tabIndex={-1} className="min-h-screen pt-[var(--nav-h)] outline-none">
         <Suspense fallback={<PageFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -61,7 +60,10 @@ export default function App() {
             <Route path="/stories" element={<StoriesPage />} />
             <Route path="/stories/:slug" element={<StoryDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/skills" element={<SkillsPage />} />
+            {/* Interim: plans 3 and 4 give these routes their own pages. */}
+            <Route path="/journal" element={<StoriesPage />} />
+            <Route path="/contact" element={<ConnectPage />} />
+            <Route path="/skills" element={<Navigate to="/about" replace />} />
             <Route path="/connect" element={<ConnectPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/map-awards" element={<MapAwardsPage />} />
