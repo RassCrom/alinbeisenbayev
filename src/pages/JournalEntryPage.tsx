@@ -86,7 +86,7 @@ export default function JournalEntryPage() {
 
   return (
     <article className="entry">
-      <div className="wrap">
+      <div className="entry__cover column column--wide">
         <Frame
           src={entry.cover}
           // The title is the page's heading.
@@ -99,7 +99,7 @@ export default function JournalEntryPage() {
         />
       </div>
 
-      <header className="entry__head wrap">
+      <header className="entry__head column">
         <h1 className="t-display">{entry.title}</h1>
         <p className="work-page__lede">{entry.summary}</p>
         <p className="t-meta">{meta}</p>
@@ -126,7 +126,7 @@ export default function JournalEntryPage() {
       </header>
 
       {Body && (
-        <div className="entry__body wrap">
+        <div className="entry__body column">
           <ChapterNav key={slug} containerRef={reading.ref} />
           <div ref={reading.ref} className="mdx-prose">
             <Body />
@@ -135,7 +135,7 @@ export default function JournalEntryPage() {
       )}
 
       {methodNotes.length > 0 && (
-        <section className="work-page__text wrap">
+        <section className="work-page__text column">
           <div className="work-section">
             <h2 className="t-h2">Method notes</h2>
             <ul className="work-page__notes">
@@ -153,7 +153,7 @@ export default function JournalEntryPage() {
       )}
 
       {facts.length > 0 && (
-        <div className="work-page__text wrap">
+        <div className="work-page__text column">
           <aside className="source-note" aria-labelledby="colophon-heading">
             <h2 id="colophon-heading" className="t-h3">
               Colophon

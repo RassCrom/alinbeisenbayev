@@ -54,6 +54,8 @@
   /* ---- Layout ---- */
   --gutter: clamp(16px, 6.6vw, 96px);
   --page-max: 1440px;
+  --read: 720px;       /* the reading column: about 68 characters of body text */
+  --read-wide: 1040px; /* a cover or figure above a reading column */
   --nav-h: 72px;
 
   /* ---- Layers ---- */

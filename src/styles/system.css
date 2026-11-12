@@ -987,7 +987,6 @@
   .facts {
     display: grid;
     gap: var(--s-3) var(--s-7);
-    max-width: 68ch;
     padding-top: var(--s-5);
     border-top: 1px solid var(--line);
   }
@@ -1008,10 +1007,6 @@
     gap: var(--s-2) var(--s-6);
   }
 
-  /* Reading column: body text never runs wider than about 68 characters. */
-  .work-page__text > * {
-    max-width: 68ch;
-  }
 
   .work-page__media {
     margin-top: var(--s-8);
@@ -1212,9 +1207,6 @@
     margin-top: var(--s-8);
   }
 
-  .entry__body > * {
-    max-width: 68ch;
-  }
 
   /* ---- Chapter list ---- */
   .chapter-nav {
@@ -1641,5 +1633,22 @@
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+@layer components {
+  /* ---- Reading column ----
+   * Long text sits in a narrow column in the centre of the page, not against
+   * its left edge: on a wide screen that left a third of the page empty on
+   * one side only. The text itself stays left-aligned. */
+  .column {
+    width: 100%;
+    max-width: calc(var(--read) + 2 * var(--gutter));
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .column--wide {
+    max-width: calc(var(--read-wide) + 2 * var(--gutter));
   }
 }

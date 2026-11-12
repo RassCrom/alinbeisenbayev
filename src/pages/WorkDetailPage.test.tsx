@@ -94,3 +94,11 @@ it('opens outside links in a new tab', () => {
     expect(link.getAttribute('target'), link.getAttribute('href')!).toBe('_blank');
   }
 });
+
+it('sets the reading column in the centre of the page', () => {
+  const view = at('silk-road');
+  for (const block of view.container.querySelectorAll('.work-page__head, .work-page__text')) {
+    expect(block.classList.contains('column'), block.className).toBe(true);
+  }
+  expect(view.container.querySelectorAll('.work-page__text').length).toBeGreaterThan(0);
+});

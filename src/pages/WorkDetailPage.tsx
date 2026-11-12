@@ -120,7 +120,7 @@ export default function WorkDetailPage() {
           goes straight to the media, where the cover usually is already. */}
       {full && cover}
 
-      <header className="work-page__head wrap">
+      <header className="work-page__head column">
         <h1 className="t-display">{project.title}</h1>
         {project.tagline && <p className="work-page__lede">{project.tagline}</p>}
 
@@ -152,14 +152,14 @@ export default function WorkDetailPage() {
       </header>
 
       {story && (
-        <div className="work-page__text wrap">
+        <div className="work-page__text column">
           <StoryCallout story={story} />
         </div>
       )}
 
       {full ? (
         <>
-          <div className="work-page__text wrap">
+          <div className="work-page__text column">
             <Section heading="Context">
               <p>{project.context}</p>
             </Section>
@@ -222,7 +222,7 @@ export default function WorkDetailPage() {
           {!hasMedia && cover}
 
           {shortText.length > 0 && (
-            <div className="work-page__text wrap">
+            <div className="work-page__text column">
               <Section heading="About this work">
                 {shortText.map((text) => (
                   <p key={text}>{text}</p>
@@ -233,12 +233,12 @@ export default function WorkDetailPage() {
         </>
       )}
 
-      <div className="work-page__text wrap">
+      <div className="work-page__text column">
         <SourceNote project={project} />
       </div>
 
       {methodNotes.length > 0 && (
-        <div className="work-page__text wrap">
+        <div className="work-page__text column">
           <Section heading="Method notes">
             <ul className="work-page__notes">
               {methodNotes.map((note) => (

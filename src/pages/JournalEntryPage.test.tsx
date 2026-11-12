@@ -115,3 +115,13 @@ it('lists a page’s chapters when there are at least two', () => {
 it('shows no chapter list for a single chapter', () => {
   expect(render(<Chapters headings={['Only']} />).queryByRole('navigation')).toBeNull();
 });
+
+it('sets the reading column in the centre of the page', () => {
+  const view = at('saint-lucia');
+  for (const selector of ['.entry__cover', '.entry__head', '.entry__body']) {
+    const block = view.container.querySelector(selector);
+    expect(block, selector).not.toBeNull();
+    expect(block!.classList.contains('column'), selector).toBe(true);
+    expect(block!.classList.contains('wrap'), selector).toBe(false);
+  }
+});
