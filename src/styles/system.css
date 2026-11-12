@@ -1652,3 +1652,21 @@
     max-width: calc(var(--read-wide) + 2 * var(--gutter));
   }
 }
+
+@layer components {
+  /* ---- Page not found ---- */
+  .not-found {
+    display: grid;
+    align-content: center;
+    gap: var(--s-5);
+    min-height: 60vh;
+    padding-top: var(--s-8);
+  }
+
+  .not-found__ways {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-7);
+    margin-top: var(--s-3);
+  }
+}
