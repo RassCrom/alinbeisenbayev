@@ -22,7 +22,8 @@ const BANNED: RegExp[] = [
   /--color-/,
   /tracking-\[0\.\d/,
   /coord-label/,
-  /\bpill\b/,
+  // The legacy `pill` class, not the --r-pill radius token.
+  /(?<![-\w])pill(?![-\w])/,
 ];
 
 it.each(REDESIGNED.length ? REDESIGNED : ['(none yet)'])('%s follows the type and copy rules', (file) => {
