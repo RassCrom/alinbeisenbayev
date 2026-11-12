@@ -9,7 +9,7 @@
       name="description"
       content="Award-winning cartographer and GIS engineer. Print maps, scroll-driven map narratives, and interactive geospatial work on climate, history and Central Asia."
     />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="color-scheme" content="dark" />
     <meta name="author" content="Alikhan Beisenbayev" />
     <link rel="canonical" href="https://alinbeisenbayev.com/" />
     <title>Alikhan Beisenbayev — Cartographer &amp; Data Storyteller</title>
@@ -84,20 +84,6 @@
           "https://t.me/tulparmaps"
         ]
       }
-    </script>
-    <script>
-      // Runs before first paint so the page never flashes the wrong theme.
-      // Kept in sync with the storage key/logic in src/hooks/useTheme.ts.
-      (function () {
-        var stored = localStorage.getItem('theme');
-        var theme =
-          stored === 'light' || stored === 'dark'
-            ? stored
-            : matchMedia('(prefers-color-scheme: light)').matches
-              ? 'light'
-              : 'dark';
-        document.documentElement.dataset.theme = theme;
-      })();
     </script>
   </head>
   <body>

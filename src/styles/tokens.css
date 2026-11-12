@@ -1,59 +1,100 @@
+/*
+ * Lamp: the site's one theme. A warm near-black page, cream text and a single
+ * ember accent. See docs/superpowers/specs/2026-11-12-site-redesign-design.md.
+ *
+ * Token names say what a value is for, not what it looks like, so a second
+ * theme can later be one override block of the colour group.
+ */
 :root {
-  /* Backgrounds */
-  --color-bg-base:     #0d1320;
-  --color-bg-surface:  #121a2d;
-  --color-bg-elevated: #192236;
-  --color-bg-overlay:  #1f2a44;
+  /* ---- Colour ----
+   * Contrast is measured, not judged by eye: src/styles/tokens.test.ts fails
+   * if any text or accent token drops under 4.5:1 on bg, surface or raised. */
+  --bg:         #14110f; /* page */
+  --surface:    #1c1815; /* frames, cards */
+  --raised:     #26201b; /* hover, overlays, fields */
+  --line:       #3a3028; /* dividers only, never text */
+  --text:       #f3ebdf; /* headings, body */
+  --text-2:     #b9ac99; /* secondary text */
+  --text-3:     #948672; /* captions, placeholders */
+  /* The solid accent fill belongs to "Work with me" and the form's submit
+     button. Everywhere else accent is an outline, focus ring or active state. */
+  --accent:     #f0823c;
+  --accent-ink: #1d0f06; /* text on accent */
 
-  /* Borders */
-  --color-border-subtle:  #243049;
-  --color-border-default: #2e3d5c;
+  /* ---- Type: Geologica only. No mono, no italics, no letter-spaced caps. ---- */
+  --font: 'Geologica Variable', 'Geologica', system-ui, sans-serif;
+  --fs-display: clamp(2.5rem, 5.3vw, 4.75rem);
+  --fs-h2:      clamp(1.75rem, 2.8vw, 2.5rem);
+  --fs-h3:      clamp(1.375rem, 1.8vw, 1.625rem);
+  --fs-body:    1.125rem;
+  --fs-small:   1rem;
+  --fs-min:     0.9375rem; /* nothing on the site is smaller */
 
-  /* Text */
-  --color-text-primary:   #dce3ef;
-  /* The ramp is contrast-bound, not taste-bound: on #0d1320 nothing darker
-     than ~#7d8aa6 clears WCAG AA (4.5:1) for normal text, and muted carries
-     real body copy — captions, coordinates, taglines, meta. muted was #566280
-     (3.05:1, a clear fail); secondary moved up with it so the three steps stay
-     visually distinct instead of collapsing into each other. #7d8aa6 then
-     measured 4.11:1 on --color-bg-overlay (cards, popovers), so muted moved
-     to #8a97b2 (4.85:1 there). Gold moved from #9e7f4a (3.79:1) for the
-     same reason. */
-  --color-text-secondary: #9aa8c2;
-  --color-text-muted:     #8a97b2;
+  /* ---- Space: related things 8 to 24 apart, groups 72 or more. ---- */
+  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;  --s-5: 24px;
+  --s-6: 32px;  --s-7: 48px;  --s-8: 72px;  --s-9: 96px;  --s-10: 140px;
 
-  /* Accent */
-  --color-accent:         #4472a8;
-  --color-accent-light:   #6691c0;
-  --color-accent-gold:    #b08f58;
-  --color-accent-glow:    rgba(68, 114, 168, 0.12);
+  /* ---- Radius: inner = outer - padding (checked by the token test). ---- */
+  --r-outer: 20px;     --frame-pad: 8px;     --r-inner: 12px;
+  --r-outer-sm: 12px;  --frame-pad-sm: 4px;  --r-inner-sm: 8px;
+  --r-pill: 9999px;
 
-  /* RGB triplets for one-off rgba() uses (translucent "glass" chrome,
-     decorative glows) that can't just reference the hex custom properties
-     above — rgba() needs the channels split out. Every one of these must
-     stay in lockstep with its hex counterpart, in both this block and the
-     light override below. */
-  --color-chrome-rgb:       13, 19, 32;     /* = --color-bg-base */
-  --color-surface-rgb:      18, 26, 45;     /* = --color-bg-surface */
-  --color-accent-rgb:       68, 114, 168;   /* = --color-accent */
-  --color-accent-light-rgb: 102, 145, 192;  /* = --color-accent-light */
-  --color-accent-gold-rgb:  176, 143, 88;   /* = --color-accent-gold */
+  /* ---- Depth: three tiers, one shadow each. ---- */
+  --shadow-rest:    0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lift:    0 24px 60px rgba(0, 0, 0, 0.55);
+  --shadow-overlay: 0 40px 80px rgba(0, 0, 0, 0.6);
 
-  /* Gradients */
-  --gradient-hero:    linear-gradient(160deg, #0d1320 0%, #121d33 60%, #0f1928 100%);
-  --gradient-card:    linear-gradient(145deg, #121a2d 0%, #192236 100%);
-  --gradient-overlay: linear-gradient(to bottom, transparent 0%, #0d1320 100%);
+  /* ---- Motion ---- */
+  --t-press: 120ms;
+  --t-hover: 200ms;
+  --t-enter: 400ms;
+  --t-page:  600ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-  /* Typography */
-  /* Self-hosted via @fontsource (imported in main.tsx); the variable builds
-     cover every weight the site uses in one file per script subset. */
-  --font-heading: 'Geologica Variable', 'Geologica', system-ui, sans-serif;
-  --font-body:    var(--font-heading);
-  --font-mono:    var(--font-heading);
+  /* ---- Layout ---- */
+  --gutter: clamp(16px, 6.6vw, 96px);
+  --page-max: 1440px;
+  --nav-h: 72px;
 
-  /* Type scale */
-  --text-xs:   0.75rem;
-  --text-sm:   0.875rem;
+  /* ---- Layers ---- */
+  --z-base:    0;
+  --z-raised:  10;
+  --z-overlay: 100;
+  --z-modal:   1000;
+
+  /* ====================================================================
+   * LEGACY ALIASES: delete in plan 5.
+   *
+   * The pages not yet rebuilt still ask for the old token names. Each one
+   * resolves to a Lamp value here, so those pages sit in the new theme
+   * until their own plan replaces them. Nothing new may use these.
+   * ==================================================================== */
+  --color-bg-base:     var(--bg);
+  --color-bg-surface:  var(--surface);
+  --color-bg-elevated: var(--raised);
+  --color-bg-overlay:  var(--raised);
+  --color-border-subtle:  var(--line);
+  --color-border-default: var(--line);
+  --color-text-primary:   var(--text);
+  --color-text-secondary: var(--text-2);
+  --color-text-muted:     var(--text-3);
+  --color-accent:         var(--accent);
+  --color-accent-light:   var(--accent);
+  --color-accent-gold:    var(--text-2);
+  --color-accent-glow:    rgba(240, 130, 60, 0.12);
+  --color-chrome-rgb:       20, 17, 15;    /* = --bg */
+  --color-surface-rgb:      28, 24, 21;    /* = --surface */
+  --color-accent-rgb:       240, 130, 60;  /* = --accent */
+  --color-accent-light-rgb: 240, 130, 60;
+  --color-accent-gold-rgb:  185, 172, 153; /* = --text-2 */
+  --gradient-hero:    var(--bg);
+  --gradient-card:    var(--surface);
+  --gradient-overlay: linear-gradient(to bottom, transparent 0%, #14110f 100%);
+  --font-heading: var(--font);
+  --font-body:    var(--font);
+  --font-mono:    var(--font);
+  --text-xs:   0.9375rem; /* was 0.75rem; raised to the site minimum */
+  --text-sm:   1rem;
   --text-base: 1rem;
   --text-lg:   1.125rem;
   --text-xl:   1.25rem;
@@ -62,86 +103,20 @@
   --text-4xl:  2.5rem;
   --text-5xl:  3.5rem;
   --text-6xl:  5rem;
-
-  /* Body size range: 16–18px */
-  --body-font-size: clamp(1rem, 1vw + 0.75rem, 1.125rem);
-
-  /* Spacing */
+  --body-font-size: var(--fs-body);
   --space-1: 0.25rem;   --space-2: 0.5rem;    --space-3: 0.75rem;
   --space-4: 1rem;      --space-5: 1.25rem;   --space-6: 1.5rem;
   --space-8: 2rem;      --space-10: 2.5rem;   --space-12: 3rem;
   --space-16: 4rem;     --space-24: 6rem;     --space-32: 8rem;
-
-  /* Border radius */
-  --radius-sm:   4px;
-  --radius-md:   8px;
-  --radius-lg:   16px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
   --radius-full: 9999px;
-
-  /* Shadows */
-  --shadow-card:     0 4px 24px rgba(0, 0, 0, 0.4);
-  --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.6);
-  --shadow-glow:     0 0 40px var(--color-accent-glow);
-
-  /* Transitions */
-  --transition-fast:  150ms ease;
-  --transition-base:  300ms ease;
-  --transition-slow:  600ms ease;
+  --shadow-card:     var(--shadow-rest);
+  --shadow-elevated: var(--shadow-overlay);
+  --shadow-glow:     none;
+  --transition-fast:  var(--t-press) var(--ease);
+  --transition-base:  var(--t-hover) var(--ease);
+  --transition-slow:  var(--t-enter) var(--ease);
   --transition-globe: 1500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-  /* Z-index */
-  --z-base:    0;
-  --z-raised:  10;
-  --z-overlay: 100;
-  --z-modal:   1000;
-}
-
-/*
- * Light theme — steppe/Turkic palette (warm gold accent, sky-blue-adjacent
- * hues reserved for the globe/map which stay theme-constant, cream/beige
- * surfaces). Only the color roles are overridden; everything else (type
- * scale, spacing, radii, transitions, z-index) is theme-independent.
- *
- * Every value here was checked against WCAG AA contrast (4.5:1 body text,
- * 3:1 large text/UI) against both --color-bg-base and --color-bg-elevated
- * before being picked — see the conversation this was built in for the
- * numbers. Two components (GlobeStory's WebGL globe and WorksMap's MapLibre
- * paint colors) use hardcoded hex outside the CSS cascade entirely and are
- * intentionally left blue/gold in both themes, matching how the Lightbox's
- * dark photo-viewer backdrop is also intentionally not themed.
- */
-:root[data-theme='light'] {
-  --color-bg-base:     #faf3e2;
-  --color-bg-surface:  #f1e6cd;
-  --color-bg-elevated: #ffffff;
-  --color-bg-overlay:  #fdf9ef;
-
-  --color-border-subtle:  #e4d3a7;
-  --color-border-default: #cbb37e;
-
-  --color-text-primary:   #2b2011;
-  --color-text-secondary: #5c4b2c;
-  --color-text-muted:     #766340;
-
-  --color-accent:         #a35d16;
-  /* #96600d only reached 4.26:1 on --color-bg-surface, and this is link and
-     label text, not decoration. */
-  --color-accent-light:   #8a5709;
-  --color-accent-gold:    #83571a;
-  --color-accent-glow:    rgba(163, 93, 22, 0.14);
-
-  --color-chrome-rgb:       250, 243, 226;
-  --color-surface-rgb:      241, 230, 205;
-  --color-accent-rgb:       163, 93, 22;
-  --color-accent-light-rgb: 138, 87, 9;
-  --color-accent-gold-rgb:  131, 87, 26;
-
-  --gradient-hero:    linear-gradient(160deg, #faf3e2 0%, #f1e6cd 60%, #ffffff 100%);
-  --gradient-card:    linear-gradient(145deg, #ffffff 0%, #f7ecd6 100%);
-  --gradient-overlay: linear-gradient(to bottom, transparent 0%, #faf3e2 100%);
-
-  /* Warm-tinted and lower-opacity than the dark theme's black shadows,
-     which read as muddy smudges on a light background. */
-  --shadow-card:     0 4px 24px rgba(90, 66, 30, 0.10);
-  --shadow-elevated: 0 8px 40px rgba(90, 66, 30, 0.16);
 }
