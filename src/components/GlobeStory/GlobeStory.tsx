@@ -46,21 +46,28 @@ interface Palette {
  */
 function readPalette(element: HTMLElement): Palette {
   const style = getComputedStyle(element);
-  const token = (name: string, fallback: string) =>
-    style.getPropertyValue(name).trim() || fallback;
-  const rgba = (name: string, alpha: number, fallback: string) => {
-    const triplet = style.getPropertyValue(name).trim();
-    return triplet ? `rgba(${triplet}, ${alpha})` : fallback;
+  const token = (name: string, fallback: string) => style.getPropertyValue(name).trim() || fallback;
+  /** A `#rrggbb` token at an opacity, as the canvas wants it. */
+  const alpha = (hex: string, opacity: number) => {
+    const value = hex.replace('#', '');
+    const [r, g, b] = [0, 2, 4].map((offset) => parseInt(value.slice(offset, offset + 2), 16));
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
 
+  const surface = token('--surface', '#1c1815');
+  const quiet = token('--text-2', '#b9ac99');
+  const accent = token('--accent', '#f0823c');
+
+  // The world is drawn in the quiet text colour. The accent is kept for the
+  // stop being read and the path to it: on this site accent means "active".
   return {
-    ocean: rgba('--color-surface-rgb', 0.55, 'rgba(18, 26, 45, 0.55)'),
-    graticule: rgba('--color-accent-rgb', 0.16, 'rgba(68, 114, 168, 0.16)'),
-    coast: rgba('--color-accent-light-rgb', 0.72, 'rgba(102, 145, 192, 0.72)'),
-    arc: rgba('--color-accent-light-rgb', 0.5, 'rgba(102, 145, 192, 0.5)'),
-    point: token('--color-accent-light', '#6691c0'),
-    active: token('--color-accent-gold', '#b08f58'),
-    limb: rgba('--color-accent-rgb', 0.35, 'rgba(68, 114, 168, 0.35)'),
+    ocean: alpha(surface, 0.55),
+    graticule: alpha(quiet, 0.12),
+    coast: alpha(quiet, 0.62),
+    arc: alpha(accent, 0.6),
+    point: quiet,
+    active: accent,
+    limb: alpha(quiet, 0.28),
   };
 }
 

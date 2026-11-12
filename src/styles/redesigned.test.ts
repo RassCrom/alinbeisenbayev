@@ -45,6 +45,8 @@ export const REDESIGNED: string[] = [
   'src/components/Field/Field.tsx',
   'src/components/ContactForm/ContactForm.tsx',
   'src/pages/ContactPage.tsx',
+  'src/pages/AboutPage.tsx',
+  'src/data/proof.ts',
 ];
 
 const BANNED: RegExp[] = [

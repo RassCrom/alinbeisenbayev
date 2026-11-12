@@ -1,138 +1,136 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { useScrollStory } from '../hooks/useScrollStory';
+import Frame from '../components/Frame/Frame';
+import Skeleton from '../components/Skeleton/Skeleton';
 import aboutData from '../data/about-story.json';
-import type { AboutStoryData } from '../types';
-import { formatCoordinates } from '../utils/coordinates';
+import { audience, audienceDate, awards } from '../data/proof';
+import { socials } from '../data/socials';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useScrollStory } from '../hooks/useScrollStory';
+import type { AboutStoryData } from '../types';
 
-// Canvas globe + its coastline data — only needed on this page
+// The canvas globe and its coastline data are needed only here, and only
+// once the reader reaches the route.
 const GlobeStory = lazy(() => import('../components/GlobeStory/GlobeStory'));
 
-const { profile, story, endCta } = aboutData as unknown as AboutStoryData;
+const { profile, story } = aboutData as unknown as AboutStoryData;
+const cv = socials.find((social) => social.platform === 'CV');
+const profiles = socials.filter((social) => social.platform !== 'CV');
 
-/*
- * How long the globe gets the stage to itself before the story fades in.
- *
- * This was 2600ms, and with the panels' own 300ms delay + 700ms fade the page
- * showed nothing readable for 3.3 seconds. The panels now cross-fade over a
- * globe that is still settling (its own transform runs 1000ms), so the text is
- * legible at ~1.3s without losing the entrance.
+/**
+ * Who he is, what backs that up, where else to find him, and the route that
+ * got him here, told stop by stop on a globe.
  */
-const INTRO_MS = 800;
-
 export default function AboutPage() {
-  usePageMeta('About', 'From Astana to Munich, Vienna and Dresden — the route through geodesy, GIS and cartography, told on a globe.');
+  usePageMeta('About', 'Alikhan Beisenbayev, cartographer and data storyteller: recognition, audience, and the route from Astana to Vienna.');
   const { activeIndex, visible, setPanelRef, scrollToPanel } = useScrollStory(story.length);
-  // Entrance: the globe opens centered and slowly spinning, then settles into
-  // its column while the story panels fade in.
-  const [intro, setIntro] = useState(true);
-
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setIntro(false);
-      return;
-    }
-    const timer = setTimeout(() => setIntro(false), INTRO_MS);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
-    // overflow-x-clip (not hidden) kills any transient canvas overflow during
-    // resize without creating a scroll container, which would break sticky
-    <div className="relative overflow-x-clip lg:grid lg:grid-cols-[35%_65%]">
-      <h1 className="sr-only">About Alikhan Beisenbayev</h1>
-      {/* Globe: full-width sticky background on mobile, right column on desktop */}
-      <div
-        className={`sticky top-16 z-[var(--z-base)] h-[55vh] w-full overflow-hidden transition-transform duration-1000 ease-out lg:order-2 lg:top-16 lg:h-[calc(100vh-4rem)] ${
-          intro ? 'scale-110 lg:-translate-x-[28%] lg:scale-105' : ''
-        }`}
-      >
-        <Suspense
-          fallback={
-            <div className="flex h-full items-center justify-center">
-              <span className="mono-label">Loading globe…</span>
+    <div className="about">
+      <header className="about__head wrap">
+        <div className="about__photo">
+          <Frame src={profile.photo} alt={profile.name} width={800} height={800} ratio="1 / 1" priority />
+        </div>
+        <div className="about__intro">
+          <h1 className="t-display">{profile.name}</h1>
+          <p className="work-page__lede">{profile.title}</p>
+          {profile.bio.split('\n').filter(Boolean).map((paragraph) => (
+            <p key={paragraph} className="about__bio">
+              {paragraph}
+            </p>
+          ))}
+          {cv && (
+            <div>
+              <a href={cv.url} download className="button button--quiet button--md focus-ring">
+                Download CV
+              </a>
             </div>
-          }
-        >
-          <GlobeStory points={story} activeStoryIndex={activeIndex} autoRotate={intro} onPointClick={scrollToPanel} />
-        </Suspense>
-      </div>
+          )}
+        </div>
+      </header>
 
-      {/* Story panels: held back until the globe settles */}
-      <div
-        className={`relative z-[var(--z-raised)] transition-opacity duration-500 lg:order-1 ${
-          intro ? 'pointer-events-none opacity-0' : 'opacity-100'
-        }`}>
-        {story.map((point, index) => (
-          <section
-            key={point.id}
-            ref={setPanelRef(index)}
-            data-story-index={index}
-            className="flex min-h-[80vh] items-center px-[var(--space-6)] py-[var(--space-12)] lg:min-h-[calc(100vh-4rem)] lg:px-[var(--space-12)]"
-          >
-            <div
-              className={`story-reveal ${visible[index] ? 'is-visible' : ''} w-full rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[rgba(var(--color-surface-rgb),0.92)] p-[var(--space-8)] shadow-[var(--shadow-card)] backdrop-blur-sm`}
-            >
-              <p className="font-[family-name:var(--font-mono)] text-[length:var(--text-sm)] tracking-[0.1em] text-[var(--color-accent-light)]">
-                {point.date} — {point.location.name}
-              </p>
-              <p className="coord-label mt-[var(--space-1)]">
-                {formatCoordinates(point.location.lat, point.location.lng)}
-              </p>
-              <h2 className="mt-[var(--space-3)] font-[family-name:var(--font-heading)] text-[length:var(--text-2xl)] font-bold">
-                {point.title}
-              </h2>
-              <p className="mt-[var(--space-4)] font-[family-name:var(--font-body)] text-[var(--color-text-secondary)]">
-                {point.description}
-              </p>
-              {point.images.length > 0 && (
-                <div className="mt-[var(--space-6)] grid gap-[var(--space-4)]">
-                  {point.images.map((image, imageIndex) => (
-                    <img
-                      key={imageIndex}
-                      src={image}
-                      alt={point.title}
-                      width={1200}
-                      height={630}
-                      loading="lazy"
-                      className="aspect-video w-full rounded-[var(--radius-md)] object-cover"
-                    />
+      {awards.length > 0 && (
+        <section className="home-section wrap">
+          <h2 className="t-h2">Recognition</h2>
+          <ul className="rows">
+            {awards.map((item) => (
+              <li key={`${item.slug}-${item.award}`}>
+                <span>{item.award}</span>
+                <Link to={`/works/${item.slug}`} className="rows__link focus-ring">
+                  {item.work}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {audience.length > 0 && (
+        <section className="home-section wrap">
+          <h2 className="t-h2">Audience</h2>
+          <dl className="facts about__audience">
+            {audience.map((item) => (
+              <div key={item.platform}>
+                <dt>{item.platform}</dt>
+                <dd>{item.count} followers</dd>
+              </div>
+            ))}
+          </dl>
+          {audienceDate && <p className="t-meta about__counted">Counted {audienceDate}.</p>}
+        </section>
+      )}
+
+      <section className="home-section wrap">
+        <h2 className="t-h2">Find me elsewhere</h2>
+        <ul className="rows profiles">
+          {profiles.map((social) => {
+            const outside = social.url.startsWith('http');
+            return (
+              <li key={social.id}>
+                <a
+                  href={social.url}
+                  target={outside ? '_blank' : undefined}
+                  rel={outside ? 'noreferrer' : undefined}
+                  className="rows__link focus-ring"
+                >
+                  {social.platform}
+                </a>
+                <span>{social.description}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="home-section">
+        <div className="wrap">
+          <h2 className="t-h2">The route so far</h2>
+        </div>
+        {/* overflow clip, not hidden: hidden would make a scroll container and break the sticky globe. */}
+        <div className="route">
+          <div className="route__globe">
+            <Suspense fallback={<Skeleton className="route__globe-skeleton" />}>
+              <GlobeStory points={story} activeStoryIndex={activeIndex} onPointClick={scrollToPanel} />
+            </Suspense>
+          </div>
+          <div className="route__panels">
+            {story.map((point, index) => (
+              <section key={point.id} ref={setPanelRef(index)} data-story-index={index} className="route__panel">
+                <div className={visible[index] ? 'route__card is-visible' : 'route__card'}>
+                  <p className="t-meta">
+                    {point.date}, {point.location.name}
+                  </p>
+                  <h3 className="t-h3">{point.title}</h3>
+                  <p className="route__text">{point.description}</p>
+                  {point.images.map((image) => (
+                    <Frame key={image} src={image} alt="" width={1200} height={675} ratio="16 / 9" small />
                   ))}
                 </div>
-              )}
-            </div>
-          </section>
-        ))}
-
-        {/* End of story: bio + CTA */}
-        <section className="flex min-h-[80vh] items-center px-[var(--space-6)] py-[var(--space-12)] lg:min-h-[calc(100vh-4rem)] lg:px-[var(--space-12)]">
-          <div className="w-full rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[rgba(var(--color-surface-rgb),0.92)] p-[var(--space-8)] shadow-[var(--shadow-card)] backdrop-blur-sm">
-            <img
-              src={profile.photo}
-              alt={profile.name}
-              width={96}
-              height={96}
-              loading="lazy"
-              className="h-24 w-24 rounded-[var(--radius-full)] border-2 border-[var(--color-accent)] object-cover"
-            />
-            <h2 className="mt-[var(--space-6)] font-[family-name:var(--font-heading)] text-[length:var(--text-2xl)] font-bold">
-              {endCta.heading}
-            </h2>
-            <p className="mt-[var(--space-4)] font-[family-name:var(--font-body)] text-[var(--color-text-secondary)]">
-              {profile.bio}
-            </p>
-            <div className="mt-[var(--space-8)] flex flex-wrap gap-[var(--space-4)]">
-              <Link to="/works" className="btn btn-primary">
-                {endCta.worksLabel}
-              </Link>
-              <Link to="/connect" className="btn btn-secondary">
-                {endCta.contactLabel}
-              </Link>
-            </div>
+              </section>
+            ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

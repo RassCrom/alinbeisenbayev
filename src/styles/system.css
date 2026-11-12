@@ -1459,3 +1459,187 @@
     transition: none;
   }
 }
+
+@layer components {
+  /* ---- Rows: a plain list of paired facts, divided by lines ---- */
+  .rows {
+    display: grid;
+    margin-top: var(--s-6);
+    border-top: 1px solid var(--line);
+  }
+
+  .rows li {
+    display: grid;
+    gap: var(--s-1);
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--text-2);
+  }
+
+  .rows__link {
+    color: var(--text);
+    font-weight: 550;
+    transition: color var(--t-hover) var(--ease);
+  }
+
+  /* ---- About ---- */
+  .about {
+    padding-top: var(--s-7);
+  }
+
+  .about__head {
+    display: grid;
+    gap: var(--s-7);
+  }
+
+  .about__photo {
+    max-width: 320px;
+  }
+
+  .about__intro {
+    display: grid;
+    align-content: start;
+    gap: var(--s-4);
+  }
+
+  .about__bio {
+    max-width: 68ch;
+    color: var(--text-2);
+  }
+
+  .about__audience {
+    margin-top: var(--s-6);
+    max-width: none;
+  }
+
+  .about__audience dd {
+    font-size: var(--fs-h3);
+    font-weight: 550;
+    letter-spacing: -0.015em;
+  }
+
+  .about__counted {
+    margin-top: var(--s-4);
+  }
+
+  /* ---- The route: a globe that stays put while the stops scroll past ---- */
+  .route {
+    position: relative;
+    margin-top: var(--s-6);
+    /* clip, not hidden: hidden would make a scroll container and unstick the globe. */
+    overflow-x: clip;
+  }
+
+  .route__globe {
+    position: sticky;
+    top: var(--nav-h);
+    z-index: var(--z-base);
+    width: 100%;
+    height: 55vh;
+    overflow: hidden;
+  }
+
+  .route__globe-skeleton {
+    width: min(70vmin, 520px);
+    aspect-ratio: 1;
+    margin: 6vh auto 0;
+    border-radius: var(--r-pill);
+  }
+
+  .route__panels {
+    position: relative;
+    z-index: var(--z-raised);
+  }
+
+  .route__panel {
+    display: flex;
+    align-items: center;
+    min-height: 80vh;
+    padding: var(--s-7) var(--gutter);
+  }
+
+  .route__card {
+    display: grid;
+    gap: var(--s-3);
+    width: 100%;
+    padding: var(--s-5);
+    border-radius: var(--r-outer);
+    /* The globe shows through a little on phones, where it sits behind the cards. */
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity var(--t-enter) var(--ease),
+      transform var(--t-enter) var(--ease);
+  }
+
+  .route__card.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .route__text {
+    color: var(--text-2);
+  }
+
+  @media (hover: hover) {
+    .rows__link:hover {
+      color: var(--accent);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .about {
+      padding-top: var(--s-8);
+    }
+
+    .about__head {
+      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+      gap: var(--s-8);
+      align-items: start;
+    }
+
+    .rows li {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--s-6);
+      align-items: baseline;
+    }
+
+    .profiles li {
+      grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    }
+
+    .about__audience {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .route {
+      display: grid;
+      grid-template-columns: 40% 60%;
+    }
+
+    .route__globe {
+      order: 2;
+      height: calc(100vh - var(--nav-h));
+    }
+
+    .route__panels {
+      order: 1;
+    }
+
+    .route__panel {
+      min-height: calc(100vh - var(--nav-h));
+      padding-right: var(--s-7);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route__card {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
