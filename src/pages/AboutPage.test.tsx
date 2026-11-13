@@ -36,7 +36,7 @@ it('reads the date the counts were taken', () => {
   expect(parseCountDate('09.19.26')).toBe('19 September 2026');
   expect(parseCountDate('sometime')).toBeNull();
   expect(parseCountDate(undefined)).toBeNull();
-  expect(audienceDate).toBe('19 September 2026');
+  expect(audienceDate).toBe('13 November 2026');
 });
 
 it('introduces him by name', () => {

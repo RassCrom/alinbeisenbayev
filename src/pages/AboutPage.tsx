@@ -68,11 +68,11 @@ export default function AboutPage() {
       {audience.length > 0 && (
         <section className="home-section wrap">
           <h2 className="t-h2">Audience</h2>
-          <dl className="facts about__audience">
+          <dl className="facts audience">
             {audience.map((item) => (
               <div key={item.platform}>
-                <dt>{item.platform}</dt>
-                <dd>{item.count} followers</dd>
+                <dt>{item.platform} followers</dt>
+                <dd>{item.count}</dd>
               </div>
             ))}
           </dl>

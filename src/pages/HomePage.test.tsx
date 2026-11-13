@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { expect, it, vi } from 'vitest';
 import { OFFERS, offerHref } from '../data/offers';
+import { audience, collaborations, completedProjects } from '../data/proof';
 import HomePage from './HomePage';
 
 vi.mock('./WorkDetailPage', () => ({ default: () => null }));
@@ -18,7 +19,17 @@ it('orders the sections', () => {
   const headings = render(<HomePage />, { wrapper })
     .getAllByRole('heading', { level: 2 })
     .map((h) => h.textContent);
-  expect(headings).toEqual(['Selected work', 'What I can make for you', 'Journal']);
+  expect(headings).toEqual(['Selected work', 'Clients and collaborations', 'What I can make for you', 'Journal']);
+});
+
+it('lists the collaborations and the client-project count from the data', () => {
+  const { container, getByText } = render(<HomePage />, { wrapper });
+  for (const item of collaborations) {
+    expect(getByText(item.name)).toBeTruthy();
+    expect(getByText(item.detail)).toBeTruthy();
+  }
+  expect(getByText('Client projects completed').nextElementSibling?.textContent).toBe(completedProjects);
+  expect(container.querySelectorAll('.audience > div')).toHaveLength(audience.length + 1);
 });
 
 it('links each offer to the filtered works index', () => {

@@ -1,5 +1,10 @@
+import collaborationData from './collaborations.json';
 import { projects } from './projects';
 import { socials } from './socials';
+
+/** Pages and partners the maps were made for or with, and how many client projects are done. */
+export const collaborations: { id: string; name: string; detail: string }[] = collaborationData.collaborations;
+export const completedProjects: string = collaborationData.completedProjects;
 
 /*
  * What backs the About page's claims, read from the data and nothing else:

@@ -10,6 +10,7 @@ import { featuredWorks } from '../data/featured';
 import { OFFERS, offerHref } from '../data/offers';
 import { journalEntries } from '../data/journal';
 import { projects } from '../data/projects';
+import { audience, collaborations, completedProjects } from '../data/proof';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { prefersReducedMotion } from '../utils/motion';
 
@@ -67,6 +68,30 @@ export default function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="home-section wrap">
+        <h2 className="t-h2">Clients and collaborations</h2>
+        <dl className="facts audience">
+          <div>
+            <dt>Client projects completed</dt>
+            <dd>{completedProjects}</dd>
+          </div>
+          {audience.map((item) => (
+            <div key={item.platform}>
+              <dt>{item.platform} followers</dt>
+              <dd>{item.count}</dd>
+            </div>
+          ))}
+        </dl>
+        <ul className="rows">
+          {collaborations.map((item) => (
+            <li key={item.id}>
+              <span className="rows__name">{item.name}</span>
+              <span>{item.detail}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="home-section wrap">

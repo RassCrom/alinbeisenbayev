@@ -762,6 +762,7 @@
       "slug": "figura-game",
       "title": "Figura",
       "tagline": "History and geography quiz game about famous historical figures, anchored to their places on a map",
+      "hidden": true,
       "status": "in-progress",
       "featured": false,
       "type": "website",

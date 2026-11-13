@@ -1,0 +1,533 @@
+/*
+ * The awards map is the one place the site leaves Lamp: an aged paper chart.
+ * Its palette lives here, scoped to the map, and the page chrome around it
+ * stays in the site theme.
+ */
+.awards-map-root {
+  --aw-paper: #ecdcb3;
+  --aw-paper-deep: #d6bd8e;
+  --aw-ink: #2a1c10;
+  --aw-ink-soft: rgba(42, 28, 16, 0.68);
+  --aw-red: #a3341f;
+  --aw-serif: 'Palatino Linotype', 'Book Antiqua', Palatino, 'Iowan Old Style', Georgia, serif;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--aw-paper-deep);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  isolation: isolate;
+}
+
+.awards-map-root:focus-visible {
+  outline: 2px solid var(--aw-red);
+  outline-offset: -6px;
+}
+
+.awards-map-root.is-dragging {
+  cursor: grabbing;
+}
+
+.awards-map-root.is-picking {
+  cursor: crosshair;
+}
+
+.awards-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* ---------- Paper, light and lens: layered over the chart, never hit-tested ---------- */
+
+.aw-paper,
+.aw-light,
+.aw-vignette,
+.aw-frame,
+.aw-rose-wrap {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Stains and fibre from low-frequency noise, fine grain on top. Both are tiny
+   inline SVGs the browser rasterises once; no image files. */
+.aw-paper {
+  inset: 0;
+  z-index: 2;
+  mix-blend-mode: multiply;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .24 0 0 0 0 .16 0 0 0 0 .08 1.1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.0045' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .38 0 0 0 0 .18 1.5 0 0 0 -.62'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  background-size: 240px 240px, 900px 900px;
+  opacity: 0.85;
+}
+
+/* Warm, uneven light, as if the sheet lay under a lamp. It drifts very slowly. */
+.aw-light {
+  inset: -35%;
+  z-index: 3;
+  background: radial-gradient(closest-side at 48% 46%, rgba(255, 238, 196, 0.42), rgba(255, 238, 196, 0) 72%);
+  mix-blend-mode: soft-light;
+  animation: aw-drift 48s ease-in-out infinite alternate;
+}
+
+/* Vignette: edges burnt down to umber. */
+.aw-vignette {
+  inset: 0;
+  z-index: 4;
+  mix-blend-mode: multiply;
+  background:
+    radial-gradient(ellipse 75% 70% at 50% 48%, rgba(120, 80, 40, 0) 52%, rgba(104, 66, 30, 0.38) 82%, rgba(58, 34, 14, 0.78) 100%);
+  box-shadow: inset 0 0 120px 30px rgba(62, 36, 14, 0.45);
+}
+
+/* Double ruled border, inset from the edge like a printed plate. */
+.aw-frame {
+  inset: 10px;
+  z-index: 5;
+  border: 1.5px solid rgba(42, 28, 16, 0.62);
+  outline: 1px solid rgba(42, 28, 16, 0.42);
+  outline-offset: 4px;
+}
+
+.aw-rose-wrap {
+  right: 26px;
+  z-index: 5;
+  opacity: 0.88;
+}
+
+.aw-rose-ring {
+  fill: none;
+  stroke: var(--aw-ink);
+  stroke-width: 1.2;
+}
+
+.aw-rose-thin {
+  stroke-width: 0.6;
+  stroke-dasharray: 1.5 2;
+}
+
+.aw-rose-minor {
+  fill: var(--aw-red);
+  stroke: var(--aw-ink);
+  stroke-width: 0.5;
+}
+
+.aw-rose-dark {
+  fill: var(--aw-ink);
+  stroke: var(--aw-ink);
+  stroke-width: 0.6;
+}
+
+.aw-rose-light {
+  fill: var(--aw-paper);
+  stroke: var(--aw-ink);
+  stroke-width: 0.6;
+}
+
+.aw-rose-hub {
+  fill: var(--aw-red);
+  stroke: var(--aw-ink);
+  stroke-width: 0.6;
+}
+
+.aw-rose-fleur {
+  fill: var(--aw-red);
+  stroke: var(--aw-ink);
+  stroke-width: 0.7;
+}
+
+/* ---------- Pins ---------- */
+
+.aw-marks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.aw-mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+}
+
+.awards-map-root.is-picking .aw-mark {
+  cursor: crosshair;
+}
+
+.aw-mark-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  min-height: 36px;
+  transform: translate(-50%, -50%);
+  transition: transform var(--t-hover, 200ms) var(--ease, ease);
+  filter: drop-shadow(0 1px 0 rgba(236, 220, 179, 0.9));
+}
+
+.aw-mark:hover .aw-mark-inner,
+.aw-mark:focus-visible .aw-mark-inner {
+  transform: translate(-50%, -50%) scale(1.14);
+}
+
+.aw-mark:focus-visible .aw-mark-inner {
+  outline: 2px solid var(--aw-red);
+  outline-offset: 1px;
+  border-radius: 50%;
+}
+
+/* The selected place gets a double ring in red ink. */
+.aw-mark[aria-current] .aw-mark-inner::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border: 3.5px double var(--aw-red);
+  border-radius: 50%;
+}
+
+.aw-glyph {
+  display: block;
+  overflow: visible;
+}
+
+.aw-g-fill {
+  fill: var(--c, #8f7148);
+  stroke: var(--aw-ink, #2a1c10);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.aw-g-ink {
+  fill: var(--aw-ink, #2a1c10);
+}
+
+.aw-g-line {
+  fill: none;
+  stroke: var(--aw-ink, #2a1c10);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.aw-g-pennant {
+  fill: var(--aw-red, #a3341f);
+  stroke: var(--aw-ink, #2a1c10);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+
+.aw-g-ring {
+  fill: none;
+  stroke: rgba(236, 220, 179, 0.85);
+  stroke-width: 1.1;
+}
+
+.aw-g-star {
+  fill: #ecdcb3;
+  stroke: var(--aw-ink, #2a1c10);
+  stroke-width: 0.8;
+}
+
+.aw-g-approx {
+  fill: rgba(236, 220, 179, 0.55);
+  stroke: var(--aw-ink, #2a1c10);
+  stroke-width: 1.2;
+  stroke-dasharray: 1.4 2.6;
+  stroke-linecap: round;
+}
+
+.aw-count {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--aw-ink);
+  color: var(--aw-paper);
+  font: 600 11px/17px var(--aw-serif);
+  text-align: center;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.aw-label {
+  position: absolute;
+  left: 0;
+  top: 20px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font: 600 14px/1.1 var(--aw-serif);
+  color: var(--aw-ink);
+  text-shadow:
+    0 0 2px var(--aw-paper),
+    0 0 4px var(--aw-paper),
+    0 0 6px var(--aw-paper);
+  pointer-events: none;
+}
+
+/* ---------- Visitor's new pin: a red-ink pushpin ---------- */
+
+.awards-new-pin {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  width: 28px;
+  height: 38px;
+  margin: -38px 0 0 -14px;
+  cursor: grab;
+  touch-action: none;
+  background: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 38'%3E%3Cpath d='M14 37C14 37 2.5 21.5 2.5 13a11.5 11.5 0 0 1 23 0c0 8.5-11.5 24-11.5 24z' fill='%23a3341f' stroke='%232a1c10' stroke-width='2'/%3E%3Ccircle cx='14' cy='13' r='4.5' fill='%23ecdcb3' stroke='%232a1c10' stroke-width='1.5'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 3px 3px rgba(42, 28, 16, 0.45));
+}
+
+.awards-new-pin:active {
+  cursor: grabbing;
+}
+
+/* ---------- Hover card ---------- */
+
+.awards-popup {
+  position: absolute;
+  z-index: 8;
+  display: grid;
+  gap: 4px;
+  width: min(260px, calc(100% - 32px));
+  padding: 12px 14px;
+  transform: translate(-50%, -100%);
+  background: #f2e6c6;
+  border: 1px solid rgba(42, 28, 16, 0.55);
+  outline: 1px solid rgba(42, 28, 16, 0.25);
+  outline-offset: 3px;
+  box-shadow: 0 14px 30px rgba(42, 28, 16, 0.35);
+  color: var(--aw-ink);
+  font-size: 13px;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.awards-popup.is-below {
+  transform: translate(-50%, 0);
+}
+
+.awards-popup strong {
+  font: 700 16px/1.2 var(--aw-serif);
+}
+
+.aw-pop-meta {
+  color: var(--aw-ink-soft);
+  font-size: 12px;
+}
+
+.awards-popup ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  list-style: disc;
+}
+
+/* ---------- Key, zoom, credit ---------- */
+
+.aw-key-wrap {
+  position: absolute;
+  z-index: 7;
+  max-width: calc(100% - 96px);
+}
+
+.aw-key,
+.aw-key-toggle {
+  background: rgba(242, 230, 198, 0.94);
+  border: 1px solid rgba(42, 28, 16, 0.5);
+  color: var(--aw-ink);
+  font: 13px/1.2 var(--aw-serif);
+}
+
+.aw-key {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 8px 34px 8px 12px;
+  cursor: default;
+}
+
+.aw-key-close {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: none;
+  color: var(--aw-ink);
+  font: 20px/1 var(--aw-serif);
+  cursor: pointer;
+}
+
+.aw-key-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 12px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.aw-key-toggle .aw-glyph {
+  --c: #b9a07a;
+}
+
+.aw-key-close:focus-visible,
+.aw-key-toggle:focus-visible {
+  outline: 2px solid var(--aw-red);
+  outline-offset: -2px;
+}
+
+.aw-key-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.aw-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.aw-key-item .aw-glyph {
+  --c: #b9a07a;
+}
+
+.aw-swatch {
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--aw-ink);
+  border-radius: 50%;
+}
+
+.aw-controls {
+  position: absolute;
+  right: 18px;
+  z-index: 7;
+  display: grid;
+  border: 1px solid rgba(42, 28, 16, 0.6);
+  background: rgba(242, 230, 198, 0.94);
+}
+
+.aw-controls button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  background: none;
+  color: var(--aw-ink);
+  font: 600 22px/1 var(--aw-serif);
+  cursor: pointer;
+}
+
+.aw-controls button + button {
+  border-top: 1px solid rgba(42, 28, 16, 0.35);
+}
+
+.aw-controls button:hover {
+  background: rgba(42, 28, 16, 0.08);
+}
+
+.aw-controls button:focus-visible {
+  outline: 2px solid var(--aw-red);
+  outline-offset: -2px;
+}
+
+.aw-credit {
+  position: absolute;
+  right: 18px;
+  max-width: 120px;
+  text-align: right;
+  z-index: 7;
+  margin: 0;
+  color: rgba(42, 28, 16, 0.78);
+  font: 11px/1.3 var(--aw-serif);
+  text-shadow: 0 0 3px var(--aw-paper), 0 0 6px var(--aw-paper);
+  pointer-events: none;
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .aw-credit {
+    display: block;
+  }
+}
+
+/* ---------- Opening: the chart surfaces out of the paper, then the pins are inked ---------- */
+
+.aw-intro .awards-canvas {
+  animation: aw-surface 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.aw-intro .aw-mark-inner {
+  animation: aw-ink 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(1.1s + var(--i, 0) * 45ms);
+}
+
+@keyframes aw-surface {
+  from {
+    opacity: 0;
+    filter: blur(6px) sepia(0.6);
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+
+@keyframes aw-ink {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.6);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes aw-drift {
+  from {
+    transform: translate(-7%, -5%);
+  }
+  to {
+    transform: translate(8%, 6%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aw-light,
+  .aw-intro .awards-canvas,
+  .aw-intro .aw-mark-inner {
+    animation: none;
+  }
+
+  .aw-mark-inner {
+    transition: none;
+  }
+}

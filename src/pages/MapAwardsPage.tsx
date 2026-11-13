@@ -663,7 +663,7 @@ export default function MapAwardsPage() {
   );
 
   return (
-    <div className="relative h-[calc(100dvh-4rem)] w-full overflow-hidden bg-[#0d1320]">
+    <div className="relative h-[calc(100dvh-4rem)] w-full overflow-hidden bg-[#d6bd8e]">
       {/* The map is the page. */}
       <div className="absolute inset-0">
         <Suspense fallback={<div className="flex h-full items-center justify-center"><span className="mono-label">Loading map…</span></div>}>
@@ -709,7 +709,7 @@ export default function MapAwardsPage() {
       </div>
 
       {adding && (
-        <div className="pointer-events-none absolute left-1/2 top-16 z-10 -translate-x-1/2 rounded-[var(--radius-full)] bg-[rgba(13,19,32,0.88)] px-4 py-2 text-[13px] text-[#dce3ef] shadow-[var(--shadow-elevated)] lg:left-[calc(50%+226px)]">
+        <div className="pointer-events-none absolute left-1/2 top-16 z-10 -translate-x-1/2 rounded-[var(--radius-full)] bg-[var(--raised)] px-4 py-2 text-[13px] text-[var(--text)] shadow-[var(--shadow-elevated)] lg:left-[calc(50%+226px)]">
           {picked ? 'Pin placed. Drag it or click again to move.' : 'Click the map to place the new award'}
         </div>
       )}
