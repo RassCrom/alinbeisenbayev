@@ -11,13 +11,18 @@ const FieldCamp = lazy(() => import('../FieldCamp/FieldCamp'));
 export interface FooterProps {
   /** Off on the contact page itself and on pages that end with their own call to action. */
   cta?: boolean;
+  /** The field-camp drawing. Hidden for now (see SHOW_SCENE); the call to action stays either way. */
+  scene?: boolean;
 }
+
+/** The footer drawing is switched off at Alikhan's request (2026-11-13). Set to true to bring it back. */
+const SHOW_SCENE = false;
 
 /**
  * How every page ends: the offer once more, over the field camp, then the
  * name, the ways around and the ways out.
  */
-export default function Footer({ cta = true }: FooterProps) {
+export default function Footer({ cta = true, scene = SHOW_SCENE }: FooterProps) {
   const year = new Date().getFullYear();
 
   return (
@@ -32,10 +37,14 @@ export default function Footer({ cta = true }: FooterProps) {
             <Button to={CTA.to}>{CTA.label}</Button>
           </div>
         )}
-        {/* The empty box has the drawing's shape, so nothing moves when it arrives. */}
-        <Suspense fallback={<div className="field-camp" aria-hidden="true" />}>
-          <FieldCamp />
-        </Suspense>
+        {scene && (
+          <>
+            {/* The empty box has the drawing's shape, so nothing moves when it arrives. */}
+            <Suspense fallback={<div className="field-camp" aria-hidden="true" />}>
+              <FieldCamp />
+            </Suspense>
+          </>
+        )}
       </div>
       <div className="footer__inner wrap">
         <p className="footer__name">Alikhan Beisenbayev</p>

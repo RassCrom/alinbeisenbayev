@@ -32,7 +32,7 @@ it('opens outside profiles in a new tab', () => {
 });
 
 it('ends with the call to action, over the field camp', () => {
-  const { getByRole, container } = render(<Footer />, { wrapper });
+  const { getByRole, container } = render(<Footer scene />, { wrapper });
   expect(getByRole('heading', { level: 2 }).textContent).toBe('Start a project');
   const cta = getByRole('link', { name: 'Work with me' });
   expect(cta.getAttribute('href')).toBe('/contact');
@@ -43,7 +43,7 @@ it('ends with the call to action, over the field camp', () => {
 });
 
 it('drops the call to action where the page already is one', () => {
-  const { queryByRole, container } = render(<Footer cta={false} />, { wrapper });
+  const { queryByRole, container } = render(<Footer cta={false} scene />, { wrapper });
   expect(queryByRole('link', { name: 'Work with me' })).toBeNull();
   expect(queryByRole('heading', { level: 2 })).toBeNull();
   // The drawing stays.
@@ -51,10 +51,16 @@ it('drops the call to action where the page already is one', () => {
 });
 
 it('brings the drawing in after the page, into a box already its shape', async () => {
-  const { container } = render(<Footer />, { wrapper });
+  const { container } = render(<Footer scene />, { wrapper });
   // At first: the placeholder box, so the footer's height is already right.
   expect(container.querySelector('.footer__scene .field-camp')).not.toBeNull();
   // Then the drawing itself.
   await waitFor(() => expect(container.querySelector('svg.field-camp')).not.toBeNull());
   expect(container.querySelectorAll('.field-camp')).toHaveLength(1);
+});
+
+it('keeps the drawing hidden for now, and the call to action showing', () => {
+  const { container, getByRole } = render(<Footer />, { wrapper });
+  expect(container.querySelector('.field-camp')).toBeNull();
+  expect(getByRole('link', { name: 'Work with me' }).getAttribute('href')).toBe('/contact');
 });
