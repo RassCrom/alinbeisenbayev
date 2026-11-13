@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Nav from './components/Nav/Nav';
-import ContactBand, { showContactBand } from './components/ContactBand/ContactBand';
+import { showContactBand } from './components/ContactBand/ContactBand';
 import Footer from './components/Footer/Footer';
 import LegacyRedirect from './components/LegacyRedirect/LegacyRedirect';
 import PageFallback from './components/PageFallback/PageFallback';
@@ -19,18 +19,17 @@ const MapAwardsPage = lazy(() => import('./pages/MapAwardsPage'));
 const JournalPage = lazy(() => import('./pages/JournalPage'));
 const JournalEntryPage = lazy(() => import('./pages/JournalEntryPage'));
 
-/** What every page ends with: the call to action, then the footer. */
+/**
+ * What every page ends with: the footer, whose field-camp scene carries the
+ * call to action. A page that is itself the call to action, or that places
+ * its own (a work page words it for that work), gets the scene without it.
+ */
 function PageEnd() {
   const { pathname } = useLocation();
   // The awards map fills the viewport; anything under it would only be
   // reachable by scrolling past the map.
-  const fullScreen = pathname === '/journal/map-awards';
-  return (
-    <>
-      {showContactBand(pathname) && <ContactBand />}
-      {!fullScreen && <Footer />}
-    </>
-  );
+  if (pathname === '/journal/map-awards') return null;
+  return <Footer cta={showContactBand(pathname)} />;
 }
 
 export default function App() {

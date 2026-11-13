@@ -55,8 +55,13 @@ export const REDESIGNED: string[] = [
   'src/pages/ContactPage.tsx',
   'src/pages/AboutPage.tsx',
   'src/pages/NotFoundPage.tsx',
-  'src/components/FieldCartographer/FieldCartographer.tsx',
+  'src/components/FieldCamp/FieldCamp.tsx',
+  'src/styles/field-camp.css',
   'src/data/proof.ts',
+  'src/components/AwardsMap/AwardsMap.tsx',
+  'src/components/AwardsMap/AwardsMap.css',
+  'src/components/AwardsMap/glyphs.tsx',
+  'src/utils/ortelius.ts',
 ];
 
 const BANNED: RegExp[] = [

@@ -1,0 +1,289 @@
+/*
+ * The footer's scene and the call to action that sits over it.
+ *
+ * The drawing is src/components/FieldCamp. Nothing here invents a colour or a
+ * duration: every value is a token, and every loop below runs only for a
+ * visitor who has not asked for reduced motion.
+ */
+@layer components {
+  /* ---- Footer: the offer, then the camp, then the links ---- */
+  .footer__scene {
+    display: grid;
+    gap: var(--s-6);
+    /* Off screen, the browser skips this subtree and its animations with it. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 640px;
+  }
+
+  .footer__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s-5) var(--s-7);
+  }
+
+  .footer__cta-copy {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  /* ---- The camp ----
+   * Farther things are drawn quieter. The whole drawing shows from tablet
+   * width up; a phone keeps the ground line and crops the sides, which
+   * leaves the tent, the fire and the theodolite. */
+  .field-camp {
+    display: block;
+    width: 100%;
+    max-width: 1280px;
+    min-height: 300px;
+    aspect-ratio: 1344 / 576;
+    margin-inline: auto;
+    color: var(--text-2);
+    view-timeline-name: --camp;
+  }
+
+  /* One stroke weight on screen, however the drawing is scaled to fit. */
+  .field-camp :is(path, ellipse, circle) {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .field-camp__sky {
+    color: var(--text-3);
+  }
+
+  .field-camp__mountains {
+    color: color-mix(in srgb, var(--text-3) 58%, var(--bg));
+  }
+
+  .field-camp__hatching {
+    opacity: 0.55;
+  }
+
+  .field-camp__mid {
+    color: color-mix(in srgb, var(--text-3) 82%, var(--bg));
+  }
+
+  .field-camp__accent {
+    stroke: var(--accent);
+  }
+
+  .field-camp__wick {
+    fill: var(--accent);
+  }
+
+  .field-camp__steam {
+    color: var(--text-3);
+    stroke-dasharray: 1;
+    opacity: 0;
+  }
+
+  .field-camp__shooting-star {
+    stroke-dasharray: 0.35 1;
+    stroke-dashoffset: 1.35;
+    opacity: 0;
+  }
+
+  /* Each moving part turns about its own box, not the drawing's corner. */
+  .field-camp :is(.field-camp__star, .field-camp__bird, .field-camp__flame, .field-camp__flag, .field-camp__lantern, .field-camp__needle) {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .field-camp__flame {
+    transform-origin: 50% 100%;
+  }
+
+  .field-camp__flag {
+    transform-origin: 0 50%;
+  }
+
+  .field-camp__lantern {
+    transform-origin: 50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Stars: each on its own slow pulse. */
+  .field-camp__star {
+    animation: camp-twinkle 4.6s ease-in-out infinite;
+  }
+
+  .field-camp__star:nth-of-type(3) {
+    animation-duration: 6.2s;
+    animation-delay: -2s;
+  }
+
+  .field-camp__star:nth-of-type(4) {
+    animation-duration: 5.4s;
+    animation-delay: -3.4s;
+  }
+
+  /* Once in a while, a shooting star. */
+  .field-camp__shooting-star {
+    animation: camp-shooting-star 17s ease-out 3s infinite;
+  }
+
+  /* Clouds drift, each at its own pace. */
+  .field-camp__cloud {
+    animation: camp-drift 38s ease-in-out infinite alternate;
+  }
+
+  .field-camp__cloud:nth-of-type(7) {
+    animation-duration: 52s;
+    animation-delay: -18s;
+  }
+
+  .field-camp__cloud:nth-of-type(8) {
+    animation-duration: 44s;
+    animation-delay: -30s;
+  }
+
+  /* The flock glides across; each bird beats its wings a little. */
+  .field-camp__flock {
+    animation: camp-glide 26s ease-in-out infinite alternate;
+  }
+
+  .field-camp__bird {
+    animation: camp-flap 1.3s ease-in-out infinite alternate;
+  }
+
+  .field-camp__bird:nth-of-type(2) {
+    animation-delay: -0.4s;
+  }
+
+  .field-camp__bird:nth-of-type(3) {
+    animation-delay: -0.9s;
+  }
+
+  /* Fire and lantern. */
+  .field-camp__flame {
+    animation: camp-flicker 1.5s ease-in-out infinite;
+  }
+
+  .field-camp__flame:nth-of-type(2) {
+    animation-duration: 1.1s;
+    animation-delay: -0.5s;
+  }
+
+  .field-camp__lantern {
+    animation: camp-sway 6s ease-in-out infinite alternate;
+  }
+
+  .field-camp__wick {
+    animation: camp-waver 2.3s ease-in-out infinite;
+  }
+
+  /* Steam rises off the kettle and thins out. */
+  .field-camp__steam {
+    animation: camp-steam 4.2s ease-out infinite;
+  }
+
+  .field-camp__steam:nth-of-type(2n) {
+    animation-delay: -2.1s;
+  }
+
+  /* Flags in a light wind; the compass needle never quite settles. */
+  .field-camp__flag {
+    animation: camp-flutter 2.4s ease-in-out infinite alternate;
+  }
+
+  .field-camp__flag:nth-of-type(3) {
+    animation-duration: 2.9s;
+    animation-delay: -1.2s;
+  }
+
+  .field-camp__needle {
+    animation: camp-needle 5s ease-in-out infinite alternate;
+  }
+
+  @keyframes camp-twinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.25; transform: scale(0.7); }
+  }
+
+  @keyframes camp-shooting-star {
+    0% { opacity: 0; stroke-dashoffset: 1.35; }
+    1% { opacity: 1; }
+    6% { opacity: 1; stroke-dashoffset: 0; }
+    8%, 100% { opacity: 0; stroke-dashoffset: 0; }
+  }
+
+  @keyframes camp-drift {
+    from { transform: translateX(-26px); }
+    to { transform: translateX(26px); }
+  }
+
+  @keyframes camp-glide {
+    from { transform: translate(-90px, 14px); }
+    to { transform: translate(110px, -18px); }
+  }
+
+  @keyframes camp-flap {
+    from { transform: scaleY(1); }
+    to { transform: scaleY(0.45); }
+  }
+
+  @keyframes camp-flicker {
+    0%, 100% { transform: scale(1, 1) skewX(0deg); opacity: 1; }
+    25% { transform: scale(0.94, 1.1) skewX(-3deg); opacity: 0.86; }
+    50% { transform: scale(1.04, 0.9) skewX(2deg); opacity: 1; }
+    75% { transform: scale(0.97, 1.06) skewX(4deg); opacity: 0.9; }
+  }
+
+  @keyframes camp-sway {
+    from { transform: rotate(-2.4deg); }
+    to { transform: rotate(2.4deg); }
+  }
+
+  @keyframes camp-waver {
+    0%, 100% { opacity: 1; }
+    40% { opacity: 0.55; }
+    60% { opacity: 0.85; }
+  }
+
+  @keyframes camp-steam {
+    0% { opacity: 0; stroke-dashoffset: 1; transform: translateY(6px); }
+    25% { opacity: 0.8; }
+    70% { opacity: 0.45; stroke-dashoffset: 0; }
+    100% { opacity: 0; stroke-dashoffset: 0; transform: translateY(-14px); }
+  }
+
+  @keyframes camp-flutter {
+    from { transform: skewY(-7deg) scaleX(1); }
+    to { transform: skewY(6deg) scaleX(0.9); }
+  }
+
+  @keyframes camp-needle {
+    from { transform: rotate(-9deg); }
+    to { transform: rotate(7deg); }
+  }
+
+  /* Depth: the far layers settle into place as the footer scrolls in. */
+  @supports (animation-timeline: view()) {
+    .field-camp__sky,
+    .field-camp__mountains,
+    .field-camp__mid {
+      animation: camp-settle linear both;
+      animation-timeline: --camp;
+      animation-range: entry 0% cover 55%;
+    }
+
+    .field-camp__sky {
+      --camp-shift: 36px;
+    }
+
+    .field-camp__mountains {
+      --camp-shift: 22px;
+    }
+
+    .field-camp__mid {
+      --camp-shift: 10px;
+    }
+
+    @keyframes camp-settle {
+      from { transform: translateY(var(--camp-shift)); }
+      to { transform: none; }
+    }
+  }
+}
