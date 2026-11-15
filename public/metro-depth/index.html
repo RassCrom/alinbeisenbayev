@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Metro Depth Map</title>
+<meta name="description" content="How deep the stations of 14 metro networks are, from the street to the platform, on a full-screen map you can see underground.">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<style>
+@font-face{font-family:'Geologica Variable';font-style:normal;font-display:swap;font-weight:100 900;src:url(vendor/geologica-cyrillic-ext-wght-normal.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}
+@font-face{font-family:'Geologica Variable';font-style:normal;font-display:swap;font-weight:100 900;src:url(vendor/geologica-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:'Geologica Variable';font-style:normal;font-display:swap;font-weight:100 900;src:url(vendor/geologica-latin-ext-wght-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Geologica Variable';font-style:normal;font-display:swap;font-weight:100 900;src:url(vendor/geologica-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* Lamp tokens, same values as src/styles/tokens.css */
+:root{
+  --bg:#14110f; --surface:#1c1815; --raised:#26201b; --line:#3a3028;
+  --text:#f3ebdf; --text-2:#b9ac99; --text-3:#948672; --accent:#f0823c; --accent-ink:#1d0f06;
+  --font:'Geologica Variable','Geologica',system-ui,sans-serif;
+  --r-outer:20px; --r-inner:12px; --r-pill:9999px;
+  --shadow-lift:0 24px 60px rgba(0,0,0,.55);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --panel-w:380px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+/* the hidden attribute must win over any display rule (the timeline bar is display:flex) */
+[hidden]{display:none!important}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.45;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#map{position:fixed;inset:0}
+
+/* ---- panel ---- */
+.panel{position:fixed;z-index:10;top:max(16px,env(safe-area-inset-top));left:max(16px,env(safe-area-inset-left));width:var(--panel-w);max-height:calc(100% - 32px);display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-outer);box-shadow:var(--shadow-lift);overflow:hidden}
+.panel-scroll{overflow-y:auto;padding:20px 20px 16px;display:flex;flex-direction:column;gap:18px;min-height:0}
+h1{font-size:26px;line-height:1.1;font-weight:600;margin:0;text-wrap:balance}
+h2{font-size:24px;line-height:1.1;font-weight:600;margin:0}
+.lede{margin:6px 0 0;color:var(--text-2)}
+.sub{color:var(--text-2);margin-top:4px}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;padding:0;color:var(--text-2);font-size:15px;align-self:flex-start}
+.back:hover{color:var(--text)}
+.back svg{width:16px;height:16px}
+.grab{display:none}
+
+.find{position:relative}
+.find input{width:100%;background:var(--raised);border:1px solid var(--line);border-radius:var(--r-pill);padding:9px 14px 9px 38px;outline:none}
+.find input:focus{border-color:var(--accent)}
+.find svg{position:absolute;left:13px;top:20px;transform:translateY(-50%);width:16px;height:16px;color:var(--text-3)}
+.results{list-style:none;margin:6px 0 0;padding:4px;background:var(--raised);border:1px solid var(--line);border-radius:var(--r-inner)}
+.results button{width:100%;display:grid;grid-template-columns:1fr auto;gap:10px;background:none;border:0;border-radius:8px;padding:7px 10px;text-align:left}
+.results button:hover,.results button.active{background:var(--line)}
+.results .ln{color:var(--text-3);font-size:13px;display:block}
+.results .none{padding:7px 10px;color:var(--text-3)}
+
+.cities{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.city{width:100%;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:baseline;text-align:left;background:none;border:0;border-radius:var(--r-inner);padding:8px 10px}
+.city:hover{background:var(--raised)}
+.city .nm{font-weight:500}
+.city .nm span{color:var(--text-3);font-weight:400;margin-left:6px}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.track{grid-column:1/3;height:4px;border-radius:2px;background:var(--raised);overflow:hidden}
+.track i{display:block;height:100%;border-radius:2px}
+
+.big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big b{font-size:48px;line-height:1;font-weight:650;font-variant-numeric:tabular-nums}
+.big span{color:var(--text-2)}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0}
+.facts dt{color:var(--text-3)}
+.facts dd{margin:0;font-variant-numeric:tabular-nums;min-width:0}
+.note{margin:0;padding:10px 12px;border-radius:var(--r-inner);background:var(--raised);color:var(--text-2)}
+.legend{display:flex;flex-direction:column;gap:6px}
+.ramp{height:8px;border-radius:4px}
+.ramp-ticks{display:flex;justify-content:space-between;color:var(--text-3);font-size:13px;font-variant-numeric:tabular-nums}
+.legend-row{display:flex;gap:14px;flex-wrap:wrap;color:var(--text-3);font-size:13px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:6px}
+.section-title{font-size:15px;font-weight:600;margin:0 0 6px}
+.lines{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:none;border-radius:var(--r-pill);padding:4px 10px 4px 8px;font-size:13px;color:var(--text)}
+.chip[aria-pressed="false"]{color:var(--text-3);opacity:.6}
+.chip i{width:10px;height:10px;border-radius:50%}
+.deep{list-style:none;margin:0;padding:0}
+.deep button{width:100%;display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:center;background:none;border:0;border-radius:8px;padding:6px 8px;text-align:left}
+.deep button:hover{background:var(--raised)}
+.deep i{width:10px;height:10px;border-radius:50%}
+.deep .ln{color:var(--text-3);font-size:13px;display:block}
+.credit{color:var(--text-3);font-size:13px;margin:0}
+
+/* underground block */
+.ug{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:var(--r-inner);background:var(--raised)}
+.ug-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:0;padding:0;font-weight:600;text-align:left}
+.switch{flex:none;width:40px;height:24px;border-radius:var(--r-pill);background:var(--line);position:relative;transition:background 200ms var(--ease)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--text);transition:transform 200ms var(--ease)}
+.ug-toggle[aria-pressed="true"] .switch{background:var(--accent)}
+.ug-toggle[aria-pressed="true"] .switch::after{transform:translateX(16px)}
+.ug label{display:flex;justify-content:space-between;gap:12px;color:var(--text-2);font-size:14px}
+.ug label b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+.ug input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+.ug-note{margin:0;color:var(--text-3);font-size:13px}
+.hint{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:10px 12px;border:1px solid var(--accent);border-radius:8px;color:var(--text);font-size:14px}
+.hint button{flex:none;background:none;border:0;padding:0;color:var(--accent);font-weight:600}
+
+.view-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.seg{display:inline-flex;align-items:center;gap:8px;color:var(--text-2);font-size:14px}
+.seg-btns{display:inline-flex;border:1px solid var(--line);border-radius:var(--r-pill);padding:3px}
+.seg-btns button{background:none;border:0;border-radius:var(--r-pill);padding:4px 12px;font-size:14px;color:var(--text-2)}
+.seg-btns button[aria-pressed="true"]{background:var(--raised);color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:none;border:1px solid var(--line);border-radius:var(--r-pill);padding:6px 14px;font-size:14px}
+.btn:hover{border-color:var(--accent)}
+.btn svg{width:12px;height:12px}
+.btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+
+/* collapse */
+.collapse{position:absolute;z-index:2;top:14px;right:14px;width:32px;height:32px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);border-radius:50%;color:var(--text-2)}
+.collapse:hover{color:var(--text);border-color:var(--text-3)}
+.collapse svg{width:16px;height:16px}
+.panel-scroll > :first-child{margin-right:40px}
+.mini{display:none;align-items:center;gap:12px;width:100%;background:none;border:0;padding:12px 16px;text-align:left}
+.mini b{font-weight:600}
+.mini span{color:var(--text-2);font-variant-numeric:tabular-nums}
+.mini svg{width:16px;height:16px;margin-left:auto;color:var(--text-2)}
+.panel.collapsed{width:auto;max-width:calc(100% - 32px)}
+.panel.collapsed .panel-scroll,.panel.collapsed .collapse,.panel.collapsed .grab{display:none}
+.panel.collapsed .mini{display:flex}
+.views{display:flex;gap:6px}
+.views button{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);padding:5px 8px;font-size:14px;color:var(--text-2)}
+.views button:hover{color:var(--text);border-color:var(--text-3)}
+.views button[aria-pressed="true"]{border-color:var(--accent);color:var(--text)}
+.ug-off .ug-cam{opacity:.45;pointer-events:none}
+
+.show{display:flex;flex-direction:column;gap:8px}
+.check{display:flex;align-items:center;gap:10px;cursor:pointer}
+.check input{width:18px;height:18px;margin:0;accent-color:var(--accent);cursor:pointer}
+
+/* growth timeline */
+.timeline{position:fixed;z-index:9;left:calc(max(16px,env(safe-area-inset-left)) + var(--panel-w) + 16px);right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:14px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-outer);box-shadow:var(--shadow-lift)}
+body:has(.panel.collapsed) .timeline{left:max(16px,env(safe-area-inset-left))}
+.tl-btn{flex:none;width:40px;height:40px;display:grid;place-items:center;background:none;border:1px solid var(--line);border-radius:50%;color:var(--text)}
+.tl-btn:hover{border-color:var(--text-3)}
+.tl-btn svg{width:14px;height:14px}
+#tl-play{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tl-speed{width:auto;padding:0 12px;border-radius:var(--r-pill);font-size:14px;font-variant-numeric:tabular-nums}
+.tl-when{flex:none;display:flex;flex-direction:column;line-height:1.05;min-width:70px}
+.tl-when b{font-size:32px;font-weight:650;font-variant-numeric:tabular-nums}
+.tl-when span{color:var(--text-2);font-size:13px}
+.tl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.tl-main input{width:100%;margin:0;accent-color:var(--accent)}
+.tl-stats{color:var(--text-2);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-stats b{color:var(--text);font-weight:600}
+body.timeline-on .below-note{top:auto;bottom:110px}
+
+/* ---- map overlays ---- */
+#ug-labels{position:fixed;inset:0;z-index:5;pointer-events:none;overflow:hidden}
+.ug-lbl{position:absolute;left:0;top:0;white-space:nowrap;font-size:12px;line-height:1.2;padding:2px 6px;border-radius:6px;background:rgba(20,17,15,.78);color:var(--text-2);transition:opacity .12s}
+.ug-lbl b{font-weight:600;color:var(--text)}
+.ug-lbl.est{border:1px dashed var(--text-3)}
+.ug-lbl.on{background:var(--text);color:var(--bg)}
+.ug-lbl.on b{color:var(--bg)}
+.ug-plane{position:absolute;left:0;top:0;font-size:12px;color:var(--text-3);white-space:nowrap}
+#tip{position:fixed;z-index:12;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;white-space:nowrap;box-shadow:var(--shadow-lift)}
+#tip b{font-weight:600}
+#tip span{color:var(--text-2)}
+
+.below-note{display:none;position:fixed;z-index:8;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);padding:6px 14px;font-size:14px;color:var(--text-2)}
+body.below-street .below-note{display:block}
+/* ---- popup ---- */
+.maplibregl-popup-content{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:var(--r-inner);padding:12px 14px;box-shadow:var(--shadow-lift);font-family:var(--font);font-size:14px;min-width:210px}
+.maplibregl-popup-tip{border-top-color:var(--line)!important;border-bottom-color:var(--line)!important}
+.maplibregl-popup-close-button{color:var(--text-3);font-size:18px;padding:2px 8px}
+.pop h3{margin:0 0 2px;font-size:17px;font-weight:600;padding-right:18px}
+.pop .native{color:var(--text-3);font-size:13px}
+.pop ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pop li{display:grid;grid-template-columns:12px 1fr auto;gap:2px 8px;align-items:center}
+.pop li i{width:10px;height:10px;border-radius:50%}
+.pop .d{font-weight:600;font-variant-numeric:tabular-nums}
+.pop .flag{color:var(--text-3);font-size:13px;grid-column:2/4}
+.pop .scale{margin:8px 0 0;color:var(--text-2);font-size:13px}
+.pop a{color:var(--text-2);font-size:13px}
+.maplibregl-ctrl-group{background:var(--surface)!important;border:1px solid var(--line);border-radius:12px!important;box-shadow:none!important}
+.maplibregl-ctrl-group button+button{border-top:1px solid var(--line)!important}
+.maplibregl-ctrl-group button span{filter:invert(.9)}
+.maplibregl-ctrl-attrib{background:rgba(20,17,15,.7)!important;color:var(--text-3)}
+.maplibregl-ctrl-attrib a{color:var(--text-2)}
+.loading{position:fixed;z-index:20;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);padding:8px 16px;color:var(--text-2)}
+
+@media (max-width:820px){
+  .timeline{left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));bottom:auto;gap:10px;padding:8px 10px}
+  body:has(.panel.collapsed) .timeline{left:max(10px,env(safe-area-inset-left))}
+  .tl-when b{font-size:24px}
+  .tl-when{min-width:52px}
+  .tl-btn{width:34px;height:34px}
+  .tl-stats{font-size:13px}
+  body.timeline-on .maplibregl-ctrl-top-right{top:84px}
+  .panel.collapsed{left:0;right:0;max-width:none}
+  .panel{top:auto;bottom:0;left:0;right:0;width:auto;max-height:52%;border-radius:var(--r-outer) var(--r-outer) 0 0;border-bottom:0}
+  .panel-scroll{padding:8px max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+  .grab{display:block;width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 0;flex:none}
+  .collapse{top:8px;right:12px;width:30px;height:30px}
+  .collapse svg{transform:rotate(-90deg)}
+  .mini svg{transform:rotate(-90deg)}
+  .panel-scroll{padding-top:36px!important}
+  .panel-scroll > :first-child{margin-right:0}
+  h1{font-size:22px}
+  .big b{font-size:40px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="map" role="region" aria-label="Map of metro stations coloured by depth"></div>
+<div id="ug-labels" hidden></div>
+<aside class="panel" id="side" aria-label="Metro depth">
+  <div class="grab" aria-hidden="true"></div>
+  <button class="collapse" id="collapse" aria-expanded="true" aria-controls="panel" title="Hide panel"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg><span class="vh">Hide panel</span></button>
+  <button class="mini" id="mini" aria-controls="panel" aria-expanded="true"><b id="mini-title">How deep metro stations go</b><span id="mini-sub"></span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg><span class="vh">Show panel</span></button>
+  <div class="panel-scroll" id="panel"></div>
+</aside>
+<div id="tip" hidden></div>
+<section class="timeline" id="timeline" hidden aria-label="Network growth over time">
+  <button class="tl-btn" id="tl-play" aria-label="Pause"></button>
+  <div class="tl-when" aria-live="off"><b id="tl-year"></b><span id="tl-month"></span></div>
+  <div class="tl-main"><label class="vh" for="tl-range">Date</label><input type="range" id="tl-range" step="1"><div class="tl-stats" id="tl-stats"></div></div>
+  <button class="tl-btn tl-speed" id="tl-speed" aria-label="Playback speed">1×</button>
+  <button class="tl-btn" id="tl-close" aria-label="Close the timeline"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg></button>
+</section>
+<div class="below-note" aria-live="polite">Camera below the street, looking up</div>
+<div class="loading" id="loading">Loading map</div>
+
+<script src="vendor/maplibre-gl.js"></script>
+<script>
+const DATA = 'data/';
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store = { get(k){ try{ return localStorage.getItem(k); }catch{ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch{} } };
+
+// ---------- depth colour: pale near the street, ember, then deep red ----------
+const STOPS = [[0,'#f3e3c0'],[20,'#f2b65e'],[45,'#f0823c'],[75,'#d9452c'],[105,'#b0213f']];
+const SURFACE = '#7d7062';
+const hex2 = h => [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function depthColor(d){
+  if(d <= 0) return SURFACE;
+  for(let i=1;i<STOPS.length;i++){
+    if(d <= STOPS[i][0] || i===STOPS.length-1){
+      const [d0,c0]=STOPS[i-1],[d1,c1]=STOPS[i], t=Math.max(0,Math.min(1,(d-d0)/(d1-d0)));
+      const a=hex2(c0), b=hex2(c1); return `rgb(${a.map((v,k)=>Math.round(v+(b[k]-v)*t)).join(',')})`;
+    }
+  }
+}
+const depthExpr = ['case', ['<=', ['get','depth'], 0], SURFACE, ['interpolate', ['linear'], ['get','depth'], ...STOPS.flat()]];
+const rampCSS = `linear-gradient(90deg, ${STOPS.map(([d,c])=>`${c} ${(d/105*100).toFixed(1)}%`).join(', ')})`;
+// very dark line colours (London's black Northern line) vanish on the dark map: lift them toward cream
+function visible(hex){
+  const [r,g,b] = hex2(hex.length===4 ? '#'+[...hex.slice(1)].map(c=>c+c).join('') : hex);
+  const L = (0.2126*r + 0.7152*g + 0.0722*b)/255;
+  if(L >= 0.3) return hex;
+  const t = Math.min(.72, (0.3-L)*2.4);
+  return '#'+[r,g,b].map((v,k)=>Math.round(v+([0xd8,0xcc,0xbb][k]-v)*t).toString(16).padStart(2,'0')).join('');
+}
+const fmt = d => (Math.round(d*10)/10).toLocaleString('en', {maximumFractionDigits:1});
+const depthText = d => d > 0 ? `${fmt(d)} m` : d < 0 ? `${fmt(-d)} m above street` : 'street level';
+// a storey is taken as 3 m: enough to turn a number into something you can picture
+const storeys = d => Math.round(d/3);
+const storeyText = d => d >= 6 ? `about ${storeys(d)} storeys down` : '';
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fold = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const searchIcon = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.8"/><path d="m10.6 10.6 3.6 3.6"/></svg>';
+
+// ---------- basemap: CARTO vector tiles recoloured to the Lamp theme ----------
+const T = {land:'#1d1915', water:'#0e0c0a', park:'#1f1d17', res:'#211c18', bldg:'#2a231d', minor:'#2c251f', major:'#3e3229', border:'#4d3f32', label:'#948672', labelDim:'#6f6354', halo:'#14110f'};
+const FONT = ['Open Sans Regular','Noto Sans Regular'];
+const BOLD = ['Open Sans Bold','Noto Sans Regular'];
+const STYLE = {
+  version:8,
+  projection:{type:'globe'},
+  sources:{carto:{type:'vector', url:'https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json'}},
+  glyphs:'https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf',
+  layers:[
+    {id:'background', type:'background', paint:{'background-color':T.land}},
+    {id:'park', type:'fill', source:'carto', 'source-layer':'park', minzoom:9, paint:{'fill-color':T.park}},
+    {id:'residential', type:'fill', source:'carto', 'source-layer':'landuse', minzoom:10, filter:['in','class','residential','suburbs','neighbourhood'], paint:{'fill-color':T.res, 'fill-opacity':.7}},
+    {id:'water', type:'fill', source:'carto', 'source-layer':'water', paint:{'fill-color':T.water}},
+    {id:'waterway', type:'line', source:'carto', 'source-layer':'waterway', minzoom:8, paint:{'line-color':T.water, 'line-width':['interpolate',['linear'],['zoom'],8,.5,12,1.5,16,4]}},
+    {id:'building', type:'fill', source:'carto', 'source-layer':'building', minzoom:13, paint:{'fill-color':T.bldg, 'fill-opacity':.7}},
+    {id:'road-minor', type:'line', source:'carto', 'source-layer':'transportation', minzoom:11, filter:['in','class','minor','tertiary','service','secondary'], layout:{'line-cap':'round','line-join':'round'}, paint:{'line-color':T.minor, 'line-width':['interpolate',['linear'],['zoom'],11,.4,14,1.2,18,6]}},
+    {id:'road-major', type:'line', source:'carto', 'source-layer':'transportation', minzoom:6, filter:['in','class','motorway','trunk','primary'], layout:{'line-cap':'round','line-join':'round'}, paint:{'line-color':T.major, 'line-width':['interpolate',['linear'],['zoom'],6,.4,10,1.2,14,2.8,18,8]}},
+    {id:'rail', type:'line', source:'carto', 'source-layer':'transportation', minzoom:11, filter:['==','class','rail'], paint:{'line-color':T.major, 'line-width':.8, 'line-dasharray':[3,2]}},
+    {id:'boundary', type:'line', source:'carto', 'source-layer':'boundary', filter:['all',['==','admin_level',2],['==','maritime',0]], paint:{'line-color':T.border, 'line-width':['interpolate',['linear'],['zoom'],2,.5,6,1.1]}},
+    {id:'street-names', type:'symbol', source:'carto', 'source-layer':'transportation_name', minzoom:14, layout:{'symbol-placement':'line', 'text-field':['coalesce',['get','name_en'],['get','name']], 'text-font':FONT, 'text-size':11}, paint:{'text-color':T.labelDim, 'text-halo-color':T.halo, 'text-halo-width':1}},
+    {id:'water-names', type:'symbol', source:'carto', 'source-layer':'water_name', minzoom:3, layout:{'text-field':['coalesce',['get','name_en'],['get','name']], 'text-font':FONT, 'text-size':12}, paint:{'text-color':T.labelDim, 'text-halo-color':T.water, 'text-halo-width':1}},
+    {id:'place-names', type:'symbol', source:'carto', 'source-layer':'place', minzoom:11, filter:['in','class','suburb','neighbourhood','quarter'], layout:{'text-field':['coalesce',['get','name_en'],['get','name']], 'text-font':FONT, 'text-size':12, 'text-max-width':8}, paint:{'text-color':T.labelDim, 'text-halo-color':T.halo, 'text-halo-width':1.2}},
+    {id:'city-names', type:'symbol', source:'carto', 'source-layer':'place', minzoom:3, maxzoom:11, filter:['in','class','city','town'], layout:{'text-field':['coalesce',['get','name_en'],['get','name']], 'text-font':FONT, 'text-size':['interpolate',['linear'],['zoom'],3,10,8,13], 'text-max-width':8}, paint:{'text-color':T.label, 'text-halo-color':T.halo, 'text-halo-width':1.2}},
+    {id:'country-names', type:'symbol', source:'carto', 'source-layer':'place', minzoom:2, maxzoom:6, filter:['==','class','country'], layout:{'text-field':['coalesce',['get','name_en'],['get','name']], 'text-font':FONT, 'text-size':12, 'text-max-width':7}, paint:{'text-color':T.labelDim, 'text-halo-color':T.halo, 'text-halo-width':1.2}},
+  ],
+};
+
+// display options, remembered per viewer
+let showNames = store.get('metro-depth-names') !== '0';
+let showBasemap = store.get('metro-depth-basemap') !== '0';
+let showTerrain = store.get('metro-depth-terrain') === '1';
+let terrainActive = false;
+const BASE_LAYERS = STYLE.layers.filter(l => l.id !== 'background').map(l => l.id);
+// Terrarium-encoded elevation tiles (AWS Open Data, Mapzen), no key
+const DEM_URL = 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
+
+const narrow = () => innerWidth <= 820;
+const map = new maplibregl.Map({
+  container:'map', style:STYLE, center:[32,42], zoom: narrow() ? 0.9 : 1.7,
+  attributionControl:false, maxPitch:70, renderWorldCopies:false, centerClampedToGround:false,
+});
+map.addControl(new maplibregl.NavigationControl({visualizePitch:true}), 'top-right');
+// MapLibre keeps the camera at or above altitude 0 when a map has no 3D terrain, lowering the tilt until it is.
+// There is no public option for this, so the check is skipped while the underground view is on.
+const keepCameraAboveGround = map._elevateCameraIfInsideTerrain?.bind(map);
+if(keepCameraAboveGround) map._elevateCameraIfInsideTerrain = tr => ug?.enabled ? {} : keepCameraAboveGround(tr);
+
+// easeTo cannot animate the orbit centre's height, so camera moves that change it run through this tween
+let tweenRaf = 0;
+function tweenCamera(to, ms = 1200){
+  cancelAnimationFrame(tweenRaf);
+  const c0 = map.getCenter();
+  const from = {pitch:map.getPitch(), bearing:map.getBearing(), zoom:map.getZoom(), elevation:map.transform.elevation, lng:c0.lng, lat:c0.lat};
+  if(reduceMotion || !ms){ map.jumpTo(to); return Promise.resolve(); }
+  let db = (to.bearing ?? from.bearing) - from.bearing; db = ((db + 540) % 360) - 180;
+  const t0 = performance.now();
+  return new Promise(res => {
+    const step = now => {
+      const t = Math.min(1, (now - t0) / ms), e = t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2, o = {};
+      for(const k of ['pitch','zoom','elevation']) if(k in to) o[k] = from[k] + (to[k] - from[k]) * e;
+      if('bearing' in to) o.bearing = from.bearing + db * e;
+      if(to.center) o.center = [from.lng + (to.center[0] - from.lng) * e, from.lat + (to.center[1] - from.lat) * e];
+      map.jumpTo(o);
+      if(t < 1) tweenRaf = requestAnimationFrame(step); else { markView(); res(); }
+    };
+    tweenRaf = requestAnimationFrame(step);
+  });
+}
+const stopTween = () => cancelAnimationFrame(tweenRaf);
+map.addControl(new maplibregl.AttributionControl({compact:true}), 'bottom-right');
+
+let INDEX = [], city = null, cityData = null, hidden = new Set(), popup = null;
+let hubs = [], hubOf = [], colourMode = 'depth', ug = null, tour = null;
+const cache = {};
+const panel = document.getElementById('panel');
+const tipEl = document.getElementById('tip');
+const getJSON = u => fetch(u).then(r => { if(!r.ok) throw new Error(u+' '+r.status); return r.json(); });
+const lineColorOf = () => Object.fromEntries(cityData.lines.map(l=>[l.id,l.color]));
+
+// ---------- station hubs: interchange platforms that share a place become one marker ----------
+function buildHubs(){
+  const c = cityData; hubs = []; hubOf = [];
+  c.stations.forEach((s,i) => {
+    if(hidden.has(s.line)) return;
+    let h = hubs.find(h => h.name === s.name && Math.abs(h.lat-s.lat) < .004 && Math.abs(h.lon-s.lon) < .006);
+    if(!h){ h = {name:s.name, native:s.native, lat:s.lat, lon:s.lon, members:[]}; hubs.push(h); }
+    h.members.push(i); hubOf[i] = hubs.indexOf(h);
+  });
+  for(const h of hubs){
+    const m = h.members.map(i=>c.stations[i]);
+    h.i = h.members.reduce((a,b)=>c.stations[b].depth > c.stations[a].depth ? b : a);
+    h.depth = Math.max(...m.map(s=>s.depth)); h.min = Math.min(...m.map(s=>s.depth));
+    h.lines = [...new Set(m.map(s=>s.line))];
+    h.est = c.stations[h.i].est;
+    h.t = Math.min(...m.map(s => s._t ?? Infinity));
+  }
+  const order = hubs.map((h,k)=>k).sort((a,b)=>hubs[b].depth-hubs[a].depth);
+  order.forEach((k,r) => hubs[k].rank = r);
+}
+function hubLabel(h){
+  const d = h.lines.length > 1 && Math.abs(h.depth - h.min) >= 1 ? `${fmt(Math.max(h.min,0))}–${fmt(h.depth)} m` : depthText(h.depth);
+  return d + (h.est ? ' (est.)' : '');
+}
+function updateStationSource(){
+  buildHubs();
+  const color = lineColorOf();
+  map.getSource('stations').setData({type:'FeatureCollection', features:hubs.map((h,k)=>({type:'Feature', properties:{
+    hid:k, i:h.i, name:h.name, depth:h.depth, est:h.est, color:color[cityData.stations[h.i].line], multi:h.lines.length>1, rank:h.rank, label:hubLabel(h), t:Number.isFinite(h.t) ? h.t : 1e9, pt: TL ? ptOf(h.t) : 0,
+  }, geometry:{type:'Point', coordinates:[h.lon, h.lat]}}))});
+}
+
+// ---------- collapsible panel ----------
+const side = document.getElementById('side');
+function setCollapsed(on, save = true){
+  side.classList.toggle('collapsed', on);
+  document.getElementById('collapse').setAttribute('aria-expanded', String(!on));
+  document.getElementById('mini').setAttribute('aria-expanded', String(!on));
+  if(save) store.set('metro-depth-collapsed', on ? '1' : '0');
+  updateMini();
+}
+function updateMini(){
+  document.getElementById('mini-title').textContent = cityData ? cityData.name : 'How deep metro stations go';
+  document.getElementById('mini-sub').textContent = cityData ? `deepest ${fmt(cityData.deepest.depth)} m` : `${INDEX.length || 14} cities`;
+}
+document.getElementById('collapse').onclick = () => setCollapsed(true);
+document.getElementById('mini').onclick = () => setCollapsed(false);
+const panelOpen = () => !side.classList.contains('collapsed');
+
+// ---------- panel: world ----------
+function renderWorld(){
+  const max = INDEX[0].deepest.depth;
+  panel.innerHTML = `
+    <div><h1>How deep metro stations go</h1>
+    <p class="lede">Every station of ${INDEX.length} metro networks, measured from the street down to the platform. Pick a city to see its network, then look underground.</p></div>
+    <div class="find">${searchIcon}<label class="vh" for="find-city">Find a city</label><input id="find-city" type="search" placeholder="Find a city" autocomplete="off"></div>
+    <div class="legend"><div class="ramp" style="background:${rampCSS}"></div>
+      <div class="ramp-ticks"><span>0 m</span><span>25</span><span>50</span><span>75</span><span>100 m</span></div></div>
+    <ul class="cities" id="city-list">${INDEX.map(c => `<li data-name="${esc(fold(c.name+' '+c.system))}"><button class="city" data-id="${c.id}">
+      <span class="nm">${esc(c.name)}<span>${esc(c.deepest.name)}</span></span>
+      <span class="num">${fmt(c.deepest.depth)} m</span>
+      <span class="track" aria-hidden="true"><i style="width:${(c.deepest.depth/max*100).toFixed(1)}%;background:${depthColor(c.deepest.depth)}"></i></span>
+    </button></li>`).join('')}</ul>
+    <p class="credit">Bars show each network's deepest station. Depths from TfL, Wikipedia, metros.hu, DPP and the Dobrov metro catalogue.</p>`;
+  panel.querySelectorAll('.city').forEach(b => b.onclick = () => go(b.dataset.id));
+  updateMini();
+  const f = document.getElementById('find-city');
+  f.oninput = () => { const q = fold(f.value.trim()); panel.querySelectorAll('#city-list li').forEach(li => li.hidden = q && !li.dataset.name.includes(q)); };
+  f.onkeydown = e => { if(e.key==='Enter'){ const li = [...panel.querySelectorAll('#city-list li')].find(li=>!li.hidden); li?.querySelector('button').click(); } };
+  panel.scrollTop = 0;
+}
+
+// ---------- panel: city ----------
+const EXAG = [1, 2, 5, 10, 20, 50, 100];
+function renderCity(){
+  const c = cityData;
+  const lineColor = lineColorOf();
+  const topHubs = [...hubs].sort((a,b)=>b.depth-a.depth).slice(0, 8);
+  const estCount = c.stations.filter(s=>s.est).length;
+  const showHint = !store.get('metro-depth-ug-seen') && !ug?.enabled;
+  panel.innerHTML = `
+    <button class="back" id="back"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg>All cities</button>
+    <div class="find">${searchIcon}<label class="vh" for="find-st">Find a station</label><input id="find-st" type="search" placeholder="Find a station in ${esc(c.name)}" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="find-results"><ul class="results" id="find-results" hidden></ul></div>
+    <div><h2>${esc(c.name)}</h2><div class="sub">${esc(c.system)}</div></div>
+    <div><div class="big"><b style="color:${depthColor(c.deepest.depth)}">${fmt(c.deepest.depth)} m</b><span>${esc(c.deepest.name)}</span></div>
+      <div class="sub">Deepest station, ${esc(c.deepest.line)}. That is ${storeyText(c.deepest.depth) || 'just below the street'}, counting 3 m a storey.</div></div>
+    <div class="ug${ug?.enabled ? '' : ' ug-off'}" id="ug-box">
+      <button class="ug-toggle" id="ug-toggle" aria-pressed="${ug?.enabled ? 'true' : 'false'}"><span>See underground</span><span class="switch" aria-hidden="true"></span></button>
+      ${showHint ? `<div class="hint" id="hint"><span>Switch this on to see the tunnels and platforms below the street. Then drag with the right mouse button, or two fingers, to tilt the camera down past the street and look up at them.</span><button id="hint-ok">Got it</button></div>` : ''}
+      <div class="ug-cam"><p class="section-title" id="views-label">Look from</p>
+        <div class="views" role="group" aria-labelledby="views-label">
+          <button data-view="above">Above</button><button data-view="side">Side</button><button data-view="below">Below</button>
+        </div></div>
+      <label for="ug-exag">Vertical exaggeration <b id="ug-val"></b></label>
+      <input type="range" id="ug-exag" min="0" max="${EXAG.length-1}" step="1" value="${EXAG.indexOf(ug?.exaggeration ?? 20)}">
+      <p class="ug-note" id="ug-note"></p>
+    </div>
+    <div class="view-row">
+      <span class="seg"><span id="seg-label">Colour by</span><span class="seg-btns" role="group" aria-labelledby="seg-label">
+        <button data-mode="depth" aria-pressed="${colourMode==='depth'}">Depth</button><button data-mode="line" aria-pressed="${colourMode==='line'}">Line</button></span></span>
+      <button class="btn" id="grow"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="4.6"/><path d="M6 3.4V6l1.8 1.2"/></svg>Watch it grow</button>
+      <button class="btn" id="tour" aria-pressed="${!!tour}"><svg viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M2.5 1.5v9l8-4.5z"/></svg>${tour ? 'Stop tour' : 'Tour the 5 deepest'}</button>
+    </div>
+    <div class="show"><p class="section-title">Show</p>
+      <label class="check"><input type="checkbox" id="opt-names"${showNames ? ' checked' : ''}>Station names</label>
+      <label class="check"><input type="checkbox" id="opt-basemap"${showBasemap ? ' checked' : ''}>Street map</label>
+      <label class="check"><input type="checkbox" id="opt-terrain"${showTerrain ? ' checked' : ''}>Ground elevation</label>
+      <p class="ug-note" id="terrain-note"></p>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div><p class="section-title">Lines</p><div class="lines">${c.lines.map(l => `<button class="chip" data-line="${esc(l.id)}" aria-pressed="${!hidden.has(l.id)}"><i style="background:${l.color}"></i>${esc(l.name)}</button>`).join('')}</div></div>
+    <div><p class="section-title">Deepest stations</p><ol class="deep">${topHubs.map(h => `<li><button data-i="${h.i}"><i style="background:${lineColor[c.stations[h.i].line]}"></i><span>${esc(h.name)}<span class="ln">${esc(h.lines.join(', '))}</span></span><span class="num">${depthText(h.depth)}</span></button></li>`).join('')}</ol></div>
+    <dl class="facts">
+      <dt>Stations</dt><dd>${esc(c.stationsLabel)}</dd>
+      <dt>On this map</dt><dd>${c.platformCount} platforms, ${c.below} below the street</dd>
+      <dt>Depths</dt><dd>${esc(c.confirmed)} confirmed, ${esc(c.estimated)} estimated${estCount ? ' (dashed)' : ''}</dd>
+      <dt>Source</dt><dd>${esc(c.source)}</dd>
+    </dl>
+    ${c.note ? `<p class="note">${esc(c.note)}</p>` : ''}
+    <p class="credit">${esc(c.datesAttribution || '')}${c.datesAttribution && c.datesAttribution.includes('Wikidata') ? '. Where a line reached an interchange later than the station first opened, its date comes from the nearest station on that line alone, and no platform opens before its line did. A few suburban stations opened on a main-line railway before the metro reached them and appear from that earlier date. ' : '. '}${c.schematic ? 'Track drawn straight from station to station. ' : ''}Tunnel depth between stations is estimated from the stations either side. ${esc(c.attribution)}</p>`;
+  document.getElementById('back').onclick = () => go(null);
+  panel.querySelectorAll('.chip').forEach(b => b.onclick = () => {
+    const id = b.dataset.line; hidden.has(id) ? hidden.delete(id) : hidden.add(id);
+    b.setAttribute('aria-pressed', String(!hidden.has(id)));
+    applyLineFilter(); updateStationSource(); ug?.setHidden(hidden);
+  });
+  panel.querySelectorAll('.deep button').forEach(b => b.onclick = () => focusStation(+b.dataset.i));
+  panel.querySelectorAll('.seg-btns button').forEach(b => b.onclick = () => setColourMode(b.dataset.mode));
+  document.getElementById('tour').onclick = () => tour ? stopTour() : startTour();
+  document.getElementById('grow').onclick = () => startTimeline();
+  document.getElementById('hint-ok')?.addEventListener('click', dismissHint);
+  wireUnderground(); wireStationSearch(); renderLegend(); updateMini(); markView(); wireShow();
+  panel.scrollTop = 0;
+}
+function dismissHint(){ store.set('metro-depth-ug-seen','1'); document.getElementById('hint')?.remove(); }
+
+function renderLegend(){
+  const el = document.getElementById('legend'); if(!el) return;
+  const estCount = cityData.stations.filter(s=>s.est).length;
+  const extra = `<div class="legend-row">${colourMode==='depth' ? `<span><i class="dot" style="background:${SURFACE}"></i>Street level or above</span>` : ''}<span><i class="dot" style="background:none;border:1.5px solid var(--text)"></i>Ring: interchange</span>${estCount ? `<span><i class="dot" style="background:none;border:1.5px dashed var(--text-2)"></i>Estimated depth</span>` : ''}</div>`;
+  el.innerHTML = colourMode === 'depth'
+    ? `<div class="ramp" style="background:${rampCSS}"></div><div class="ramp-ticks"><span>0 m</span><span>25</span><span>50</span><span>75</span><span>100 m</span></div>${extra}`
+    : `<div class="legend-row"><span>Stations take their line's colour, as in the list below. Depth is in the labels.</span></div>${extra}`;
+}
+
+function wireStationSearch(){
+  const input = document.getElementById('find-st'), list = document.getElementById('find-results');
+  let found = [], active = 0;
+  const draw = () => {
+    const q = fold(input.value.trim());
+    if(!q){ list.hidden = true; input.setAttribute('aria-expanded','false'); return; }
+    found = hubs.filter(h => fold(h.name).includes(q) || (h.native && fold(h.native).includes(q))).sort((a,b) => fold(a.name).indexOf(q) - fold(b.name).indexOf(q) || b.depth - a.depth).slice(0, 6);
+    active = 0;
+    list.innerHTML = found.length ? found.map((h,k) => `<li><button data-k="${k}" class="${k===0?'active':''}"><span>${esc(h.name)}<span class="ln">${esc(h.lines.join(', '))}</span></span><span class="num">${depthText(h.depth)}</span></button></li>`).join('') : `<li class="none">No station matches “${esc(input.value.trim())}”.</li>`;
+    list.hidden = false; input.setAttribute('aria-expanded','true');
+    list.querySelectorAll('button').forEach(b => b.onclick = () => pick(+b.dataset.k));
+  };
+  const pick = k => { const h = found[k]; if(!h) return; input.value = ''; list.hidden = true; input.setAttribute('aria-expanded','false'); focusStation(h.i); };
+  input.oninput = draw;
+  input.onkeydown = e => {
+    if(e.key === 'Enter'){ e.preventDefault(); pick(active); }
+    else if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+      e.preventDefault(); if(!found.length) return;
+      active = (active + (e.key === 'ArrowDown' ? 1 : -1) + found.length) % found.length;
+      list.querySelectorAll('button').forEach((b,k) => b.classList.toggle('active', k===active));
+    } else if(e.key === 'Escape'){ input.value=''; draw(); }
+  };
+}
+
+// ---------- underground view ----------
+function exagNote(){
+  const e = ug?.exaggeration ?? 20, d = cityData.deepest.depth * e;
+  document.getElementById('ug-val').textContent = e === 1 ? 'true scale' : `×${e}`;
+  document.getElementById('ug-note').textContent = e === 1
+    ? `True scale: ${cityData.deepest.name} is drawn exactly ${fmt(cityData.deepest.depth)} m below the street. Zoom in close to see it.`
+    : `${cityData.deepest.name}, ${fmt(cityData.deepest.depth)} m deep, is drawn ${d >= 1000 ? (d/1000).toLocaleString('en',{maximumFractionDigits:1})+' km' : Math.round(d)+' m'} below the street.`;
+}
+function wireUnderground(){
+  const t = document.getElementById('ug-toggle'), r = document.getElementById('ug-exag');
+  exagNote();
+  t.onclick = () => setUnderground(!ug?.enabled);
+  r.oninput = () => {
+    ug?.setExaggeration(EXAG[+r.value]); exagNote();
+    if(terrainActive){ map.setTerrain({source:'dem', exaggeration: EXAG[+r.value]}); terrainNote(); }
+    if(ug?.enabled || terrainActive) tweenCamera({elevation: orbitElevation()}, 400);
+  };
+  document.querySelectorAll('.views button').forEach(b => b.onclick = () => lookFrom(b.dataset.view));
+}
+// camera presets in the underground view. A pitch over 90 puts the camera below the street, looking up
+const VIEWS = {above:55, side:90, below:118};
+function lookFrom(v){
+  if(!ug?.enabled) return;
+  // side-on and from below, a whole city at once flattens into a line: come in to district scale
+  // pick the zoom at which the deepest drawn station spans about a third of the screen height
+  const drawn = Math.max(cityData.deepest.depth, 10) * ug.exaggeration;
+  const fit = Math.log2(78271.5 * Math.cos(map.getCenter().lat * Math.PI / 180) * 0.34 * map.getCanvas().clientHeight / drawn);
+  if(v === 'above') return tweenCamera({pitch:VIEWS[v], elevation: orbitElevation()}, 1400);
+  // and look at where the deep stations are: a centre weighted by depth squared, unless the view is already zoomed in close
+  const zoom = Math.min(16.5, Math.max(map.getZoom(), fit));
+  let center;
+  if(map.getZoom() < fit - .3){
+    let w = 0, x = 0, y = 0;
+    for(const h of hubs) if(h.depth > 0){ const k = h.depth * h.depth; w += k; x += h.lon * k; y += h.lat * k; }
+    if(w) center = [x / w, y / w];
+  }
+  tweenCamera({pitch:VIEWS[v], zoom, elevation: orbitElevation(), ...(center ? {center} : {})}, 1400);
+}
+function markView(){
+  const p = map.getPitch(), v = p > 96 ? 'below' : p > 78 ? 'side' : 'above';
+  document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', String(!!ug?.enabled && b.dataset.view === v)));
+}
+// the camera orbits a point halfway down the drawn depth of the deepest station, not a point on the street,
+// so tilting swings the camera down past the street and under the tunnels
+// with ground elevation on, heights are metres above sea level times the exaggeration, so the street sits at its mean height
+const streetBase = () => terrainActive && cityData?._surface ? cityData._surface.mean * (ug?.exaggeration ?? 20) : 0;
+const orbitElevation = () => !cityData ? 0 : streetBase() - (ug?.enabled ? Math.max(cityData.deepest.depth, 10) * ug.exaggeration * 0.5 : 0);
+function setUnderground(on, keepCamera){
+  if(!ug) return;
+  ug.setEnabled(on);
+  if(on) dismissHint();
+  document.getElementById('ug-box')?.classList.toggle('ug-off', !on);
+  if(on) map.setMaxPitch(130);
+  document.getElementById('ug-toggle')?.setAttribute('aria-pressed', String(on));
+  for(const id of ['line','line-grow']) map.setPaintProperty(id, 'line-opacity', on ? .3 : .85);
+  for(const id of ['line-casing','line-grow-casing']) map.setPaintProperty(id, 'line-opacity', on ? .3 : 1);
+  stationFade();
+  applyLabels();
+  const done = () => { if(!ug.enabled){ map.setMaxPitch(70); document.body.classList.remove('below-street'); } markView(); };
+  stopTween();
+  if(keepCamera){ if(on) map.jumpTo({elevation: orbitElevation()}); else { map.jumpTo({pitch:Math.min(map.getPitch(),70), elevation: orbitElevation()}); done(); } return; }
+  if(on) tweenCamera({pitch: Math.max(map.getPitch(), 62), bearing: map.getBearing() || -25, zoom: map.getZoom() + (map.getPitch() < 40 ? .9 : 0), elevation: orbitElevation()}, 1200);
+  else tweenCamera({pitch: terrainActive ? 55 : 0, bearing: terrainActive ? map.getBearing() : 0, elevation: orbitElevation()}, 900).then(done);
+}
+
+// ---------- show: station names, street map, ground elevation ----------
+function wireShow(){
+  const n = document.getElementById('opt-names'), b = document.getElementById('opt-basemap'), t = document.getElementById('opt-terrain');
+  n.onchange = () => { showNames = n.checked; store.set('metro-depth-names', showNames ? '1' : '0'); applyLabels(); };
+  b.onchange = () => { showBasemap = b.checked; store.set('metro-depth-basemap', showBasemap ? '1' : '0'); applyBasemap(); };
+  t.onchange = () => { showTerrain = t.checked; store.set('metro-depth-terrain', showTerrain ? '1' : '0'); applyTerrain(); };
+  if(terrainActive) terrainNote();
+}
+function applyLabels(){
+  const under = !!ug?.enabled;
+  for(const id of ['st-label','st-label-major','st-label-deepest']) map.setLayoutProperty(id, 'visibility', showNames && !under ? 'visible' : 'none');
+  map.setLayoutProperty('st-ring', 'visibility', under ? 'none' : 'visible');
+  ug?.setNames(showNames);
+}
+// "metro only": every basemap layer off, a plain dark ground left behind. The world view always keeps its map.
+function applyBasemap(){
+  const on = showBasemap || !cityData;
+  for(const id of BASE_LAYERS) if(map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
+  map.setLayoutProperty('hillshade', 'visibility', on && terrainActive ? 'visible' : 'none');
+  map.setPaintProperty('background', 'background-color', on ? T.land : '#100d0b');
+}
+
+// street height for a city: read the elevation tiles covering it once, then sample them anywhere (bilinear)
+function tileXY(lon, lat, z){
+  const n = 2 ** z, r = lat * Math.PI / 180;
+  return [(lon + 180) / 360 * n, (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n];
+}
+async function loadSurface(c){
+  if(c._surface) return c._surface;
+  const pad = .01, [w,s,e,n] = c.bbox;
+  let z = 13, x0, y0, x1, y1;
+  for(; z > 8; z--){
+    [x0, y0] = tileXY(w - pad, n + pad, z).map(Math.floor); [x1, y1] = tileXY(e + pad, s - pad, z).map(Math.floor);
+    if((x1 - x0 + 1) * (y1 - y0 + 1) <= 30) break;
+  }
+  const W = (x1 - x0 + 1) * 256, H = (y1 - y0 + 1) * 256;
+  const canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d', {willReadFrequently:true});
+  const jobs = [];
+  for(let x = x0; x <= x1; x++) for(let y = y0; y <= y1; y++) jobs.push(new Promise((res, rej) => {
+    const img = new Image(); img.crossOrigin = 'anonymous';
+    img.onload = () => { ctx.drawImage(img, (x - x0) * 256, (y - y0) * 256); res(); };
+    img.onerror = () => rej(new Error('elevation tile ' + z + '/' + x + '/' + y));
+    img.src = DEM_URL.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+  }));
+  await Promise.all(jobs);
+  const px = ctx.getImageData(0, 0, W, H).data;
+  const at = (i, j) => { i = Math.max(0, Math.min(W - 1, i)); j = Math.max(0, Math.min(H - 1, j)); const k = (j * W + i) * 4; return px[k] * 256 + px[k+1] + px[k+2] / 256 - 32768; };
+  const fn = (lon, lat) => {
+    const [tx, ty] = tileXY(lon, lat, z), fx = (tx - x0) * 256 - .5, fy = (ty - y0) * 256 - .5;
+    const i = Math.floor(fx), j = Math.floor(fy), a = fx - i, b = fy - j;
+    return (at(i,j)*(1-a) + at(i+1,j)*a)*(1-b) + (at(i,j+1)*(1-a) + at(i+1,j+1)*a)*b;
+  };
+  const hs = c.stations.map(st => fn(st.lon, st.lat));
+  return c._surface = {fn, min: Math.min(...hs), max: Math.max(...hs), mean: hs.reduce((x,y)=>x+y,0) / hs.length};
+}
+function terrainNote(){
+  const el = document.getElementById('terrain-note'), sf = cityData?._surface; if(!el || !sf) return;
+  const e = ug?.exaggeration ?? 20;
+  el.textContent = `Street level at the stations runs from ${Math.round(sf.min)} to ${Math.round(sf.max)} m above sea level. Hills and depths share the same ${e === 1 ? 'true' : '×' + e} vertical scale, so a station under a hill sits higher than one by the river.`;
+}
+async function applyTerrain(){
+  const note = document.getElementById('terrain-note');
+  const c = cityData;
+  if(!showTerrain || !c){
+    if(terrainActive){ map.setTerrain(null); terrainActive = false; ug?.setSurface(null); applyBasemap(); if(c) map.jumpTo({elevation: orbitElevation()}); }
+    if(note) note.textContent = '';
+    return;
+  }
+  if(note) note.textContent = 'Loading ground elevation';
+  try{ await loadSurface(c); }
+  catch(err){
+    console.warn(err);
+    showTerrain = false; store.set('metro-depth-terrain', '0');
+    const box = document.getElementById('opt-terrain'); if(box) box.checked = false;
+    if(note) note.textContent = 'Ground elevation did not load. Check the connection and try again.';
+    return;
+  }
+  if(cityData !== c || !showTerrain) return;
+  map.setTerrain({source:'dem', exaggeration: ug?.exaggeration ?? 20});
+  terrainActive = true;
+  ug?.setSurface(c._surface.fn); applyBasemap(); terrainNote();
+  if(map.isMoving()) await new Promise(r => map.once('moveend', r));
+  if(cityData !== c) return;
+  map.jumpTo({elevation: orbitElevation(), ...(ug?.enabled || map.getPitch() > 20 ? {} : {pitch:55, bearing:-20})});
+}
+
+// ---------- colour by depth or by line ----------
+function setColourMode(m){
+  colourMode = m;
+  document.querySelectorAll('.seg-btns button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+  map.setPaintProperty('st', 'circle-color', m === 'depth' ? depthExpr : ['get','color']);
+  map.setPaintProperty('st', 'circle-stroke-color', m === 'depth' ? ['case',['get','est'],'#b9ac99',['get','color']] : ['case',['get','est'],'#b9ac99',T.halo]);
+  ug?.setColorMode(m); renderLegend();
+}
+
+// ---------- map layers ----------
+function addLayers(){
+  map.addSource('cities', {type:'geojson', data:{type:'FeatureCollection', features:INDEX.map(c=>({type:'Feature', properties:{id:c.id, name:c.name, depth:c.deepest.depth}, geometry:{type:'Point', coordinates:[c.deepest.lon, c.deepest.lat]}}))}});
+  map.addLayer({id:'city-halo', type:'circle', source:'cities', paint:{'circle-radius':['interpolate',['linear'],['get','depth'],0,8,105,20], 'circle-color':depthExpr, 'circle-opacity':.18, 'circle-pitch-alignment':'map'}});
+  map.addLayer({id:'city-dot', type:'circle', source:'cities', paint:{'circle-radius':['interpolate',['linear'],['get','depth'],0,3.5,105,8], 'circle-color':depthExpr, 'circle-stroke-color':T.halo, 'circle-stroke-width':1.5}});
+  map.addLayer({id:'city-label', type:'symbol', source:'cities', layout:{'text-field':['format',['get','name'],{'font-scale':1.05},'\n',{},['concat',['to-string',['get','depth']],' m'],{'font-scale':.9}], 'text-font':BOLD, 'text-size':13, 'text-anchor':'left', 'text-offset':[1.1,0], 'text-justify':'left', 'symbol-sort-key':['-',0,['get','depth']]}, paint:{'text-color':'#f3ebdf', 'text-halo-color':T.halo, 'text-halo-width':1.6}});
+
+  const demAttribution = 'Elevation: <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a>';
+  map.addSource('dem', {type:'raster-dem', tiles:[DEM_URL], tileSize:256, encoding:'terrarium', maxzoom:14, attribution:demAttribution});
+  map.addSource('dem-hs', {type:'raster-dem', tiles:[DEM_URL], tileSize:256, encoding:'terrarium', maxzoom:14});
+  map.addLayer({id:'hillshade', type:'hillshade', source:'dem-hs', layout:{visibility:'none'}, paint:{'hillshade-shadow-color':'#0b0908', 'hillshade-highlight-color':'#4a3d31', 'hillshade-accent-color':'#1a1512', 'hillshade-exaggeration':.55}}, 'water');
+  map.addSource('lines', {type:'geojson', data:{type:'FeatureCollection', features:[]}});
+  map.addSource('stations', {type:'geojson', data:{type:'FeatureCollection', features:[]}});
+  map.addLayer({id:'line-casing', type:'line', source:'lines', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':T.halo, 'line-width':['interpolate',['linear'],['zoom'],9,3,13,6,16,10]}});
+  map.addSource('lines-grow', {type:'geojson', data:{type:'FeatureCollection', features:[]}});
+  map.addLayer({id:'line-grow-casing', type:'line', source:'lines-grow', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':T.halo, 'line-width':['interpolate',['linear'],['zoom'],9,3,13,6,16,10]}});
+  map.addLayer({id:'line-grow', type:'line', source:'lines-grow', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':['get','color'], 'line-width':['interpolate',['linear'],['zoom'],9,1.4,13,3.2,16,6], 'line-opacity':.85}});
+  map.addLayer({id:'line', type:'line', source:'lines', layout:{'line-join':'round','line-cap':'round'}, paint:{'line-color':['get','color'], 'line-width':['interpolate',['linear'],['zoom'],9,1.4,13,3.2,16,6], 'line-opacity':.85}});
+  // station size: small and even when zoomed out (so the centre is not a blob), growing with depth as you zoom in
+  const r = (lo, hi) => ['+', lo, ['*', ['max', ['get','depth'], 0], hi]];
+  const radiusPlus = add => ['interpolate',['linear'],['zoom'],9,r(1.8+add,.012),11,r(2.6+add,.03),13,r(4+add,.06),16,r(6.5+add,.1)];
+  const radius = radiusPlus(0);
+  map.addLayer({id:'st-hover', type:'circle', source:'stations', filter:['==',['get','hid'],-1], paint:{'circle-radius':['interpolate',['linear'],['zoom'],9,r(7,.05),14,r(13,.1)], 'circle-color':'#f3ebdf', 'circle-opacity':.25}});
+  map.addLayer({id:'st-ring', type:'circle', source:'stations', minzoom:11, filter:['==',['get','multi'],true], paint:{'circle-radius':radiusPlus(3), 'circle-color':'rgba(0,0,0,0)', 'circle-stroke-color':'#f3ebdf', 'circle-stroke-width':1.3, 'circle-stroke-opacity':.85}});
+  // a ring that pops around each station in the moment it opens, during the growth timeline
+  map.addLayer({id:'st-new', type:'circle', source:'stations', filter:['==', ['get','t'], -1], paint:{'circle-radius':['interpolate',['linear'],['zoom'],9,10,14,20], 'circle-color':'rgba(0,0,0,0)', 'circle-stroke-color':'#f3ebdf', 'circle-stroke-width':2}});
+  map.addLayer({id:'st', type:'circle', source:'stations', layout:{'circle-sort-key':['get','depth']}, paint:{
+    'circle-radius':radius, 'circle-color':depthExpr,
+    'circle-stroke-color':['case',['get','est'],'#b9ac99',['get','color']],
+    'circle-stroke-width':['interpolate',['linear'],['zoom'],9,.8,14,2],
+  }});
+  const labelText = ['format',['get','name'],{},'\n',{},['get','label'],{'font-scale':.88}];
+  const labelPaint = {'text-color':'#f3ebdf', 'text-halo-color':T.halo, 'text-halo-width':1.6};
+  map.addLayer({id:'st-label', type:'symbol', source:'stations', minzoom:12.6, layout:{'text-field':labelText, 'text-font':FONT, 'text-size':['interpolate',['linear'],['zoom'],12.6,11,15,13], 'text-variable-anchor':['left','right','top','bottom'], 'text-radial-offset':.9, 'text-justify':'auto', 'symbol-sort-key':['get','rank'], 'text-max-width':9}, paint:labelPaint});
+  map.addLayer({id:'st-label-major', type:'symbol', source:'stations', minzoom:10.4, maxzoom:12.6, filter:['<',['get','rank'],12], layout:{'text-field':labelText, 'text-font':FONT, 'text-size':11, 'text-variable-anchor':['left','right'], 'text-radial-offset':.8, 'text-justify':'auto', 'symbol-sort-key':['get','rank'], 'text-max-width':9}, paint:labelPaint});
+  map.addLayer({id:'st-label-deepest', type:'symbol', source:'stations', maxzoom:10.4, filter:['<',['get','rank'],3], layout:{'text-field':labelText, 'text-font':BOLD, 'text-size':12, 'text-variable-anchor':['left','right'], 'text-radial-offset':.8, 'text-justify':'auto', 'symbol-sort-key':['get','rank']}, paint:labelPaint});
+
+  for(const id of ['city-dot','city-halo','st']){
+    map.on('mouseenter', id, () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', id, () => map.getCanvas().style.cursor = '');
+  }
+  map.on('click', 'city-dot', e => go(e.features[0].properties.id));
+  map.on('click', 'city-halo', e => go(e.features[0].properties.id));
+  map.on('click', 'st', e => { if(ug?.enabled) return; showPopup(e.features[0].properties.i, e.lngLat); });
+  map.on('mousemove', 'st', e => { if(ug?.enabled) return; const p = e.features[0].properties; setHover(p.i); showTip(e.point, p.i); });
+  map.on('mouseleave', 'st', () => { if(ug?.enabled) return; setHover(null); hideTip(); });
+  // underground: pick platforms in 3D
+  map.on('mousemove', e => {
+    if(!ug?.enabled) return;
+    const hit = ug.pick(e.point.x, e.point.y);
+    map.getCanvas().style.cursor = hit ? 'pointer' : '';
+    if(hit){ setHover(hit.i, hit.line); showTip(e.point, hit.i); } else { setHover(null); hideTip(); }
+  });
+  map.on('click', e => { if(!ug?.enabled) return; const hit = ug.pick(e.point.x, e.point.y); if(hit) showPopup(hit.i); });
+  map.on('mouseout', hideTip);
+  for(const ev of ['dragstart','wheel','touchstart']) map.on(ev, () => { stopTween(); if(tour) stopTour(); });
+  map.on('pitchend', markView);
+  map.on('pitch', () => { if(ug?.enabled) document.body.classList.toggle('below-street', map.transform.getCameraAltitude() < 0); });
+}
+
+function showTip(pt, i){
+  const s = cityData.stations[i], h = hubs[hubOf[i]];
+  const depth = h && h.lines.length > 1 ? hubLabel(h) : depthText(s.depth) + (s.est ? ' (est.)' : '');
+  tipEl.innerHTML = `<b>${esc(s.name)}</b> <span>${esc(depth)}${storeyText(s.depth) ? ' · ' + storeyText(h ? h.depth : s.depth) : ''}</span>`;
+  tipEl.hidden = false;
+  const x = Math.min(pt.x + 14, innerWidth - tipEl.offsetWidth - 8), y = Math.max(pt.y - 36, 8);
+  tipEl.style.transform = `translate(${x}px,${y}px)`; tipEl.style.left = '0'; tipEl.style.top = '0';
+}
+function hideTip(){ tipEl.hidden = true; }
+
+function setCityLayers(on){
+  for(const id of ['city-dot','city-halo','city-label']) map.setLayoutProperty(id, 'visibility', on ? 'none' : 'visible');
+}
+function applyLineFilter(){
+  const hf = hidden.size ? ['!', ['in', ['get','line'], ['literal', [...hidden]]]] : null;
+  // during the growth timeline everything is keyed to playback progress (pt: the moment a piece starts to be built).
+  // Track that is fully laid is filtered in here; track still being laid is drawn partially in 'lines-grow'.
+  const all = (...f) => { f = f.filter(Boolean); return !f.length ? null : f.length === 1 ? f[0] : ['all', ...f]; };
+  const done = k => TL ? ['<=', ['get','pt'], TL.p - TL.dp * k] : null;
+  for(const id of ['line','line-casing']) map.setFilter(id, all(hf, done(1)));
+  for(const id of ['line-grow','line-grow-casing']) map.setFilter(id, hf);
+  map.setFilter('st', done(.7));
+  map.setFilter('st-ring', all(['==',['get','multi'],true], done(1)));
+  map.setFilter('st-label', done(1));
+  map.setFilter('st-label-major', all(['<',['get','rank'],12], done(1)));
+  map.setFilter('st-label-deepest', all(['<',['get','rank'],3], done(1)));
+  map.setFilter('st-new', TL ? all(done(1), ['>', ['get','pt'], TL.p - TL.dp * 2.6]) : ['==', ['get','t'], -1]);
+}
+function setHover(i, line){
+  const hid = i == null ? -1 : (hubOf[i] ?? -1);
+  map.setFilter('st-hover', ['==',['get','hid'], hid]);
+  ug?.setHover(i == null ? null : (line ?? cityData?.stations[i]?.line), i ?? null);
+}
+
+// ---------- popups ----------
+function showPopup(i, lngLat){
+  const c = cityData, s = c.stations[i], lineColor = lineColorOf();
+  const h = hubs[hubOf[i]];
+  const same = (h ? h.members : [i]).map(k=>c.stations[k]).sort((a,b)=>b.depth-a.depth);
+  const rows = same.map(o => `<li><i style="background:${lineColor[o.line]}"></i><span>${esc(o.line)}</span><span class="d" style="color:${depthColor(o.depth)}">${depthText(o.depth)}</span>${o.opened ? `<span class="flag">Opened ${fmtDate(o.opened)}${o.dateSrc === 'nearest' ? ' (from a neighbouring station)' : ''}</span>` : ''}${o.est?'<span class="flag">Estimated depth</span>':''}${o.src?`<span class="flag"><a href="${esc(o.src)}" target="_blank" rel="noopener">Source</a></span>`:''}</li>`).join('');
+  const native = s.native && s.native !== s.name ? `<div class="native">${esc(s.native)}</div>` : '';
+  const deep = same[0].depth;
+  const street = terrainActive && c._surface ? c._surface.fn(s.lon, s.lat) : null;
+  const height = street == null ? '' : `<p class="scale">The street here is ${Math.round(street)} m above sea level, so the deepest platform is at ${Math.round(street - deep)} m.</p>`;
+  popup?.remove();
+  popup = new maplibregl.Popup({maxWidth:'300px', offset:12}).setLngLat(lngLat || [s.lon, s.lat]).setHTML(`<div class="pop"><h3>${esc(s.name)}</h3>${native}<ul>${rows}</ul>${storeyText(deep) ? `<p class="scale">The deepest platform here is ${storeyText(deep)}, counting 3 m a storey.</p>` : ''}${height}</div>`).addTo(map);
+}
+function focusStation(i, opts = {}){
+  const s = cityData.stations[i];
+  map.jumpTo({elevation: orbitElevation()});
+  map.flyTo({center:[s.lon, s.lat], zoom:Math.max(map.getZoom(), opts.zoom ?? 14), pitch: opts.pitch ?? map.getPitch(), bearing: opts.bearing ?? map.getBearing(), elevation: orbitElevation(), duration: reduceMotion ? 0 : (opts.duration ?? 1200), padding:mapPadding(), essential:true});
+  showPopup(i);
+  setHover(i);
+}
+
+// ---------- growth over time ----------
+const DAY = 864e5;
+const toT = d => d ? Math.floor(Date.parse(d) / DAY) : Infinity;
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const fmtDate = d => { const x = new Date(d); return `${x.getUTCDate()} ${MONTHS[x.getUTCMonth()]} ${x.getUTCFullYear()}`; };
+function prepareTime(c){
+  if(c._timed) return;
+  c.stations.forEach(s => s._t = toT(s.opened));
+  c._trackT = computeTrackT(c);
+  c._timed = true;
+}
+// Track opens when the line's built extent reaches it: stations are projected onto each track path, and in date order
+// each opening widens the extent; a vertex opens on the day the extent first covers it. Infill stations change nothing,
+// so a later station dropped onto running track does not cut the line in two.
+function computeTrackT(c){
+  const cos = Math.cos(((c.bbox[1]+c.bbox[3])/2)*Math.PI/180), P = ([lon,lat]) => [lon*111320*cos, lat*110540];
+  const out = {};
+  for(const line of c.lines){
+    const sts = c.stations.filter(s => s.line === line.id && Number.isFinite(s._t)).map(s => ({q:P([s.lon,s.lat]), t:s._t}));
+    out[line.id] = line.coords.map(path => {
+      const pts = path.map(P), cum = [0];
+      for(let k=1;k<pts.length;k++) cum.push(cum[k-1] + Math.hypot(pts[k][0]-pts[k-1][0], pts[k][1]-pts[k-1][1]));
+      const T = new Array(pts.length).fill(Infinity);
+      const on = [];
+      for(const s of sts){
+        let best = {d:Infinity};
+        for(let k=1;k<pts.length;k++){
+          const [ax,ay]=pts[k-1], [bx,by]=pts[k], dx=bx-ax, dy=by-ay, L=dx*dx+dy*dy;
+          const u = L ? Math.max(0,Math.min(1,((s.q[0]-ax)*dx+(s.q[1]-ay)*dy)/L)) : 0;
+          const d = (s.q[0]-(ax+u*dx))**2 + (s.q[1]-(ay+u*dy))**2;
+          if(d < best.d) best = {d, along: cum[k-1] + u*Math.sqrt(L)};
+        }
+        if(best.d < 1500**2) on.push({along:best.along, t:s.t});
+      }
+      if(!on.length){ const t0 = Math.min(...sts.map(s=>s.t)); return T.fill(Number.isFinite(t0) ? t0 : Infinity); }
+      on.sort((a,b) => a.t - b.t);
+      let lo = Infinity, hi = -Infinity;
+      for(const s of on){
+        lo = Math.min(lo, s.along); hi = Math.max(hi, s.along);
+        for(let k=0;k<pts.length;k++) if(T[k] === Infinity && cum[k] >= lo - 1 && cum[k] <= hi + 1) T[k] = s.t;
+      }
+      // track past the end stations (sidings, depot runs) opens with its nearest station
+      for(let k=0;k<pts.length;k++) if(T[k] === Infinity){ let b = on[0]; for(const s of on) if(Math.abs(s.along-cum[k]) < Math.abs(b.along-cum[k])) b = s; T[k] = b.t; }
+      return T;
+    });
+  }
+  return out;
+}
+// line features cut into runs of track that open on the same day
+function lineFeatures(c){
+  const features = [];
+  for(const l of c.lines) l.coords.forEach((path, pi) => {
+    const T = c._trackT[l.id][pi];
+    let start = 0;
+    const seg = i => Math.max(T[i-1], T[i]);
+    for(let i=1;i<path.length;i++){
+      if(i < path.length-1 && seg(i+1) === seg(start+1)) continue;
+      const t = seg(start+1);
+      // a new stretch grows out of the older track it continues: from its start, or from its end
+      const before = start > 0 ? seg(start) : Infinity, after = i + 1 < path.length ? seg(i+1) : Infinity;
+      const fromEnd = !(before < t) && after < t;
+      features.push({type:'Feature', properties:{line:l.id, color:l.color, t: Number.isFinite(t) ? t : 1e9, fromEnd}, geometry:{type:'LineString', coordinates:path.slice(start, i+1)}});
+      start = i;
+    }
+    if(path.length === 1) features.push({type:'Feature', properties:{line:l.id, color:l.color, t:T[0]}, geometry:{type:'LineString', coordinates:[path[0], path[0]]}});
+  });
+  return {type:'FeatureCollection', features};
+}
+
+// playback is paced by events, not by calendar: each gap between openings gets weight gap^0.55, so quiet decades
+// pass quickly and busy years get room, while the date shown is always the true date.
+// Each new stretch of track takes GROW seconds to draw out (at 1x); its station fades in as the track reaches it.
+let TL = null;
+const TL_SECONDS = 28, GROW = 1.1;
+const timelineEl = document.getElementById('timeline'), tlRange = document.getElementById('tl-range');
+const playIcon = '<svg viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.5v11l9.5-5.5z"/></svg>';
+const pauseIcon = '<svg viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><rect x="2.5" y="1.5" width="3.2" height="11" rx="1"/><rect x="8.3" y="1.5" width="3.2" height="11" rx="1"/></svg>';
+const ease = a => a < .5 ? 4*a*a*a : 1 - Math.pow(-2*a + 2, 3) / 2;
+function ptOf(t){
+  if(!Number.isFinite(t)) return 9;
+  let v = TL.ptCache.get(t);
+  if(v === undefined){ v = pAtT(t); TL.ptCache.set(t, v); }
+  return v;
+}
+function startTimeline(){
+  if(!cityData) return;
+  stopTour(); popup?.remove(); hideTip();
+  const ts = [...new Set(cityData.stations.map(s => s._t).filter(Number.isFinite))].sort((a,b) => a-b);
+  if(!ts.length) return;
+  const end = Math.max(ts[ts.length-1], Math.floor(Date.now()/DAY));
+  const pts = [ts[0] - 500, ...ts, end], cum = [0];
+  for(let i=1;i<pts.length;i++) cum.push(cum[i-1] + Math.pow(Math.max(pts[i]-pts[i-1], 0), .55));
+  cancelAnimationFrame(TL?.raf);
+  TL = {pts, cum, total:cum[cum.length-1], p:0, playing:true, speed:TL?.speed ?? 1, last:performance.now(), T:pts[0], raf:0, ptCache:new Map(), dp: GROW / TL_SECONDS};
+  // every stretch of track learns its build moment and its length profile, for drawing it out partially
+  const cos = Math.cos(((cityData.bbox[1]+cityData.bbox[3])/2)*Math.PI/180);
+  TL.feats = lineFeatures(cityData).features;
+  for(const f of TL.feats){
+    f.properties.pt = ptOf(f.properties.t);
+    const c = f.geometry.coordinates, cum2 = [0];
+    for(let k=1;k<c.length;k++) cum2.push(cum2[k-1] + Math.hypot((c[k][0]-c[k-1][0])*cos, c[k][1]-c[k-1][1]));
+    f.cum = cum2;
+  }
+  map.getSource('lines').setData({type:'FeatureCollection', features:TL.feats});
+  updateStationSource();
+  timelineEl.hidden = false; document.body.classList.add('timeline-on');
+  tlRange.min = pts[0]; tlRange.max = end;
+  setTimelineP(0); updatePlay();
+  TL.raf = requestAnimationFrame(tick);
+}
+function stopTimeline(){
+  if(!TL) return;
+  cancelAnimationFrame(TL.raf); TL = null;
+  timelineEl.hidden = true; document.body.classList.remove('timeline-on');
+  if(cityData){ map.getSource('lines').setData(lineFeatures(cityData)); updateStationSource(); }
+  map.getSource('lines-grow').setData({type:'FeatureCollection', features:[]});
+  applyLineFilter(); stationFade(); ug?.setReveal(null);
+}
+function tAtP(p){
+  const target = p * TL.total; let i = 1;
+  while(i < TL.cum.length-1 && TL.cum[i] < target) i++;
+  const a = TL.cum[i-1], b = TL.cum[i], f = b > a ? (target - a) / (b - a) : 1;
+  return TL.pts[i-1] + (TL.pts[i] - TL.pts[i-1]) * f;
+}
+function pAtT(T){
+  let i = 1;
+  while(i < TL.pts.length-1 && TL.pts[i] < T) i++;
+  const a = TL.pts[i-1], b = TL.pts[i], f = b > a ? Math.max(0, Math.min(1, (T - a) / (b - a))) : 1;
+  return (TL.cum[i-1] + (TL.cum[i] - TL.cum[i-1]) * f) / TL.total;
+}
+function tick(now){
+  if(!TL) return;
+  const dt = Math.min(.1, (now - TL.last) / 1000); TL.last = now;
+  if(TL.playing){
+    // run on past the last opening until its track and station have finished drawing in
+    const p = Math.min(1 + TL.dp * 2.6, TL.p + dt * TL.speed / TL_SECONDS);
+    setTimelineP(p);
+    if(p >= 1 + TL.dp * 2.6){ TL.playing = false; updatePlay(); }
+  }
+  TL.raf = requestAnimationFrame(tick);
+}
+// part of a line from its growing end: the first fraction a of its length
+function partial(f, a){
+  const c = f.geometry.coordinates, cum = f.cum, L = cum[cum.length-1];
+  if(!L) return null;
+  const fromEnd = f.properties.fromEnd, target = (fromEnd ? 1 - a : a) * L, out = [];
+  if(!fromEnd){
+    out.push(c[0]);
+    for(let k=1;k<c.length;k++){
+      if(cum[k] < target){ out.push(c[k]); continue; }
+      const u = (target - cum[k-1]) / ((cum[k] - cum[k-1]) || 1);
+      out.push([c[k-1][0] + (c[k][0]-c[k-1][0])*u, c[k-1][1] + (c[k][1]-c[k-1][1])*u]); break;
+    }
+  } else {
+    for(let k=1;k<c.length;k++){
+      if(cum[k] <= target) continue;
+      const u = (target - cum[k-1]) / ((cum[k] - cum[k-1]) || 1);
+      if(!out.length) out.push([c[k-1][0] + (c[k][0]-c[k-1][0])*u, c[k-1][1] + (c[k][1]-c[k-1][1])*u]);
+      out.push(c[k]);
+    }
+  }
+  return out.length >= 2 ? {type:'Feature', properties:f.properties, geometry:{type:'LineString', coordinates:out}} : null;
+}
+// station markers fade in over the last 30% of their track's growth; underground they stay dimmed
+function stationFade(){
+  const under = !!ug?.enabled;
+  let v = under ? .35 : 1;
+  if(TL){ const fade = ['max', 0, ['min', 1, ['/', ['-', TL.p, ['+', ['get','pt'], TL.dp * .7]], TL.dp * .3]]]; v = under ? ['*', .35, fade] : fade; }
+  map.setPaintProperty('st', 'circle-opacity', v);
+  map.setPaintProperty('st', 'circle-stroke-opacity', v);
+}
+function setTimelineP(p, shownT){
+  TL.p = p;
+  const T = shownT ?? tAtP(Math.min(1, p)); TL.T = T;
+  const grow = [];
+  for(const f of TL.feats){
+    const a = (p - f.properties.pt) / TL.dp;
+    if(a > 0 && a < 1){ const g = partial(f, ease(a)); if(g) grow.push(g); }
+  }
+  map.getSource('lines-grow').setData({type:'FeatureCollection', features:grow});
+  // the opening ring: starts as the station appears, fades over about 1.5 growth lengths
+  map.setPaintProperty('st-new', 'circle-stroke-opacity', ['max', 0, ['-', 1, ['/', ['-', p, ['+', ['get','pt'], TL.dp]], TL.dp * 1.6]]]);
+  map.setPaintProperty('st-new', 'circle-radius', ['interpolate', ['linear'], ['-', p, ['+', ['get','pt'], TL.dp]], 0, 6, TL.dp * 1.6, 22]);
+  applyLineFilter(); stationFade();
+  ug?.setReveal(t => Math.max(0, Math.min(1, (p - ptOf(t)) / TL.dp)));
+  const d = new Date(T * DAY);
+  document.getElementById('tl-year').textContent = d.getUTCFullYear();
+  document.getElementById('tl-month').textContent = MONTHS[d.getUTCMonth()];
+  tlRange.value = Math.round(T);
+  const open = hubs.filter(h => h.t <= T).length;
+  let deep = null, latest = null;
+  for(const s of cityData.stations){
+    if(!(s._t <= T)) continue;
+    if(s.depth > 0 && (!deep || s.depth > deep.depth)) deep = s;
+    if(!latest || s._t > latest._t) latest = s;
+  }
+  document.getElementById('tl-stats').innerHTML = !open ? `Before the first station opened` :
+    `<b>${open}</b> station${open === 1 ? '' : 's'} open${deep ? `. Deepest so far: <b>${esc(deep.name)}</b>, ${fmt(deep.depth)} m` : ''}${latest && T - latest._t < 400 ? `. Latest: ${esc(latest.name)}, ${fmtDate(latest.opened)}` : ''}`;
+}
+const tlEnded = () => TL && TL.p >= 1 + TL.dp * 2.6 - 1e-9;
+function updatePlay(){
+  const b = document.getElementById('tl-play');
+  const playing = !!TL?.playing;
+  b.innerHTML = playing ? pauseIcon : playIcon;
+  b.setAttribute('aria-label', playing ? 'Pause' : tlEnded() ? 'Play again' : 'Play');
+}
+document.getElementById('tl-play').onclick = () => {
+  if(!TL) return;
+  if(tlEnded()) setTimelineP(0);
+  TL.playing = !TL.playing; TL.last = performance.now(); updatePlay();
+};
+document.getElementById('tl-speed').onclick = e => {
+  if(!TL) return;
+  const speeds = [0.5, 1, 2, 4]; TL.speed = speeds[(speeds.indexOf(TL.speed) + 1) % speeds.length];
+  e.currentTarget.textContent = `${TL.speed}×`;
+};
+document.getElementById('tl-close').onclick = stopTimeline;
+// scrubbing lands on a finished state: everything that opened by that date is fully drawn
+tlRange.oninput = () => { if(!TL) return; TL.playing = false; updatePlay(); setTimelineP(pAtT(+tlRange.value) + TL.dp * 2.6, +tlRange.value); };
+addEventListener('keydown', e => { if(TL && e.code === 'Space' && !/INPUT|SELECT|TEXTAREA|BUTTON/.test(document.activeElement?.tagName)){ e.preventDefault(); document.getElementById('tl-play').click(); } });
+
+// ---------- tour of the deepest stations ----------
+async function startTour(){
+  if(!cityData || !ug) return;
+  const id = city, stops = [...hubs].sort((a,b)=>b.depth-a.depth).filter(h=>h.depth>0).slice(0,5);
+  tour = {stop:false};
+  updateTourButton();
+  if(!ug.enabled) setUnderground(true, true);
+  for(const [k,h] of stops.entries()){
+    if(tour?.stop || city !== id) break;
+    map.jumpTo({elevation: orbitElevation()});
+    map.flyTo({center:[h.lon,h.lat], zoom:14.6, pitch: k % 2 ? 100 : 66, bearing: -30 + k*35, elevation: orbitElevation(), duration: reduceMotion ? 0 : 3200, padding:mapPadding(), essential:true});
+    await new Promise(r => map.once('moveend', r));
+    if(tour?.stop || city !== id) break;
+    showPopup(h.i); setHover(h.i);
+    await sleep(3200);
+  }
+  tour = null; updateTourButton();
+}
+function stopTour(){ if(tour){ tour.stop = true; map.stop(); } tour = null; updateTourButton(); }
+function updateTourButton(){
+  const b = document.getElementById('tour'); if(!b) return;
+  b.setAttribute('aria-pressed', String(!!tour));
+  b.lastChild.textContent = tour ? 'Stop tour' : 'Tour the 5 deepest';
+}
+
+// ---------- navigation ----------
+function mapPadding(){
+  if(narrow()) return {top:40, bottom: panelOpen() ? Math.round(innerHeight*.52)+20 : 90, left:30, right:30};
+  return {top:60, bottom:60, left: panelOpen() ? 380+60 : 60, right:70};
+}
+async function go(id, instant){
+  popup?.remove(); hidden = new Set(); hideTip(); stopTour(); stopTimeline();
+  if(!id){
+    city = cityData = null;
+    if(location.hash) history.replaceState(null, '', location.pathname);
+    map.getSource('lines').setData({type:'FeatureCollection', features:[]});
+    map.getSource('stations').setData({type:'FeatureCollection', features:[]});
+    if(ug){ ug.setCity(null); if(ug.enabled) setUnderground(false, true); }
+    await applyTerrain(); applyBasemap();
+    map.setProjection({type:'globe'});
+    setCityLayers(false); renderWorld(); applyLineFilter();
+    map.flyTo({center:[32,42], zoom: narrow() ? 0.9 : 1.7, pitch:0, bearing:0, elevation:0, duration: instant||reduceMotion ? 0 : 2000});
+    return;
+  }
+  const meta = INDEX.find(c=>c.id===id); if(!meta) return go(null);
+  city = id;
+  if(location.hash !== '#'+id) history.replaceState(null, '', '#'+id);
+  const c = cache[id] || (cache[id] = await getJSON(DATA + id + '.json'));
+  if(city !== id) return;
+  if(!c.lit){ c.lines.forEach(l => l.color = visible(l.color)); c.lit = true; }
+  if(terrainActive){ map.setTerrain(null); terrainActive = false; ug?.setSurface(null); }
+  cityData = c;
+  prepareTime(c);
+  map.getSource('lines').setData(lineFeatures(c));
+  updateStationSource();
+  map.setProjection({type:'mercator'});
+  setCityLayers(true); applyLineFilter(); renderCity();
+  if(ug){ ug.setCity(c); ug.setColorMode(colourMode); if(ug.enabled) setUnderground(true, true); }
+  const [w,s,e,n] = c.bbox;
+  const cam = map.cameraForBounds([[w,s],[e,n]], {padding:mapPadding(), maxZoom:14.5});
+  const under = ug?.enabled;
+  map.jumpTo({elevation: orbitElevation()});
+  map.flyTo({...cam, zoom: cam.zoom + (under ? .9 : 0), pitch: under ? 62 : 0, bearing: under ? -25 : 0, elevation: orbitElevation(), duration: instant||reduceMotion ? 0 : 2400, essential:true});
+  applyBasemap(); applyLabels(); applyTerrain();
+}
+addEventListener('hashchange', () => { const id = location.hash.slice(1); if(id !== (city||'')) go(id || null); });
+
+map.on('load', async () => {
+  try{
+    INDEX = await getJSON(DATA + 'index.json');
+  }catch(err){
+    document.getElementById('loading').textContent = 'The station data did not load. Reload the page to try again.'; return;
+  }
+  document.getElementById('loading').remove();
+  if(store.get('metro-depth-collapsed') === '1') setCollapsed(true, false);
+  addLayers();
+  try{
+    const { createUnderground } = await import('./underground.js');
+    ug = createUnderground(map, maplibregl, { depthColor, labelsEl: document.getElementById('ug-labels') });
+    map.addLayer(ug.layer, 'st-hover');
+  }catch(err){ console.error('Underground view unavailable', err); }
+  applyLabels();
+  const id = location.hash.slice(1);
+  if(id && INDEX.some(c=>c.id===id)) go(id, true); else renderWorld();
+});
+</script>
+</body>
+</html>
