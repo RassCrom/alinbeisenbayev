@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
+import ClientProof from '../components/ClientProof/ClientProof';
 import ContactForm from '../components/ContactForm/ContactForm';
 import { parseOffer } from '../data/offers';
 import { socials } from '../data/socials';
@@ -34,6 +35,8 @@ export default function ContactPage() {
       </div>
 
       <ContactForm initialOffer={parseOffer(params.get('offer'))} directEmail={directEmail} />
+
+      <ClientProof />
     </div>
   );
 }

@@ -1,10 +1,41 @@
+import type { GalleryItem } from '../types';
 import collaborationData from './collaborations.json';
+import galleryData from './gallery.json';
 import { projects } from './projects';
 import { socials } from './socials';
 
+export interface Collaboration {
+  id: string;
+  name: string;
+  detail: string;
+  /** Logo under /clients/, drawn as a one-colour mask so it follows the theme. */
+  logo?: string;
+  /** Words set beside a logo that is only a mark (Lichess's knight). */
+  logoText?: string;
+  /** A gallery piece made for this client, shown in the showcase. */
+  galleryId?: string;
+  /** A piece that is not in the gallery: its own image under /clients/. */
+  showcase?: { title: string; image: string; width: number; height: number };
+}
+
 /** Pages and partners the maps were made for or with, and how many client projects are done. */
-export const collaborations: { id: string; name: string; detail: string }[] = collaborationData.collaborations;
+export const collaborations: Collaboration[] = collaborationData.collaborations;
 export const completedProjects: string = collaborationData.completedProjects;
+
+/** Clients with a logo, in the order the data lists them: the "Trusted by" strip. */
+export const clientLogos = collaborations.filter((item) => item.logo);
+
+/** Clients with a piece to show, paired with that piece (hidden pieces included: the client chose them, not the gallery). */
+export const clientShowcase = collaborations.flatMap((client) => {
+  if (client.showcase) {
+    const { title, image, width, height } = client.showcase;
+    return [{ client, piece: { title, image, width, height, workSlug: undefined as string | undefined } }];
+  }
+  const item = (galleryData.items as unknown as GalleryItem[]).find((entry) => entry.id === client.galleryId);
+  if (!item) return [];
+  const image = item.kind === 'video' ? (item.poster ?? item.src) : item.src;
+  return [{ client, piece: { title: item.title, image, width: item.width, height: item.height, workSlug: item.workSlug } }];
+});
 
 /*
  * What backs the About page's claims, read from the data and nothing else:

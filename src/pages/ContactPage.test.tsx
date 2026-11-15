@@ -42,3 +42,12 @@ it('opens with the offer the visitor came for', () => {
 it('ignores an offer it does not know', () => {
   expect(pressed(at('/contact?offer=nonsense'))).toEqual([]);
 });
+
+it('shows the client logos and the pieces made for them', () => {
+  const view = at('/contact');
+  const section = within(view.getByRole('region', { name: 'Trusted by' }));
+  for (const name of ['Lichess.org', 'Europe Magazine', 'IFME', 'Vlast.kz', 'The Times of Central Asia'])
+    expect(section.getByRole('img', { name })).not.toBeNull();
+  expect(section.getByText('Which country has the most chess players?')).not.toBeNull();
+  expect(section.getByRole('link', { name: /Berlin metro/ })).not.toBeNull();
+});

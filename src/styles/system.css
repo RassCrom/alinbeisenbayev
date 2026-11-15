@@ -1441,6 +1441,157 @@
       align-items: start;
     }
   }
+
+  /* ---- Trusted by: client logos and a few pieces made for them ---- */
+  .client-proof {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--s-6);
+    padding-top: var(--s-7);
+    border-top: 1px solid var(--line);
+  }
+
+  .client-proof__label {
+    font-size: var(--fs-body);
+    font-weight: 500;
+    color: var(--text-3);
+  }
+
+  .client-logos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-6) var(--s-5);
+    align-items: center;
+    padding: 0;
+    list-style: none;
+  }
+
+  .client-logos__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-2);
+    min-height: 48px;
+    color: var(--text-2);
+    transition: color var(--t-hover) var(--ease);
+  }
+
+  .client-logos__item:hover {
+    color: var(--text);
+  }
+
+  /* Each logo's own proportions; heights are tuned by eye so no brand shouts. */
+  .client-logo {
+    display: block;
+    height: 30px;
+    max-width: 100%;
+    background: currentColor;
+    mask: var(--logo) center / contain no-repeat;
+    -webkit-mask: var(--logo) center / contain no-repeat;
+  }
+
+  .client-logo--lichess { aspect-ratio: 1; height: 32px; }
+  .client-logo--europe-magazine { aspect-ratio: 3; height: 40px; }
+  .client-logo--ifme { aspect-ratio: 10 / 3; height: 30px; }
+  .client-logo--secreta { aspect-ratio: 12; height: 17px; }
+  .client-logo--vlast { aspect-ratio: 207 / 80; height: 40px; }
+  .client-logo--times-of-central-asia { aspect-ratio: 243 / 20; height: 17px; }
+
+  .client-logo__text {
+    font-size: 1.375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .client-showcase {
+    display: grid;
+    gap: var(--s-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .client-showcase__card {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: center;
+    height: 100%;
+    padding: var(--frame-pad);
+    border-radius: var(--r-outer);
+    background: var(--surface);
+    color: inherit;
+    text-decoration: none;
+    transition: background var(--t-hover) var(--ease);
+  }
+
+  a.client-showcase__card:hover {
+    background: var(--raised);
+  }
+
+  .client-showcase__frame {
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--r-inner);
+    background: var(--raised);
+  }
+
+  .client-showcase__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--t-enter) var(--ease);
+  }
+
+  a.client-showcase__card:hover .client-showcase__frame img {
+    transform: scale(1.04);
+  }
+
+  .client-showcase__copy {
+    display: grid;
+    gap: var(--s-1);
+    padding-right: var(--s-3);
+  }
+
+  .client-showcase__client {
+    font-size: var(--fs-min);
+    color: var(--accent);
+  }
+
+  .client-showcase__title {
+    font-size: var(--fs-body);
+    font-weight: 550;
+    color: var(--text);
+  }
+
+  .client-showcase__detail {
+    font-size: var(--fs-min);
+    color: var(--text-2);
+  }
+
+  @media (min-width: 768px) {
+    .client-logos {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .client-showcase {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .client-showcase__card {
+      grid-template-columns: 136px minmax(0, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .client-proof {
+      padding-top: var(--s-8);
+    }
+
+    .client-logos {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

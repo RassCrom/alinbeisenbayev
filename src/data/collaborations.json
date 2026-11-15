@@ -9,17 +9,46 @@
     {
       "id": "europe-magazine",
       "name": "Europe Magazine",
-      "detail": "Three map posts for a 119k+ audience: 3,260 likes."
+      "detail": "Three map posts for a 119k+ audience: 3,260 likes.",
+      "logo": "/clients/europe-magazine.svg",
+      "showcase": {
+        "title": "Which country has the most chess players?",
+        "image": "/clients/europe-magazine-chess.webp",
+        "width": 1500,
+        "height": 2000
+      }
     },
     {
       "id": "lichess",
       "name": "Lichess.org",
-      "detail": "Partnership."
+      "detail": "Partnership.",
+      "logo": "/clients/lichess.svg",
+      "logoText": "lichess.org"
     },
     {
       "id": "secreta",
       "name": "Secreta Barcelona, Amsterdam, Berlin",
-      "detail": "Maps for the Barcelona, Amsterdam and Berlin pages."
+      "detail": "Maps for the Barcelona, Amsterdam and Berlin pages.",
+      "logo": "/clients/secreta.png",
+      "galleryId": "metro-animation-berlin-morph"
+    },
+    {
+      "id": "ifme",
+      "name": "IFME",
+      "detail": "Maps and infographics.",
+      "logo": "/clients/ifme.svg"
+    },
+    {
+      "id": "vlast",
+      "name": "Vlast.kz",
+      "detail": "Maps for its reporting.",
+      "logo": "/clients/vlast.svg"
+    },
+    {
+      "id": "times-of-central-asia",
+      "name": "The Times of Central Asia",
+      "detail": "Maps for news stories.",
+      "logo": "/clients/times-of-central-asia.svg"
     }
   ]
 }
