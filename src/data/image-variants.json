@@ -1,4 +1,11 @@
 {
+  "/images/blog/gta-map-styles-isle-of-man/02-gta-vi-day.webp": {
+    "width": 1080,
+    "variants": [
+      640
+    ],
+    "og": "/og/blog-gta-map-styles-isle-of-man-02-gta-vi-day.jpg"
+  },
   "/images/blog/stockholm-metro-guide/01-source-map.webp": {
     "width": 2000,
     "variants": [

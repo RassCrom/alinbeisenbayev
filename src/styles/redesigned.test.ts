@@ -62,6 +62,11 @@ export const REDESIGNED: string[] = [
   'src/components/AwardsMap/AwardsMap.css',
   'src/components/AwardsMap/glyphs.tsx',
   'src/utils/ortelius.ts',
+  'src/hooks/useCopy.ts',
+  'src/components/Palette/Palette.tsx',
+  'src/components/Compare/Compare.tsx',
+  'src/components/DownloadCard/DownloadCard.tsx',
+  'src/data/gta-palettes.ts',
 ];
 
 const BANNED: RegExp[] = [

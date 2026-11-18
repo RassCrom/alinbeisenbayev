@@ -17,6 +17,13 @@ const PATHS = {
     </>
   ),
   check: <path d="M4 10.5l4 4 8-9" />,
+  copy: (
+    <>
+      <rect x="7" y="7" width="10" height="10" rx="2" />
+      <path d="M13 4.5V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h.5" />
+    </>
+  ),
+  download: <path d="M10 3v10M5.5 8.5L10 13l4.5-4.5M4 17h12" />,
   mail: (
     <>
       <rect x="3" y="5" width="14" height="10" rx="2" />

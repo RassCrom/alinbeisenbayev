@@ -1893,3 +1893,310 @@
     }
   }
 }
+
+@layer components {
+  /* ---- Post kit: palettes, compare slider and downloads inside a journal post ---- */
+  .palette {
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-5);
+    border-radius: var(--r-outer);
+    background: var(--surface);
+  }
+
+  .palette__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+  }
+
+  .palette__title {
+    color: var(--text);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  @media (max-width: 480px) {
+    .palette {
+      padding: var(--s-4) var(--s-3);
+    }
+
+    .palette__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .swatch:not(.swatch--stop) {
+      grid-template-columns: 28px 1fr;
+      column-gap: var(--s-2);
+    }
+
+    .swatch:not(.swatch--stop) .swatch__chip {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .palette__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: 44px;
+    padding: 0 var(--s-4);
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: var(--fs-small);
+    white-space: nowrap;
+    transition: border-color var(--t-hover) var(--ease);
+  }
+
+  .palette__all:hover {
+    border-color: var(--accent);
+  }
+
+  .palette__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--s-1);
+  }
+
+  .swatch {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--s-3);
+    align-items: center;
+    width: 100%;
+    padding: var(--s-2);
+    border-radius: var(--r-inner);
+    text-align: left;
+    line-height: 1.3;
+    transition: background-color var(--t-hover) var(--ease);
+  }
+
+  .swatch:hover {
+    background: var(--raised);
+  }
+
+  .swatch__chip {
+    grid-row: span 2;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-inner-sm);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+
+  .swatch__name {
+    color: var(--text);
+    font-size: var(--fs-min);
+  }
+
+  .swatch__hex {
+    color: var(--text-3);
+    font-size: var(--fs-min);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .swatch:hover .swatch__hex {
+    color: var(--accent);
+  }
+
+  .palette__sea {
+    display: grid;
+    gap: var(--s-3);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+
+  .palette__note {
+    color: var(--text-2);
+    font-size: var(--fs-min);
+  }
+
+  .palette__ramp {
+    height: 16px;
+    border-radius: var(--r-pill);
+  }
+
+  .palette__stops {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+    gap: var(--s-2);
+  }
+
+  /* A sea stop: chip on top, so five fit across a phone. */
+  .swatch--stop {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--s-1);
+  }
+
+  .swatch--stop .swatch__chip {
+    grid-row: auto;
+    width: 100%;
+    height: 28px;
+    margin-bottom: var(--s-2);
+  }
+
+  /* Compare: the left image is clipped to the handle's position. */
+  .compare {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-outer);
+    user-select: none;
+  }
+
+  .compare__line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--text);
+    box-shadow: var(--shadow-rest);
+    pointer-events: none;
+  }
+
+  .compare__line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border-radius: var(--r-pill);
+    border: 2px solid var(--text);
+    background: rgba(20, 17, 15, 0.7);
+  }
+
+  .compare__tag {
+    position: absolute;
+    top: var(--s-4);
+    padding: var(--s-1) var(--s-3);
+    border-radius: var(--r-pill);
+    background: rgba(20, 17, 15, 0.75);
+    color: var(--text);
+    font-size: var(--fs-min);
+    pointer-events: none;
+  }
+
+  .compare__tag--left {
+    left: var(--s-4);
+  }
+
+  .compare__tag--right {
+    right: var(--s-4);
+  }
+
+  .compare__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+  }
+
+  .compare:has(.compare__input:focus-visible) .compare__line::after {
+    border-color: var(--accent);
+  }
+
+  /* Downloads */
+  .download-list {
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .mdx-prose a.download-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-4) var(--s-5);
+    border-radius: var(--r-outer-sm);
+    background: var(--surface);
+    color: var(--text-2);
+    text-decoration: none;
+    transition: background-color var(--t-hover) var(--ease);
+  }
+
+  .mdx-prose a.download-card:hover {
+    background: var(--raised);
+    color: var(--text-2);
+  }
+
+  .download-card__text {
+    display: grid;
+    gap: var(--s-1);
+    line-height: 1.4;
+  }
+
+  .download-card__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-2);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .download-card__size,
+  .download-card__contents {
+    color: var(--text-3);
+    font-size: var(--fs-min);
+    font-weight: 400;
+  }
+
+  .download-card__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    color: var(--accent);
+  }
+}
+
+/* Post kit overrides of the journal's prose rules. global.css styles
+   .mdx-prose outside any layer, so these must sit outside one too. */
+.mdx-prose .palette,
+.mdx-prose .compare,
+.mdx-prose .download-list {
+  margin-top: var(--s-6);
+  margin-bottom: var(--s-6);
+}
+
+.mdx-prose .palette ul {
+  padding: 0;
+  list-style: none;
+}
+
+.mdx-prose .palette li + li {
+  margin-top: 0;
+}
+
+.mdx-prose .compare img {
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.mdx-prose .compare .compare__left {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+
+.mdx-prose a.download-card,
+.mdx-prose a.download-card:hover {
+  color: var(--text-2);
+  text-decoration: none;
+}

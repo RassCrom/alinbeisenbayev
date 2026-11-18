@@ -1,0 +1,94 @@
+---
+title: "GTA VI and GTA V map styles for QGIS, free to download"
+date: "2026-11-18"
+excerpt: "The Isle of Man rebuilt as a GTA VI and a GTA V map in QGIS. Download the styles and the ready project, or copy the colours."
+cover: "/images/blog/gta-map-styles-isle-of-man/02-gta-vi-day.webp"
+tags: ["cartography", "QGIS", "map styles"]
+---
+
+import Palette from '../../components/Palette/Palette';
+import Compare from '../../components/Compare/Compare';
+import DownloadCard from '../../components/DownloadCard/DownloadCard';
+import { gtaViDay, gtaViNight, gtaV } from '../../data/gta-palettes';
+
+I rebuilt the Isle of Man as a GTA VI map, by day and by night, and as a GTA V pause map, all in QGIS. The styles are free. Take them for your next map, or click any colour below to copy its hex.
+
+![The Isle of Man in three styles: GTA VI night, GTA VI day and GTA V](/images/blog/gta-map-styles-isle-of-man/01-cover.webp)
+
+## Download
+
+<div className="download-list">
+  <DownloadCard
+    href="/files/gta-map-styles/gta-map-styles-isle-of-man.zip"
+    title="Full pack"
+    size="18 MB"
+    contents="Three ready QGIS projects, the styles, the Isle of Man data and the relief"
+  />
+  <DownloadCard
+    href="/files/gta-map-styles/gta-map-styles-qml.zip"
+    title="Styles only"
+    size="0.6 MB"
+    contents="The .qml files and style libraries, for your own data"
+  />
+</div>
+
+Made in QGIS 4.2, so open it in 4.2 or newer. Install the fonts first: D-DIN Condensed and Futura PT Cond for GTA VI, Century Gothic for GTA V. QGIS swaps in a default font for any that are missing.
+
+## GTA VI
+
+Yellow-green land, white streets, pale-yellow highways, road shields and round blips.
+
+![The Isle of Man as a GTA VI day map with the TT Mountain Course in magenta](/images/blog/gta-map-styles-isle-of-man/02-gta-vi-day.webp)
+
+<Palette palette={gtaViDay} />
+
+![Where each GTA VI colour sits on the map around Douglas](/images/blog/gta-map-styles-isle-of-man/03-gta-vi-colours.webp)
+
+![GTA VI icons and fonts: sightseeing, restaurant, police and train station blips](/images/blog/gta-map-styles-isle-of-man/04-gta-vi-icons.webp)
+
+## GTA VI at night
+
+The same layers on dark land and a deep blue sea. Drag the handle to compare.
+
+<Compare
+  left={{ src: '/images/blog/gta-map-styles-isle-of-man/02-gta-vi-day.webp', label: 'Day' }}
+  right={{ src: '/images/blog/gta-map-styles-isle-of-man/08-gta-vi-night.webp', label: 'Night' }}
+  alt="The Isle of Man as a GTA VI map, day on the left of the handle and night on the right"
+/>
+
+<Palette palette={gtaViNight} />
+
+## GTA V
+
+Flat greys, no road casings, steel-blue water and flat white blips.
+
+![The Isle of Man as a GTA V pause map with the TT course in yellow](/images/blog/gta-map-styles-isle-of-man/05-gta-v.webp)
+
+<Palette palette={gtaV} />
+
+![Where each GTA V colour sits on the map around Douglas](/images/blog/gta-map-styles-isle-of-man/06-gta-v-colours.webp)
+
+![GTA V icons and fonts: police, train station, sightseeing and store blips](/images/blog/gta-map-styles-isle-of-man/07-gta-v-icons.webp)
+
+## Use the styles on your own map
+
+Each `.qml` file matches a layer of a [Geofabrik](https://download.geofabrik.de/) GeoPackage: `landuse`, `water`, `roads`, `places`, `pois` and so on. In QGIS, open Layer Properties, then Style, then Load Style, and pick the file with the same name.
+
+Keep this layer order, top to bottom:
+
+1. `pois`, `pois_a`, `transport`, `transport_a`: the icons
+2. `places`: the place names
+3. `relief_light` and `relief_shadow`: one hillshade, drawn twice in screen and multiply blend
+4. `transit`: a second copy of `railways`, GTA VI only
+5. `roads`, `railways`, `buildings`, `ferry`, `waterways`, `water`, `natural_a`, `landuse`
+6. `coast` and `sea`
+
+Then set the project background colour to the style's land colour, in Project, Properties, General.
+
+## How the sea works
+
+The sea is one raster: each pixel holds its distance from the coast. A single colour ramp in `sea.qml` turns that distance into colour, light by the shore and deep blue offshore. The stops are in each palette above.
+
+Icons are placed through the label engine, not the symbology, so QGIS thins them and keeps them off the place names. You edit them in the Labels tab.
+
+Data: OpenStreetMap contributors (ODbL), Copernicus DEM GLO-30. A fan homage, no Rockstar assets.
